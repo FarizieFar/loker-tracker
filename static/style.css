@@ -1,0 +1,400 @@
+
+/* Modern Loker Tracker Styling */
+* {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Global Background */
+.bg-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+}
+
+/* Navigation Styling */
+.navbar-brand {
+    font-size: 1.5rem;
+    letter-spacing: -0.5px;
+}
+
+.navbar {
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Modern Cards */
+.card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Dashboard Stats Cards */
+.stats-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.8));
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.stats-card .card-body {
+    padding: 2rem 1.5rem;
+}
+
+.stats-card h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Modern Table */
+.table {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+.table thead th {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border: none;
+    font-weight: 600;
+    color: #495057;
+    padding: 1rem;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 0.5px;
+}
+
+.table tbody tr {
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+    transform: scale(1.01);
+}
+
+.table tbody td {
+    padding: 1rem;
+    border: none;
+    vertical-align: middle;
+}
+
+/* Modern Form Controls */
+.form-control {
+    border: 2px solid rgba(102, 126, 234, 0.2);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    background: rgba(255, 255, 255, 1);
+}
+
+
+/* Status Dropdown */
+.status-dropdown {
+    min-width: 130px;
+    font-size: 0.875rem;
+    border: 2px solid rgba(102, 126, 234, 0.2);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.status-dropdown:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Status Color Coding */
+.status-terdaftar {
+    background: linear-gradient(135deg, #6c757d, #5a6268) !important;
+    color: white !important;
+}
+
+.status-interview {
+    background: linear-gradient(135deg, #ffc107, #e0a800) !important;
+    color: #212529 !important;
+}
+
+.status-tes {
+    background: linear-gradient(135deg, #17a2b8, #138496) !important;
+    color: white !important;
+}
+
+.status-diterima {
+    background: linear-gradient(135deg, #28a745, #1e7e34) !important;
+    color: white !important;
+}
+
+.status-tidak-diterima {
+    background: linear-gradient(135deg, #dc3545, #c82333) !important;
+    color: white !important;
+}
+
+
+/* Status Badge (alternative display) */
+.status-badge {
+    display: inline-block;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.status-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Dropdown Menu Styling */
+.dropdown-menu {
+    border: none;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    padding: 0.5rem 0;
+    min-width: 200px;
+    z-index: 1000;
+}
+
+.dropdown-item {
+    padding: 0.6rem 1rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    display: flex;
+    align-items: center;
+}
+
+.dropdown-item:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    color: #333;
+}
+
+.dropdown-item .badge {
+    margin-right: 0.5rem;
+    font-size: 0.7rem;
+}
+
+/* Ensure dropdown visibility */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+/* Fix dropdown positioning */
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1050;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    border: none;
+    padding: 0.5rem 0;
+    margin-top: 5px;
+}
+
+/* Dropdown menu items */
+.dropdown-menu li {
+    margin: 0;
+    padding: 0;
+}
+
+/* Modern Buttons */
+.btn {
+    border-radius: 10px;
+    padding: 0.6rem 1.2rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    transition: all 0.3s ease;
+    border: none;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #ffecd2, #fcb69f);
+    color: #8b4513;
+    box-shadow: 0 4px 15px rgba(252, 182, 159, 0.4);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #ff9a9e, #fecfef);
+    color: #8b0000;
+    box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4);
+}
+
+.btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    margin-right: 0.3rem;
+}
+
+/* Modern Alerts */
+.alert {
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.alert-success {
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(40, 167, 69, 0.05));
+    border-left: 4px solid #28a745;
+    color: #155724;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.1), rgba(220, 53, 69, 0.05));
+    border-left: 4px solid #dc3545;
+    color: #721c24;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.card, .table, .btn {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.table tbody tr {
+    animation: slideIn 0.4s ease-out;
+}
+
+/* Footer Styling */
+footer {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    margin-top: auto;
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1rem;
+    }
+    
+    .stats-card .card-body {
+        padding: 1.5rem 1rem;
+    }
+    
+    .stats-card h3 {
+        font-size: 2rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    
+    .status-dropdown {
+        min-width: 100px;
+        font-size: 0.8rem;
+    }
+    
+    .btn-sm {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #5a6fd8, #6a4190);
+}

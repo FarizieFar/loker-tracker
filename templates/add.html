@@ -1,0 +1,111 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<!-- Header Section -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold text-dark mb-0">
+        <i class="fas fa-plus-circle me-2 text-primary"></i>
+        Tambah Lamaran Kerja
+    </h3>
+    <a href="/" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Kembali
+    </a>
+</div>
+
+<!-- Add Job Form -->
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent border-0">
+                <h5 class="mb-0 fw-bold">
+                    <i class="fas fa-building me-2 text-primary"></i>
+                    Informasi Lamaran Kerja
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="company_name" class="form-label text-muted fw-medium">
+                                <i class="fas fa-building me-1"></i>Nama Perusahaan
+                            </label>
+                            <input type="text" class="form-control" id="company_name" name="company_name" 
+                                   placeholder="Masukkan nama perusahaan" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="location" class="form-label text-muted fw-medium">
+                                <i class="fas fa-map-marker-alt me-1"></i>Lokasi
+                            </label>
+                            <input type="text" class="form-control" id="location" name="location" 
+                                   placeholder="Contoh: Jakarta, Bandung, Remote" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="address" class="form-label text-muted fw-medium">
+                            <i class="fas fa-map-pin me-1"></i>Alamat Lengkap
+                        </label>
+                        <textarea class="form-control" id="address" name="address" rows="3" 
+                                  placeholder="Masukkan alamat lengkap perusahaan" required></textarea>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="status_id" class="form-label text-muted fw-medium">
+                            <i class="fas fa-flag me-1"></i>Status Lamaran
+                        </label>
+                        <select class="form-select" id="status_id" name="status_id" required>
+                            <option value="">Pilih status lamaran...</option>
+                            {% for status in statuses %}
+                            <option value="{{ status.id }}">{{ status.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-fill">
+                            <i class="fas fa-save me-2"></i>Simpan Lamaran
+                        </button>
+                        <a href="/" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-2"></i>Batal
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Tips Card -->
+        <div class="card border-0 shadow-sm mt-4">
+            <div class="card-body">
+                <h6 class="fw-bold text-muted mb-3">
+                    <i class="fas fa-lightbulb me-2 text-warning"></i>
+                    Tips填写 Lamaran
+                </h6>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                            <h6 class="fw-bold">Lengkap</h6>
+                            <p class="small text-muted mb-0">Pastikan semua informasi perusahaan diisi dengan lengkap</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <i class="fas fa-clock fa-2x text-info mb-2"></i>
+                            <h6 class="fw-bold">Tracking</h6>
+                            <p class="small text-muted mb-0">Update status secara berkala untuk monitoring yang efektif</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <i class="fas fa-star fa-2x text-warning mb-2"></i>
+                            <h6 class="fw-bold">Profesional</h6>
+                            <p class="small text-muted mb-0">Maintain data yang rapi dan terorganisir dengan baik</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
