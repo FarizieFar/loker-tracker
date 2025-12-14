@@ -95,6 +95,29 @@
         {% block content %}{% endblock %}
     </main>
 
+
+    <!-- Image Preview Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" 
+                 style="border-radius: 20px; background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9)); backdrop-filter: blur(10px);">
+                <div class="modal-header border-0 pb-2" 
+                     style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px 20px 0 0;">
+                    <h5 class="modal-title text-white fw-bold" id="imageModalLabel">
+                        <i class="fas fa-image me-2"></i>Preview Bukti Lamaran
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0" style="background: white; border-radius: 0 0 20px 20px;">
+                    <div class="text-center p-4">
+                        <img id="modalImage" src="" alt="Preview Bukti Lamaran" class="img-fluid" 
+                             style="max-height: 80vh; border-radius: 15px; box-shadow: 0 15px 40px rgba(0,0,0,0.2);">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Custom Confirmation Modal -->
     <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -322,8 +345,22 @@
                 confirmCallback = null;
             });
 
+
             // Make showConfirmationModal available globally
             window.showConfirmationModal = showConfirmationModal;
+
+            // Image Modal Handler
+            function showImageModal(imageSrc, imageAlt = 'Preview Bukti Lamaran') {
+                const modalImage = document.getElementById('modalImage');
+                modalImage.src = imageSrc;
+                modalImage.alt = imageAlt;
+                
+                const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+                modal.show();
+            }
+
+            // Make showImageModal available globally
+            window.showImageModal = showImageModal;
         });
     </script>
 </body>
