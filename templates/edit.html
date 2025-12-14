@@ -20,7 +20,9 @@
             <!-- Edit Form -->
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-body p-4">
-                    <form method="post">
+
+                <form method="post" enctype="multipart/form-data">
+
                         <!-- Company Name -->
                         <div class="mb-3">
                             <label class="form-label fw-medium text-muted">
@@ -32,6 +34,19 @@
                                    class="form-control form-control-lg rounded-3 border-0 bg-light" 
                                    style="padding: 0.75rem 1rem;"
                                    required>
+                        </div>
+
+                        <!-- Position -->
+                        <div class="mb-3">
+                            <label class="form-label fw-medium text-muted">
+                                <i class="fas fa-user-tie me-2"></i>Posisi yang Dilamar
+                            </label>
+                            <input type="text" 
+                                   name="position" 
+                                   value="{{ job.position or '' }}"
+                                   class="form-control form-control-lg rounded-3 border-0 bg-light" 
+                                   style="padding: 0.75rem 1rem;"
+                                   placeholder="Contoh: Frontend Developer, UI/UX Designer">
                         </div>
 
                         <!-- Location -->
@@ -47,6 +62,69 @@
                                    required>
                         </div>
 
+
+                        <!-- Application Proof Link -->
+                        <div class="mb-3">
+                            <label class="form-label fw-medium text-muted">
+                                <i class="fas fa-link me-2"></i>Link Bukti Lamaran
+                            </label>
+                            <input type="url" 
+                                   name="application_proof" 
+                                   value="{{ job.application_proof or '' }}"
+                                   class="form-control form-control-lg rounded-3 border-0 bg-light" 
+                                   style="padding: 0.75rem 1rem;"
+                                   placeholder="URL screenshot atau link bukti lamaran">
+                            <small class="form-text text-muted">Contoh: Link LinkedIn, screenshot aplikasi job, dll</small>
+                        </div>
+
+                        <!-- Upload Screenshot -->
+                        <div class="mb-4">
+                            <label class="form-label fw-medium text-muted">
+                                <i class="fas fa-image me-2"></i>Upload/Ubah Screenshot Bukti
+                            </label>
+                            
+                            <!-- Current Image -->
+                            {% if job.image_proof %}
+                            <div class="current-image mb-3">
+                                <p class="text-muted mb-2">Screenshot saat ini:</p>
+                                <div class="d-flex align-items-center">
+                                    <img src="/uploads/proofs/{{ job.image_proof }}" 
+                                         class="img-thumbnail me-3" 
+                                         style="max-width: 120px; max-height: 120px;">
+                                    <div>
+                                        <p class="mb-1 text-success">
+                                            <i class="fas fa-check-circle me-1"></i>Screenshot tersimpan
+                                        </p>
+                                        <small class="text-muted">Upload screenshot baru untuk mengganti</small>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Upload Area -->
+                            <div class="upload-area" id="uploadArea">
+                                <input type="file" class="form-control d-none" id="image_proof" name="image_proof" 
+                                       accept="image/png,image/jpeg,image/jpg,image/gif" onchange="handleFileSelect(this)">
+                                <div class="upload-content text-center">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                    <h6 class="text-muted">Klik untuk upload atau drag & drop gambar</h6>
+                                    <p class="small text-muted mb-0">Format: PNG, JPG, JPEG, GIF (Max 16MB)</p>
+                                </div>
+                            </div>
+                            <div id="previewArea" class="mt-3 d-none">
+                                <div class="d-flex align-items-center">
+                                    <img id="previewImage" class="img-thumbnail me-3" style="max-width: 100px; max-height: 100px;">
+                                    <div>
+                                        <p class="mb-1" id="previewFileName"></p>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeImage()">
+                                            <i class="fas fa-trash me-1"></i>Hapus
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
                         <!-- Address -->
                         <div class="mb-3">
                             <label class="form-label fw-medium text-muted">
@@ -57,6 +135,30 @@
                                       class="form-control form-control-lg rounded-3 border-0 bg-light" 
                                       style="padding: 0.75rem 1rem;"
                                       required>{{ job.address }}</textarea>
+                        </div>
+
+                        <!-- Source Info -->
+                        <div class="mb-3">
+                            <label class="form-label fw-medium text-muted">
+                                <i class="fas fa-share-alt me-2"></i>Sumber Informasi Loker
+                            </label>
+                            <select name="source_info" 
+                                    class="form-select form-select-lg rounded-3 border-0 bg-light" 
+                                    style="padding: 0.75rem 1rem;"
+                                    required>
+                                <option value="">Pilih sumber informasi...</option>
+                                <option value="LinkedIn" {% if job.source_info == 'LinkedIn' %}selected{% endif %}>🔗 LinkedIn</option>
+                                <option value="Instagram" {% if job.source_info == 'Instagram' %}selected{% endif %}>📷 Instagram</option>
+                                <option value="TikTok" {% if job.source_info == 'TikTok' %}selected{% endif %}>🎵 TikTok</option>
+                                <option value="JobStreet" {% if job.source_info == 'JobStreet' %}selected{% endif %}>💼 JobStreet</option>
+                                <option value="Indeed" {% if job.source_info == 'Indeed' %}selected{% endif %}>🔍 Indeed</option>
+                                <option value="Website Perusahaan" {% if job.source_info == 'Website Perusahaan' %}selected{% endif %}>🌐 Website Perusahaan</option>
+                                <option value="Email/Newsletter" {% if job.source_info == 'Email/Newsletter' %}selected{% endif %}>📧 Email/Newsletter</option>
+                                <option value="Teman/Kolega" {% if job.source_info == 'Teman/Kolega' %}selected{% endif %}>👥 Teman/Kolega</option>
+                                <option value="Job Fair/Expo" {% if job.source_info == 'Job Fair/Expo' %}selected{% endif %}>🎪 Job Fair/Expo</option>
+                                <option value="Media Sosial Lainnya" {% if job.source_info == 'Media Sosial Lainnya' %}selected{% endif %}>📱 Media Sosial Lainnya</option>
+                                <option value="Lainnya" {% if job.source_info == 'Lainnya' %}selected{% endif %}>📝 Lainnya</option>
+                            </select>
                         </div>
 
                         <!-- Status -->
@@ -142,10 +244,99 @@
     transform: translateY(-2px);
 }
 
+
 .badge {
     font-size: 0.75rem;
     padding: 0.5rem 0.75rem;
 }
 </style>
+
+<script>
+// File upload functionality (same as add.html)
+function handleFileSelect(input) {
+    const file = input.files[0];
+    if (file) {
+        showPreview(file);
+    }
+}
+
+function showPreview(file) {
+    const previewArea = document.getElementById('previewArea');
+    const previewImage = document.getElementById('previewImage');
+    const previewFileName = document.getElementById('previewFileName');
+    
+    // Create object URL for preview
+    const objectUrl = URL.createObjectURL(file);
+    previewImage.src = objectUrl;
+    previewFileName.textContent = file.name + ' (' + formatFileSize(file.size) + ')';
+    
+    previewArea.classList.remove('d-none');
+    document.getElementById('uploadArea').style.display = 'none';
+}
+
+function removeImage() {
+    const previewArea = document.getElementById('previewArea');
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('image_proof');
+    
+    previewArea.classList.add('d-none');
+    uploadArea.style.display = 'block';
+    fileInput.value = '';
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+// Drag and drop functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('image_proof');
+    
+    if (uploadArea && fileInput) {
+        // Click to upload
+        uploadArea.addEventListener('click', function() {
+            fileInput.click();
+        });
+        
+        // Drag over
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        // Drag leave
+        uploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+        });
+        
+        // Drop
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileSelect(fileInput);
+            }
+        });
+        
+        // Prevent default drag behaviors on document
+        document.addEventListener('dragover', function(e) {
+            e.preventDefault();
+        });
+        
+        document.addEventListener('drop', function(e) {
+            e.preventDefault();
+        });
+    }
+});
+</script>
 
 {% endblock %}

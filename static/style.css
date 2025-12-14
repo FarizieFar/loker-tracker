@@ -247,6 +247,44 @@ body {
     padding: 0;
 }
 
+
+/* Proof Links Styling */
+.proof-link,
+.proof-screenshot {
+    display: inline-block;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    margin-bottom: 0.2rem;
+}
+
+.proof-link {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+}
+
+.proof-link:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,123,255,0.3);
+}
+
+.proof-screenshot {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    color: white;
+}
+
+.proof-screenshot:hover {
+    background: linear-gradient(135deg, #1e7e34, #155724);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(40,167,69,0.3);
+}
+
 /* Modern Buttons */
 .btn {
     border-radius: 10px;
@@ -351,6 +389,74 @@ footer {
     pointer-events: none;
 }
 
+
+/* Upload Area Styling */
+.upload-area {
+    border: 2px dashed rgba(102, 126, 234, 0.3);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+}
+
+.upload-area:hover {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.05);
+    transform: translateY(-2px);
+}
+
+.upload-area.dragover {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+    transform: scale(1.02);
+}
+
+.upload-content h6 {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+#previewArea {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+/* Image Proof Display */
+.proof-link {
+    text-decoration: none;
+    color: #667eea;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.proof-link:hover {
+    color: #5a6fd8;
+    text-decoration: underline;
+}
+
+.proof-screenshot {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s ease;
+}
+
+.proof-screenshot:hover {
+    background: linear-gradient(135deg, #218838, #1e9966);
+    color: white;
+    transform: translateY(-1px);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .container {
@@ -378,6 +484,21 @@ footer {
         padding: 0.3rem 0.6rem;
         font-size: 0.75rem;
     }
+    
+    .upload-area {
+        padding: 1.5rem 1rem;
+    }
+    
+    #previewArea .d-flex {
+        flex-direction: column;
+        align-items: center !important;
+        text-align: center;
+    }
+    
+    #previewArea .img-thumbnail {
+        margin-right: 0 !important;
+        margin-bottom: 1rem;
+    }
 }
 
 /* Scrollbar Styling */
@@ -395,6 +516,80 @@ footer {
     border-radius: 4px;
 }
 
+
 ::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(135deg, #5a6fd8, #6a4190);
+}
+
+/* Source Info Badge Styling */
+.source-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 6px;
+    text-align: center;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.source-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Specific colors for each source */
+.source-badge.linkedin {
+    background: linear-gradient(135deg, #0077b5, #005885);
+    color: white;
+}
+
+.source-badge.instagram {
+    background: linear-gradient(135deg, #E4405F, #C13584);
+    color: white;
+}
+
+.source-badge.tiktok {
+    background: linear-gradient(135deg, #000000, #333333);
+    color: white;
+}
+
+.source-badge.jobstreet {
+    background: linear-gradient(135deg, #36B37E, #2E8B57);
+    color: white;
+}
+
+.source-badge.indeed {
+    background: linear-gradient(135deg, #2557A7, #1E3A8A);
+    color: white;
+}
+
+.source-badge.website {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: white;
+}
+
+.source-badge.email {
+    background: linear-gradient(135deg, #ea4335, #d93025);
+    color: white;
+}
+
+.source-badge.friend {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+}
+
+.source-badge.jobfair {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+}
+
+.source-badge.social {
+    background: linear-gradient(135deg, #06b6d4, #0891b2);
+    color: white;
+}
+
+.source-badge.other {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+    color: white;
 }

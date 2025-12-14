@@ -12,29 +12,74 @@
     <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
 </head>
 <body class="bg-gradient">
-    <!-- Navigation Header -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+
+
+
+    <!-- Modern Navigation Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark shadow-lg" 
+         style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-bottom: 2px solid rgba(255,255,255,0.1);">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
-                <i class="fas fa-briefcase me-2"></i>
-                Loker Tracker
-            </a>
-            <div class="navbar-nav ms-auto">
-                <span class="navbar-text me-3">
-                    <i class="fas fa-user-circle me-1"></i>
-                    Welcome, {{ current_user.username if current_user.is_authenticated else 'Guest' }}!
+            <!-- Brand Logo -->
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="{{ url_for('index') }}" 
+               style="font-size: 1.4rem; letter-spacing: -0.5px; transition: transform 0.3s ease;">
+                <div class="bg-white bg-opacity-20 rounded-circle p-2 me-3">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <span class="text-white">
+                    Loker Tracker
                 </span>
+            </a>
+            
+            <!-- User Info & Actions -->
+            <div class="navbar-nav ms-auto d-flex align-items-center">
+                <!-- Welcome Message -->
+                <div class="navbar-text me-3 d-flex align-items-center text-white" 
+                     style="background: rgba(255,255,255,0.1); padding: 0.5rem 1rem; border-radius: 20px; backdrop-filter: blur(5px);">
+                    <i class="fas fa-user-circle me-2"></i>
+                    <span class="fw-medium">
+                        Halo, <span class="text-warning">{{ current_user.username if current_user.is_authenticated else 'Guest' }}</span>!
+                    </span>
+                </div>
+                
                 {% if current_user.is_authenticated %}
-                <a href="{{ url_for('logout') }}" class="btn btn-outline-light btn-sm">
-                    <i class="fas fa-sign-out-alt me-1"></i>Logout
+                <!-- Logout Button -->
+                <a href="{{ url_for('logout') }}" 
+                   class="btn btn-light btn-sm px-3 py-2 fw-semibold" 
+                   style="border-radius: 20px; background: rgba(255,255,255,0.95); color: #4facfe; border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.2); transition: all 0.3s ease;">
+                    <i class="fas fa-sign-out-alt me-2"></i>
+                    <span class="d-none d-md-inline">Logout</span>
                 </a>
                 {% endif %}
             </div>
         </div>
     </nav>
 
+    <style>
+        .navbar-brand:hover {
+            transform: translateY(-1px);
+        }
+        
+        .btn-light:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+            background: white !important;
+        }
+        
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 1.2rem !important;
+            }
+            
+            .navbar-text {
+                font-size: 0.9rem !important;
+                margin-right: 0.5rem !important;
+            }
+        }
+    </style>
+
     <!-- Main Content -->
     <main class="container py-4">
+
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -49,6 +94,49 @@
         
         {% block content %}{% endblock %}
     </main>
+
+    <!-- Custom Confirmation Modal -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" 
+                 style="border-radius: 20px; background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9)); backdrop-filter: blur(10px);">
+                <div class="modal-header border-0 pb-0">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-warning bg-opacity-20 rounded-circle p-3 me-3">
+                            <i class="fas fa-question-circle text-warning fa-2x"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-1" id="confirmModalLabel" style="color: #2c3e50;">
+                                Konfirmasi Aksi
+                            </h5>
+                            <p class="text-muted mb-0 small">Pastikan aksi yang akan Anda lakukan</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pt-3">
+                    <div class="text-center mb-4">
+                        <h6 class="fw-semibold text-dark mb-2" id="confirmTitle">Apakah Anda yakin?</h6>
+                        <p class="text-muted mb-0" id="confirmMessage">Aksi ini tidak dapat dibatalkan.</p>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 justify-content-center">
+                    <button type="button" class="btn btn-secondary px-4 py-2 me-3" 
+                            data-bs-dismiss="modal" 
+                            style="border-radius: 25px; font-weight: 500; background: #6c757d; border: none;">
+                        <i class="fas fa-times me-2"></i>
+                        Batalkan
+                    </button>
+                    <button type="button" class="btn btn-danger px-4 py-2" 
+                            id="confirmAction" 
+                            style="border-radius: 25px; font-weight: 500; background: linear-gradient(135deg, #ff6b6b, #ee5a52); border: none; box-shadow: 0 4px 15px rgba(255,107,107,0.3);">
+                        <i class="fas fa-check me-2"></i>
+                        Ya, Lanjutkan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="bg-dark text-light py-4 mt-5">
@@ -189,6 +277,7 @@
             }
 
             // Update statistics function
+
             function updateStatistics(stats) {
                 if (stats) {
                     const elements = {
@@ -206,6 +295,35 @@
                     });
                 }
             }
+
+            // Custom Confirmation Modal Handler
+            let confirmCallback = null;
+            
+            function showConfirmationModal(title, message, callback) {
+                document.getElementById('confirmTitle').textContent = title;
+                document.getElementById('confirmMessage').textContent = message;
+                confirmCallback = callback;
+                
+                const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+                modal.show();
+            }
+            
+            // Handle confirmation action
+            document.getElementById('confirmAction').addEventListener('click', function() {
+                if (confirmCallback && typeof confirmCallback === 'function') {
+                    confirmCallback();
+                }
+                const modal = bootstrap.Modal.getInstance(document.getElementById('confirmModal'));
+                modal.hide();
+            });
+            
+            // Clear callback when modal is hidden
+            document.getElementById('confirmModal').addEventListener('hidden.bs.modal', function () {
+                confirmCallback = null;
+            });
+
+            // Make showConfirmationModal available globally
+            window.showConfirmationModal = showConfirmationModal;
         });
     </script>
 </body>

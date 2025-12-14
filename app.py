@@ -1,15 +1,58 @@
 
-from flask import Flask, render_template, redirect, url_for, request, flash, abort, jsonify
+
+from flask import Flask, render_template, redirect, url_for, request, flash, abort, jsonify, send_file
 from datetime import datetime
 from extensions import db
 from models import JobApplication, User, Status
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import check_password_hash
+from werkzeug.utils import secure_filename
+import os
+import uuid
+
 
 app = Flask(__name__)
+
+
 app.config['SECRET_KEY'] = 'super-secret-key-alfarizi'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# File upload configuration
+app.config['UPLOAD_FOLDER'] = 'static/uploads/proofs'
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+
+
+
+# Create upload directory if it doesn't exist
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def save_uploaded_file(file):
+    """Save uploaded file and return filename"""
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        # Add unique identifier to prevent conflicts
+        unique_filename = f"{uuid.uuid4().hex}_{filename}"
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+        file.save(file_path)
+        return unique_filename
+    return None
+
+def save_uploaded_image(file):
+    """Save uploaded image and return the filename"""
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        # Generate unique filename
+        unique_filename = str(uuid.uuid4()) + '.' + filename.rsplit('.', 1)[1]
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+        file.save(file_path)
+        return unique_filename
+    return None
 
 db.init_app(app)
 
@@ -93,11 +136,25 @@ def index():
 @app.route('/add', methods=['GET', 'POST'])
 @login_required
 def add_job():
+
+
     if request.method == 'POST':
+        # Handle image upload
+        image_proof = None
+        if 'image_proof' in request.files:
+            file = request.files['image_proof']
+            if file.filename:
+                image_proof = save_uploaded_image(file)
+        
+
         job = JobApplication(
             company_name=request.form['company_name'],
+            position=request.form.get('position', ''),  # NEW: Handle posisi
             location=request.form['location'],
             address=request.form['address'],
+            application_proof=request.form.get('application_proof', ''),  # NEW: Handle bukti
+            image_proof=image_proof,  # NEW: Handle uploaded image
+            source_info=request.form.get('source_info', ''),  # NEW: Handle asal info loker
             status_id=request.form['status_id'],  # ✅ INI PENTING
             applied_date=datetime.now(),
             user_id=current_user.id
@@ -122,8 +179,31 @@ def edit_job(id):
 
     statuses = Status.query.all()
 
+
+
     if request.method == 'POST':
+
         job.company_name = request.form['company_name']
+        job.position = request.form.get('position', '')  # NEW: Handle posisi
+        job.location = request.form['location']
+        job.address = request.form['address']
+        job.application_proof = request.form.get('application_proof', '')  # NEW: Handle bukti
+        job.source_info = request.form.get('source_info', '')  # NEW: Handle asal info loker
+        
+        # Handle image upload
+        if 'image_proof' in request.files:
+            file = request.files['image_proof']
+            if file.filename:
+                # Save new image
+                new_image = save_uploaded_image(file)
+                if new_image:
+                    # Delete old image if exists
+                    if job.image_proof:
+                        old_file_path = os.path.join(app.config['UPLOAD_FOLDER'], job.image_proof)
+                        if os.path.exists(old_file_path):
+                            os.remove(old_file_path)
+                    job.image_proof = new_image
+        
         job.status_id = request.form['status_id']
         db.session.commit()
         return redirect(url_for('index'))
@@ -156,21 +236,8 @@ def login():
 
 
 
-# ======================
-# DELETE JOB
-# ======================
-@app.route('/job/<int:id>/delete', methods=['POST'])
-@login_required
-def delete_job(id):
-    job = JobApplication.query.get_or_404(id)
-    
-    if job.user_id != current_user.id:
-        abort(403)
-    
-    db.session.delete(job)
-    db.session.commit()
-    
-    return {'success': True, 'message': 'Job berhasil dihapus'}
+
+
 
 
 # ======================
@@ -230,6 +297,40 @@ def update_status(job_id):
         
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+
+
+
+# ======================
+# SERVE UPLOADED IMAGE
+# ======================
+@app.route('/uploads/proofs/<filename>')
+def uploaded_file(filename):
+    """Serve uploaded proof images"""
+    return send_file(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+
+# ======================
+# DELETE JOB
+# ======================
+@app.route('/job/<int:id>/delete', methods=['POST'])
+@login_required
+def delete_job(id):
+    job = JobApplication.query.get_or_404(id)
+    
+    if job.user_id != current_user.id:
+        abort(403)
+    
+    # Delete associated image file if exists
+    if job.image_proof:
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], job.image_proof)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+    
+    db.session.delete(job)
+    db.session.commit()
+    
+    return {'success': True, 'message': 'Job berhasil dihapus'}
 
 
 # ======================

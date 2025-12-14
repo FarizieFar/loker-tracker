@@ -140,24 +140,94 @@
     <div class="card-body p-0">
         <div class="table-responsive" style="overflow: visible;">
             <table class="table table-hover mb-0" style="overflow: visible;">
+
+
                 <thead>
                     <tr>
                         <th><i class="fas fa-building me-1"></i>Perusahaan</th>
+                        <th><i class="fas fa-user-tie me-1"></i>Posisi</th>
+                        <th><i class="fas fa-share-alt me-1"></i>Sumber Info</th>
                         <th><i class="fas fa-map-marker-alt me-1"></i>Lokasi</th>
+                        <th><i class="fas fa-camera me-1"></i>Bukti Lamaran</th>
                         <th><i class="fas fa-flag me-1"></i>Status</th>
                         <th><i class="fas fa-calendar me-1"></i>Tanggal Apply</th>
                         <th><i class="fas fa-cogs me-1"></i>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
+
                     {% for job in jobs %}
                     <tr>
                         <td>
                             <div class="fw-semibold">{{ job.company_name }}</div>
                         </td>
+
+                        <td>
+                            <div class="fw-medium">
+                                <i class="fas fa-user-tie text-muted me-1"></i>
+                                {{ job.position or '<span class="text-muted">-</span>' }}
+                            </div>
+                        </td>
+                        <td>
+                            {% if job.source_info %}
+                                {% if job.source_info == 'LinkedIn' %}
+                                    <span class="source-badge linkedin">🔗 LinkedIn</span>
+                                {% elif job.source_info == 'Instagram' %}
+                                    <span class="source-badge instagram">📷 Instagram</span>
+                                {% elif job.source_info == 'TikTok' %}
+                                    <span class="source-badge tiktok">🎵 TikTok</span>
+                                {% elif job.source_info == 'JobStreet' %}
+                                    <span class="source-badge jobstreet">💼 JobStreet</span>
+                                {% elif job.source_info == 'Indeed' %}
+                                    <span class="source-badge indeed">🔍 Indeed</span>
+                                {% elif job.source_info == 'Website Perusahaan' %}
+                                    <span class="source-badge website">🌐 Website</span>
+                                {% elif job.source_info == 'Email/Newsletter' %}
+                                    <span class="source-badge email">📧 Email</span>
+                                {% elif job.source_info == 'Teman/Kolega' %}
+                                    <span class="source-badge friend">👥 Teman</span>
+                                {% elif job.source_info == 'Job Fair/Expo' %}
+                                    <span class="source-badge jobfair">🎪 Job Fair</span>
+                                {% elif job.source_info == 'Media Sosial Lainnya' %}
+                                    <span class="source-badge social">📱 Social</span>
+                                {% elif job.source_info == 'Lainnya' %}
+                                    <span class="source-badge other">📝 Lainnya</span>
+                                {% else %}
+                                    <span class="source-badge">{{ job.source_info }}</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
                         <td>
                             <i class="fas fa-map-marker-alt text-muted me-1"></i>
                             {{ job.location }}
+                        </td>
+
+                        <td>
+                            {% if job.application_proof or job.image_proof %}
+                                <!-- Link Bukti -->
+                                {% if job.application_proof and job.application_proof.startswith('http') %}
+                                    <a href="{{ job.application_proof }}" target="_blank" class="proof-link">
+                                        <i class="fas fa-external-link-alt me-1"></i>Link
+                                    </a>
+                                    <br>
+                                {% endif %}
+                                
+                                <!-- Screenshot -->
+                                {% if job.image_proof %}
+                                    <a href="/uploads/proofs/{{ job.image_proof }}" target="_blank" class="proof-screenshot">
+                                        <i class="fas fa-image me-1"></i>Screenshot
+                                    </a>
+                                {% endif %}
+                                
+                                <!-- Jika hanya ada link tanpa http -->
+                                {% if job.application_proof and not job.application_proof.startswith('http') %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
                         </td>
 
 
@@ -213,8 +283,10 @@
                         </td>
                     </tr>
                     {% else %}
+
+
                     <tr>
-                        <td colspan="5" class="text-center py-4">
+                        <td colspan="8" class="text-center py-4">
                             <div class="text-muted">
                                 <i class="fas fa-inbox fa-3x mb-3"></i>
                                 <p class="mb-0">Belum ada data lamaran kerja</p>
@@ -331,48 +403,53 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Handle delete button clicks
+
+    // Handle delete button clicks with custom confirmation modal
     document.querySelectorAll('.delete-btn').forEach(button => {
         button.addEventListener('click', function() {
             const jobId = this.dataset.jobId;
             const companyName = this.dataset.company;
             
-            if (confirm(`Apakah Anda yakin ingin menghapus job "${companyName}"?`)) {
-                // Send AJAX request
-                fetch(`/job/${jobId}/delete`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Show success message
-                        const alert = document.createElement('div');
-                        alert.className = 'alert alert-success alert-dismissible fade show';
-                        alert.innerHTML = `
-                            ${data.message}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        `;
-                        document.querySelector('.container').prepend(alert);
-                        
-                        // Remove alert after 3 seconds
-                        setTimeout(() => {
-                            alert.remove();
-                        }, 3000);
-                        
-                        // Refresh page to update table and statistics
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1000);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Terjadi kesalahan saat menghapus job');
-                });
-            }
+            showConfirmationModal(
+                'Hapus Lamaran Kerja',
+                `Apakah Anda yakin ingin menghapus lamaran kerja dari "${companyName}"? Aksi ini tidak dapat dibatalkan.`,
+                function() {
+                    // Send AJAX request
+                    fetch(`/job/${jobId}/delete`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Show success message
+                            const alert = document.createElement('div');
+                            alert.className = 'alert alert-success alert-dismissible fade show';
+                            alert.innerHTML = `
+                                ${data.message}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            `;
+                            document.querySelector('.container').prepend(alert);
+                            
+                            // Remove alert after 3 seconds
+                            setTimeout(() => {
+                                alert.remove();
+                            }, 3000);
+                            
+                            // Refresh page to update table and statistics
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showAlert('Terjadi kesalahan saat menghapus job', 'error');
+                    });
+                }
+            );
         });
     });
 });
