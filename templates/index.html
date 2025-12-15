@@ -208,32 +208,36 @@
                             </div>
                         </td>
                         
+
+
                         <td data-label="Sumber Info">
                             {% if job.source_info %}
                                 {% if job.source_info == 'LinkedIn' %}
-                                    <span class="source-badge linkedin">🔗 LinkedIn</span>
+                                    <span class="source-badge linkedin"><i class="fab fa-linkedin me-1"></i>LinkedIn</span>
                                 {% elif job.source_info == 'Instagram' %}
-                                    <span class="source-badge instagram">📷 Instagram</span>
+                                    <span class="source-badge instagram"><i class="fab fa-instagram me-1"></i>Instagram</span>
                                 {% elif job.source_info == 'TikTok' %}
-                                    <span class="source-badge tiktok">🎵 TikTok</span>
+                                    <span class="source-badge tiktok"><i class="fab fa-tiktok me-1"></i>TikTok</span>
+                                {% elif job.source_info == 'WhatsApp' %}
+                                    <span class="source-badge whatsapp"><i class="fab fa-whatsapp me-1"></i>WhatsApp</span>
                                 {% elif job.source_info == 'JobStreet' %}
-                                    <span class="source-badge jobstreet">💼 JobStreet</span>
+                                    <span class="source-badge jobstreet"><i class="fas fa-briefcase me-1"></i>JobStreet</span>
                                 {% elif job.source_info == 'Indeed' %}
-                                    <span class="source-badge indeed">🔍 Indeed</span>
+                                    <span class="source-badge indeed"><i class="fas fa-search me-1"></i>Indeed</span>
                                 {% elif job.source_info == 'Website Perusahaan' %}
-                                    <span class="source-badge website">🌐 Website</span>
+                                    <span class="source-badge website"><i class="fas fa-globe me-1"></i>Website</span>
                                 {% elif job.source_info == 'Email/Newsletter' %}
-                                    <span class="source-badge email">📧 Email</span>
+                                    <span class="source-badge email"><i class="fas fa-envelope me-1"></i>Email</span>
                                 {% elif job.source_info == 'Teman/Kolega' %}
-                                    <span class="source-badge friend">👥 Teman</span>
+                                    <span class="source-badge friend"><i class="fas fa-users me-1"></i>Teman</span>
                                 {% elif job.source_info == 'Job Fair/Expo' %}
-                                    <span class="source-badge jobfair">🎪 Job Fair</span>
+                                    <span class="source-badge jobfair"><i class="fas fa-calendar-alt me-1"></i>Job Fair</span>
                                 {% elif job.source_info == 'Media Sosial Lainnya' %}
-                                    <span class="source-badge social">📱 Social</span>
-                                {% elif job.source_info == 'Lainnya' %}
-                                    <span class="source-badge other">📝 Lainnya</span>
+                                    <span class="source-badge social"><i class="fas fa-share-alt me-1"></i>Social</span>
+                                {% elif job.source_info == 'Custom' %}
+                                    <span class="source-badge custom"><i class="fas fa-edit me-1"></i>Custom</span>
                                 {% else %}
-                                    <span class="source-badge">{{ job.source_info }}</span>
+                                    <span class="source-badge custom"><i class="fas fa-pencil-alt me-1"></i>{{ job.source_info }}</span>
                                 {% endif %}
                             {% else %}
                                 <span class="text-muted">-</span>

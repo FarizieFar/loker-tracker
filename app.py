@@ -189,6 +189,12 @@ def add_job():
             except ValueError:
                 applied_date = datetime.now()
 
+
+        # Handle source_info - if custom, use the custom input
+        source_info = request.form.get('source_info', '')
+        if source_info == 'Custom':
+            source_info = request.form.get('custom_source', '')
+        
         job = JobApplication(
             company_name=request.form['company_name'],
             position=request.form.get('position', ''),  # NEW: Handle posisi
@@ -196,7 +202,7 @@ def add_job():
             address=request.form['address'],
             application_proof=request.form.get('application_proof', ''),  # NEW: Handle bukti
             image_proof=image_proof,  # NEW: Handle uploaded image
-            source_info=request.form.get('source_info', ''),  # NEW: Handle asal info loker
+            source_info=source_info,  # Handle custom source_info
             status_id=request.form['status_id'],  # ✅ INI PENTING
             applied_date=applied_date,
             user_id=current_user.id
@@ -226,12 +232,18 @@ def edit_job(id):
 
     if request.method == 'POST':
 
+
         job.company_name = request.form['company_name']
         job.position = request.form.get('position', '')  # NEW: Handle posisi
         job.location = request.form['location']
         job.address = request.form['address']
         job.application_proof = request.form.get('application_proof', '')  # NEW: Handle bukti
-        job.source_info = request.form.get('source_info', '')  # NEW: Handle asal info loker
+        
+        # Handle source_info - if custom, use the custom input
+        source_info = request.form.get('source_info', '')
+        if source_info == 'Custom':
+            source_info = request.form.get('custom_source', '')
+        job.source_info = source_info
         
         # Handle applied_date - if provided, update the date
         if request.form.get('applied_date'):

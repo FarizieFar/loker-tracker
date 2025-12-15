@@ -138,6 +138,7 @@
                         </div>
 
 
+
                         <!-- Source Info -->
                         <div class="mb-3">
                             <label class="form-label fw-medium text-muted">
@@ -146,20 +147,34 @@
                             <select name="source_info" 
                                     class="form-select form-select-lg rounded-3 border-0 bg-light" 
                                     style="padding: 0.75rem 1rem;"
-                                    required>
+                                    required onchange="toggleCustomSourceEdit()">
                                 <option value="">Pilih sumber informasi...</option>
-                                <option value="LinkedIn" {% if job.source_info == 'LinkedIn' %}selected{% endif %}>🔗 LinkedIn</option>
-                                <option value="Instagram" {% if job.source_info == 'Instagram' %}selected{% endif %}>📷 Instagram</option>
-                                <option value="TikTok" {% if job.source_info == 'TikTok' %}selected{% endif %}>🎵 TikTok</option>
-                                <option value="JobStreet" {% if job.source_info == 'JobStreet' %}selected{% endif %}>💼 JobStreet</option>
-                                <option value="Indeed" {% if job.source_info == 'Indeed' %}selected{% endif %}>🔍 Indeed</option>
-                                <option value="Website Perusahaan" {% if job.source_info == 'Website Perusahaan' %}selected{% endif %}>🌐 Website Perusahaan</option>
-                                <option value="Email/Newsletter" {% if job.source_info == 'Email/Newsletter' %}selected{% endif %}>📧 Email/Newsletter</option>
-                                <option value="Teman/Kolega" {% if job.source_info == 'Teman/Kolega' %}selected{% endif %}>👥 Teman/Kolega</option>
-                                <option value="Job Fair/Expo" {% if job.source_info == 'Job Fair/Expo' %}selected{% endif %}>🎪 Job Fair/Expo</option>
-                                <option value="Media Sosial Lainnya" {% if job.source_info == 'Media Sosial Lainnya' %}selected{% endif %}>📱 Media Sosial Lainnya</option>
-                                <option value="Lainnya" {% if job.source_info == 'Lainnya' %}selected{% endif %}>📝 Lainnya</option>
+                                <option value="LinkedIn" {% if job.source_info == 'LinkedIn' %}selected{% endif %}><i class="fab fa-linkedin me-2"></i>LinkedIn</option>
+                                <option value="Instagram" {% if job.source_info == 'Instagram' %}selected{% endif %}><i class="fab fa-instagram me-2"></i>Instagram</option>
+                                <option value="TikTok" {% if job.source_info == 'TikTok' %}selected{% endif %}><i class="fab fa-tiktok me-2"></i>TikTok</option>
+                                <option value="WhatsApp" {% if job.source_info == 'WhatsApp' %}selected{% endif %}><i class="fab fa-whatsapp me-2"></i>WhatsApp</option>
+                                <option value="JobStreet" {% if job.source_info == 'JobStreet' %}selected{% endif %}><i class="fas fa-briefcase me-2"></i>JobStreet</option>
+                                <option value="Indeed" {% if job.source_info == 'Indeed' %}selected{% endif %}><i class="fas fa-search me-2"></i>Indeed</option>
+                                <option value="Website Perusahaan" {% if job.source_info == 'Website Perusahaan' %}selected{% endif %}><i class="fas fa-globe me-2"></i>Website Perusahaan</option>
+                                <option value="Email/Newsletter" {% if job.source_info == 'Email/Newsletter' %}selected{% endif %}><i class="fas fa-envelope me-2"></i>Email/Newsletter</option>
+                                <option value="Teman/Kolega" {% if job.source_info == 'Teman/Kolega' %}selected{% endif %}><i class="fas fa-users me-2"></i>Teman/Kolega</option>
+                                <option value="Job Fair/Expo" {% if job.source_info == 'Job Fair/Expo' %}selected{% endif %}><i class="fas fa-calendar-alt me-2"></i>Job Fair/Expo</option>
+                                <option value="Media Sosial Lainnya" {% if job.source_info == 'Media Sosial Lainnya' %}selected{% endif %}><i class="fas fa-share-alt me-2"></i>Media Sosial Lainnya</option>
+                                <option value="Custom" {% if job.source_info not in ['LinkedIn', 'Instagram', 'TikTok', 'WhatsApp', 'JobStreet', 'Indeed', 'Website Perusahaan', 'Email/Newsletter', 'Teman/Kolega', 'Job Fair/Expo', 'Media Sosial Lainnya'] and job.source_info %}selected{% endif %}><i class="fas fa-edit me-2"></i>Custom (Input Manual)</option>
                             </select>
+                        </div>
+
+                        <!-- Custom Source Input -->
+                        <div class="mb-3" id="custom_source_div_edit" style="{% if job.source_info not in ['LinkedIn', 'Instagram', 'TikTok', 'WhatsApp', 'JobStreet', 'Indeed', 'Website Perusahaan', 'Email/Newsletter', 'Teman/Kolega', 'Job Fair/Expo', 'Media Sosial Lainnya'] and job.source_info %}display: block;{% else %}display: none;{% endif %}">
+                            <label class="form-label fw-medium text-muted">
+                                <i class="fas fa-pencil-alt me-2"></i>Sumber Informasi Custom
+                            </label>
+                            <input type="text" 
+                                   name="custom_source" 
+                                   value="{% if job.source_info not in ['LinkedIn', 'Instagram', 'TikTok', 'WhatsApp', 'JobStreet', 'Indeed', 'Website Perusahaan', 'Email/Newsletter', 'Teman/Kolega', 'Job Fair/Expo', 'Media Sosial Lainnya'] and job.source_info %}{{ job.source_info }}{% endif %}"
+                                   class="form-control form-control-lg rounded-3 border-0 bg-light" 
+                                   style="padding: 0.75rem 1rem;"
+                                   placeholder="Masukkan sumber informasi...">
                         </div>
 
                         <!-- Applied Date -->
@@ -265,7 +280,26 @@
 }
 </style>
 
+
 <script>
+// Custom source toggle functionality for edit page
+function toggleCustomSourceEdit() {
+    const sourceSelect = document.querySelector('select[name="source_info"]');
+    const customDiv = document.getElementById('custom_source_div_edit');
+    const customInput = document.querySelector('input[name="custom_source"]');
+    
+    if (sourceSelect.value === 'Custom') {
+        customDiv.style.display = 'block';
+        customInput.required = true;
+    } else {
+        customDiv.style.display = 'none';
+        customInput.required = false;
+        if (customInput.value) {
+            customInput.value = ''; // Clear custom input when switching away
+        }
+    }
+}
+
 // File upload functionality (same as add.html)
 function handleFileSelect(input) {
     const file = input.files[0];

@@ -66,25 +66,35 @@
                     </div>
                     
 
+
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="source_info" class="form-label text-muted fw-medium">
                                 <i class="fas fa-share-alt me-1"></i>Sumber Informasi Loker
                             </label>
-                            <select class="form-select" id="source_info" name="source_info" required>
+                            <select class="form-select" id="source_info" name="source_info" required onchange="toggleCustomSource()">
                                 <option value="">Pilih sumber informasi...</option>
-                                <option value="LinkedIn">🔗 LinkedIn</option>
-                                <option value="Instagram">📷 Instagram</option>
-                                <option value="TikTok">🎵 TikTok</option>
-                                <option value="JobStreet">💼 JobStreet</option>
-                                <option value="Indeed">🔍 Indeed</option>
-                                <option value="Website Perusahaan">🌐 Website Perusahaan</option>
-                                <option value="Email/Newsletter">📧 Email/Newsletter</option>
-                                <option value="Teman/Kolega">👥 Teman/Kolega</option>
-                                <option value="Job Fair/Expo">🎪 Job Fair/Expo</option>
-                                <option value="Media Sosial Lainnya">📱 Media Sosial Lainnya</option>
-                                <option value="Lainnya">📝 Lainnya</option>
+                                <option value="LinkedIn"><i class="fab fa-linkedin me-2"></i>LinkedIn</option>
+                                <option value="Instagram"><i class="fab fa-instagram me-2"></i>Instagram</option>
+                                <option value="TikTok"><i class="fab fa-tiktok me-2"></i>TikTok</option>
+                                <option value="WhatsApp"><i class="fab fa-whatsapp me-2"></i>WhatsApp</option>
+                                <option value="JobStreet"><i class="fas fa-briefcase me-2"></i>JobStreet</option>
+                                <option value="Indeed"><i class="fas fa-search me-2"></i>Indeed</option>
+                                <option value="Website Perusahaan"><i class="fas fa-globe me-2"></i>Website Perusahaan</option>
+                                <option value="Email/Newsletter"><i class="fas fa-envelope me-2"></i>Email/Newsletter</option>
+                                <option value="Teman/Kolega"><i class="fas fa-users me-2"></i>Teman/Kolega</option>
+                                <option value="Job Fair/Expo"><i class="fas fa-calendar-alt me-2"></i>Job Fair/Expo</option>
+                                <option value="Media Sosial Lainnya"><i class="fas fa-share-alt me-2"></i>Media Sosial Lainnya</option>
+                                <option value="Custom"><i class="fas fa-edit me-2"></i>Custom (Input Manual)</option>
                             </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3" id="custom_source_div" style="display: none;">
+                            <label for="custom_source" class="form-label text-muted fw-medium">
+                                <i class="fas fa-pencil-alt me-1"></i>Sumber Informasi Custom
+                            </label>
+                            <input type="text" class="form-control" id="custom_source" name="custom_source" 
+                                   placeholder="Masukkan sumber informasi...">
                         </div>
                         
 
@@ -203,7 +213,24 @@
     </div>
 </div>
 
+
 <script>
+// Custom source toggle functionality
+function toggleCustomSource() {
+    const sourceSelect = document.getElementById('source_info');
+    const customDiv = document.getElementById('custom_source_div');
+    const customInput = document.getElementById('custom_source');
+    
+    if (sourceSelect.value === 'Custom') {
+        customDiv.style.display = 'block';
+        customInput.required = true;
+    } else {
+        customDiv.style.display = 'none';
+        customInput.required = false;
+        customInput.value = ''; // Clear custom input when switching away
+    }
+}
+
 // File upload functionality
 function handleFileSelect(input) {
     const file = input.files[0];

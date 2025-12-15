@@ -1,4 +1,4 @@
-/* Loker Tracker - Modern Combined Layout Design */
+/* Loker Tracker - Magazine Style Design */
 * {
   box-sizing: border-box;
 }
@@ -75,7 +75,7 @@ body {
 /* Container Layout */
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -204,128 +204,137 @@ body {
   align-items: end;
 }
 
-/* Combined Layout: Card + List + Grid System */
-.data-container {
+/* MAGAZINE LAYOUT - Masonry Grid */
+.magazine-container {
+  background: var(--bg-secondary);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.magazine-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  grid-auto-rows: auto;
+  grid-auto-flow: dense;
+}
+
+/* Magazine Cards with Variable Heights */
+.magazine-card {
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
-  border-radius: 0.75rem;
-  overflow: hidden;
+  border-radius: 1rem;
   box-shadow: var(--shadow-sm);
-  margin-bottom: 2rem;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  position: relative;
 }
 
-/* Modern List View inside Cards */
-.data-list {
-  display: grid;
-  gap: 0;
+.magazine-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+  border-color: var(--border-primary);
 }
 
-/* Individual Job Card */
-.job-card {
-  display: grid;
-  grid-template-columns: 60px 1fr auto;
-  gap: 1rem;
-  padding: 1.5rem;
-  border-bottom: 1px solid var(--border-light);
-  transition: all 0.2s ease;
-  background: var(--bg-primary);
+/* Different card sizes for magazine layout */
+.magazine-card.featured {
+  grid-column: span 2;
+  grid-row: span 2;
 }
 
-.job-card:last-child {
-  border-bottom: none;
+.magazine-card.horizontal {
+  grid-column: span 2;
+  grid-row: span 1;
 }
 
-.job-card:hover {
-  background: var(--gray-50);
+.magazine-card.vertical {
+  grid-column: span 1;
+  grid-row: span 2;
 }
 
-.job-card:nth-child(even) {
-  background: var(--bg-secondary);
+.magazine-card.standard {
+  grid-column: span 1;
+  grid-row: span 1;
 }
 
-.job-card:nth-child(even):hover {
-  background: var(--gray-100);
+/* Magazine Card Header */
+.magazine-card-header {
+  padding: 1.5rem 1.5rem 0 1.5rem;
+  position: relative;
 }
 
-/* Number Column - Modern Design */
-.job-number {
+.magazine-card-number {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: white;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-  color: white;
-  border-radius: 0.5rem;
-  font-weight: 600;
   font-size: 0.875rem;
-  height: 2.5rem;
-  width: 2.5rem;
-  box-shadow: var(--shadow-sm);
-}
-
-/* Job Content - Primary Information */
-.job-content {
-  display: grid;
-  gap: 0.5rem;
-}
-
-.job-title {
-  font-size: 1.125rem;
   font-weight: 600;
+  box-shadow: var(--shadow-md);
+  z-index: 2;
+}
+
+.magazine-card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
   color: var(--text-primary);
-  margin: 0;
-  line-height: 1.4;
+  margin: 0 0 0.75rem 0;
+  line-height: 1.3;
+  padding-right: 3rem;
 }
 
-.job-company {
-  font-size: 0.875rem;
+.magazine-card-company {
+  font-size: 1rem;
   color: var(--text-secondary);
   font-weight: 500;
-  margin: 0;
+  margin: 0 0 1rem 0;
 }
 
-.job-meta {
-  display: flex;
-  flex-wrap: wrap;
+/* Magazine Card Content */
+.magazine-card-content {
+  padding: 0 1.5rem;
+}
+
+.magazine-card-meta {
+  display: grid;
   gap: 0.75rem;
-  align-items: center;
-  margin-top: 0.25rem;
+  margin-bottom: 1.5rem;
 }
 
-.job-location {
+.magazine-card-location,
+.magazine-card-date {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  font-size: 0.8125rem;
+  gap: 0.75rem;
+  font-size: 0.875rem;
   color: var(--text-muted);
 }
 
-.job-date {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
+.magazine-card-location i,
+.magazine-card-date i {
+  color: var(--primary);
+  width: 1rem;
+  text-align: center;
   font-size: 0.8125rem;
-  color: var(--text-muted);
-  font-weight: 500;
 }
 
-/* Job Actions - Right Column */
-.job-actions {
-  display: flex;
-  flex-direction: column;
-  align-items: end;
-  gap: 0.75rem;
-  min-width: 140px;
+/* Magazine Card Status */
+.magazine-card-status {
+  padding: 0 1.5rem 1.5rem 1.5rem;
 }
 
-.job-status {
-  display: flex;
-  justify-content: end;
-}
-
-/* Status Badges - Modern Design */
 .status-badge {
   display: inline-block;
-  padding: 0.375rem 0.75rem;
+  padding: 0.5rem 1rem;
   font-size: 0.75rem;
   font-weight: 600;
   border-radius: 9999px;
@@ -333,8 +342,7 @@ body {
   letter-spacing: 0.025em;
   border: 1px solid;
   text-align: center;
-  min-width: 80px;
-  white-space: nowrap;
+  min-width: 100px;
 }
 
 .status-terdaftar {
@@ -367,93 +375,152 @@ body {
   border-color: rgba(229, 62, 62, 0.3);
 }
 
-/* Source Badge */
-.source-badge {
+/* Magazine Card Footer */
+.magazine-card-footer {
+  padding: 1rem 1.5rem 1.5rem 1.5rem;
+  border-top: 1px solid var(--border-light);
+  background: var(--gray-50);
+}
+
+.magazine-card-footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.magazine-card-source {
   display: inline-block;
-  padding: 0.25rem 0.5rem;
+  padding: 0.375rem 0.75rem;
   font-size: 0.75rem;
   font-weight: 500;
   background: rgba(113, 128, 150, 0.1);
   color: var(--secondary);
-  border-radius: 0.25rem;
+  border-radius: 0.375rem;
   border: 1px solid rgba(113, 128, 150, 0.2);
 }
 
-/* Action Buttons Container */
-.action-buttons {
+.magazine-card-actions {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
-  justify-content: end;
 }
 
-/* Proof Links - Clean Design */
-.proof-link,
-.proof-screenshot {
+/* Proof Links in Magazine */
+.magazine-proof-link,
+.magazine-proof-screenshot {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.375rem 0.75rem;
+  gap: 0.375rem;
+  padding: 0.5rem 0.75rem;
   font-size: 0.75rem;
   font-weight: 500;
   text-decoration: none;
   border-radius: 0.375rem;
-  margin: 0.125rem;
   transition: all 0.15s ease;
   border: 1px solid;
 }
 
-.proof-link {
+.magazine-proof-link {
   background: rgba(56, 161, 105, 0.1);
   color: var(--success);
   border-color: rgba(56, 161, 105, 0.3);
 }
 
-.proof-link:hover {
+.magazine-proof-link:hover {
   background: rgba(56, 161, 105, 0.2);
   color: var(--success);
   text-decoration: none;
   transform: translateY(-1px);
 }
 
-.proof-screenshot {
+.magazine-proof-screenshot {
   background: rgba(49, 130, 206, 0.1);
   color: var(--info);
   border-color: rgba(49, 130, 206, 0.3);
   cursor: pointer;
 }
 
-.proof-screenshot:hover {
+.magazine-proof-screenshot:hover {
   background: rgba(49, 130, 206, 0.2);
   color: var(--info);
   text-decoration: none;
   transform: translateY(-1px);
 }
 
-/* Info Displays - Clean Typography */
-.date-info,
-.position-info,
-.location-info {
+/* View Toggle for different layouts */
+.view-toggle {
   display: flex;
-  align-items: center;
   gap: 0.5rem;
-  color: var(--text-muted);
-  font-size: 0.875rem;
-  line-height: 1.4;
+  margin-bottom: 2rem;
+  justify-content: center;
 }
 
-.position-info {
+.view-btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
   color: var(--text-secondary);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
   font-weight: 500;
 }
 
-.date-info i,
-.position-info i,
-.location-info i {
-  color: var(--text-light);
-  width: 1rem;
-  text-align: center;
-  font-size: 0.75rem;
+.view-btn.active,
+.view-btn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+/* Hide other layouts when showing magazine */
+.kanban-container,
+.data-container,
+.data-list,
+.job-card {
+  display: none;
+}
+
+/* Show magazine by default */
+.magazine-container {
+  display: block;
+}
+
+/* Magazine-specific styling for featured cards */
+.magazine-card.featured .magazine-card-title {
+  font-size: 1.5rem;
+}
+
+.magazine-card.featured .magazine-card-company {
+  font-size: 1.125rem;
+}
+
+.magazine-card.featured .magazine-card-meta {
+  gap: 1rem;
+}
+
+.magazine-card.featured .magazine-card-location,
+.magazine-card.featured .magazine-card-date {
+  font-size: 1rem;
+}
+
+/* Horizontal card styling */
+.magazine-card.horizontal .magazine-card-content {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.magazine-card.horizontal .magazine-card-meta {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.magazine-card.horizontal .magazine-card-status {
+  flex-shrink: 0;
 }
 
 /* Button Layout - Modern Design */
@@ -535,46 +602,6 @@ body {
   font-size: 0.8125rem;
 }
 
-/* Dropdown - Clean Design */
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.dropdown-toggle {
-  cursor: pointer;
-  user-select: none;
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 1000;
-  min-width: 160px;
-  background: var(--bg-primary);
-  border: 1px solid var(--border-color);
-  border-radius: 0.375rem;
-  box-shadow: var(--shadow-lg);
-  padding: 0.5rem 0;
-  margin-top: 0.25rem;
-}
-
-.dropdown-item {
-  display: block;
-  width: 100%;
-  padding: 0.625rem 1rem;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  text-decoration: none;
-  transition: background-color 0.15s ease;
-}
-
-.dropdown-item:hover {
-  background: var(--gray-50);
-  color: var(--text-primary);
-}
-
 /* Empty State - Clean Design */
 .empty-state {
   text-align: center;
@@ -598,27 +625,6 @@ body {
 .empty-state small {
   color: var(--text-muted);
   font-size: 0.875rem;
-}
-
-/* Upload Area - Professional Interface */
-.upload-area {
-  border: 2px dashed var(--border-color);
-  border-radius: 0.75rem;
-  padding: 3rem 1.5rem;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  background: var(--gray-50);
-}
-
-.upload-area:hover {
-  border-color: var(--primary);
-  background: rgba(49, 130, 206, 0.05);
-}
-
-.upload-area.dragover {
-  border-color: var(--primary);
-  background: rgba(49, 130, 206, 0.1);
 }
 
 /* Stats Cards - Clean Grid */
@@ -660,54 +666,289 @@ body {
   margin: 0;
 }
 
-/* Grid Layout Options - Responsive */
-.view-toggle {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-  justify-content: center;
+
+/* TABLE RESPONSIVE DESIGN */
+.table-responsive {
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-.view-btn {
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  border: 1px solid var(--border-color);
+.table {
+  margin-bottom: 0;
+  width: 100%;
+  max-width: 100%;
   background: var(--bg-primary);
+  border-collapse: collapse;
+}
+
+.table thead th {
+  background: var(--gray-50);
+  border-bottom: 2px solid var(--border-color);
   color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 1rem 0.75rem;
+  white-space: nowrap;
+  border-top: none;
+}
+
+.table tbody td {
+  padding: 1rem 0.75rem;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.table tbody tr:hover {
+  background: rgba(49, 130, 206, 0.02);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Table Number Column */
+.table tbody td:first-child {
+  font-weight: 600;
+  color: var(--primary);
+  text-align: center;
+  background: rgba(49, 130, 206, 0.02);
+}
+
+/* Action Buttons in Table */
+.table .btn {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  margin: 0 0.125rem;
+}
+
+.table .btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.7rem;
+}
+
+/* Status Badge in Table */
+.table .status-badge {
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
+  min-width: 70px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+/* Source Badges */
+.source-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 500;
   border-radius: 0.375rem;
-  cursor: pointer;
-  transition: all 0.15s ease;
+  border: 1px solid;
+  white-space: nowrap;
 }
 
-.view-btn.active,
-.view-btn:hover {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
+
+.source-badge.linkedin {
+  background: rgba(0, 119, 181, 0.1);
+  color: #0077b5;
+  border-color: rgba(0, 119, 181, 0.3);
 }
 
-/* Grid View Alternative */
-.data-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.5rem;
+.source-badge.instagram {
+  background: rgba(225, 48, 108, 0.1);
+  color: #e1306c;
+  border-color: rgba(225, 48, 108, 0.3);
 }
 
-.job-grid-card {
-  background: var(--bg-primary);
-  border: 1px solid var(--border-color);
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
+.source-badge.tiktok {
+  background: rgba(0, 0, 0, 0.1);
+  color: #000;
+  border-color: rgba(0, 0, 0, 0.3);
 }
 
-.job-grid-card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+.source-badge.whatsapp {
+  background: rgba(37, 211, 102, 0.1);
+  color: #25d366;
+  border-color: rgba(37, 211, 102, 0.3);
 }
 
-/* Responsive Layout - Professional */
+.source-badge.jobstreet {
+  background: rgba(255, 111, 97, 0.1);
+  color: #ff6f61;
+  border-color: rgba(255, 111, 97, 0.3);
+}
+
+.source-badge.indeed {
+  background: rgba(34, 34, 34, 0.1);
+  color: #222;
+  border-color: rgba(34, 34, 34, 0.3);
+}
+
+.source-badge.website {
+  background: rgba(56, 161, 105, 0.1);
+  color: var(--success);
+  border-color: rgba(56, 161, 105, 0.3);
+}
+
+.source-badge.email {
+  background: rgba(49, 130, 206, 0.1);
+  color: var(--info);
+  border-color: rgba(49, 130, 206, 0.3);
+}
+
+.source-badge.friend {
+  background: rgba(214, 158, 46, 0.1);
+  color: var(--warning);
+  border-color: rgba(214, 158, 46, 0.3);
+}
+
+.source-badge.jobfair {
+  background: rgba(156, 39, 176, 0.1);
+  color: #9c27b0;
+  border-color: rgba(156, 39, 176, 0.3);
+}
+
+.source-badge.social {
+  background: rgba(156, 39, 176, 0.1);
+  color: #9c27b0;
+  border-color: rgba(156, 39, 176, 0.3);
+}
+
+.source-badge.manual {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+.source-badge.other {
+  background: rgba(113, 128, 150, 0.1);
+  color: var(--secondary);
+  border-color: rgba(113, 128, 150, 0.3);
+}
+
+/* Mobile Responsive Table */
+@media (max-width: 768px) {
+  .table {
+    font-size: 0.75rem;
+  }
+  
+  .table thead th {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.65rem;
+  }
+  
+  .table tbody td {
+    padding: 0.75rem 0.5rem;
+  }
+  
+  .table .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.65rem;
+    margin: 0 0.0625rem;
+  }
+  
+  .table .status-badge {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.4rem;
+    min-width: 60px;
+  }
+  
+  .source-badge {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .table {
+    font-size: 0.7rem;
+  }
+  
+  .table thead {
+    display: none;
+  }
+  
+  .table tbody tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    background: var(--bg-primary);
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .table tbody td {
+    display: block;
+    text-align: left !important;
+    border-bottom: 1px solid var(--border-light);
+    padding: 0.75rem 1rem;
+    position: relative;
+  }
+  
+  .table tbody td:last-child {
+    border-bottom: none;
+  }
+  
+  .table tbody td:before {
+    content: attr(data-label) ": ";
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+  
+  .table tbody td:first-child {
+    background: transparent;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--primary);
+    border-bottom: 2px solid var(--border-color);
+    text-align: left !important;
+  }
+  
+  .table tbody td:first-child:before {
+    content: "";
+    display: none;
+  }
+  
+  /* Hide action buttons on very small screens */
+  .table .btn {
+    display: none;
+  }
+  
+  /* Show mobile action buttons */
+  .mobile-actions {
+    display: block;
+    text-align: center;
+    padding: 0.5rem 1rem;
+    background: var(--gray-50);
+    border-top: 1px solid var(--border-light);
+  }
+  
+  .mobile-actions .btn {
+    display: inline-flex;
+    margin: 0 0.25rem;
+  }
+}
+
+/* Responsive Layout - Magazine */
+@media (max-width: 1200px) {
+  .magazine-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 0 0.75rem;
@@ -733,33 +974,48 @@ body {
     margin-bottom: 1.5rem;
   }
   
-  .job-card {
-    grid-template-columns: 1fr;
+  .magazine-container {
+    padding: 1.5rem;
+  }
+  
+  .magazine-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 1rem;
-    padding: 1rem;
   }
   
-  .job-number {
-    justify-self: start;
-    height: 2rem;
-    width: 2rem;
+  /* Make all cards standard size on mobile */
+  .magazine-card.featured,
+  .magazine-card.horizontal,
+  .magazine-card.vertical {
+    grid-column: span 1;
+    grid-row: span 1;
   }
   
-  .job-actions {
-    align-items: start;
-    min-width: auto;
+  .magazine-card-header {
+    padding: 1rem 1rem 0 1rem;
   }
   
-  .job-status {
-    justify-content: start;
+  .magazine-card-content {
+    padding: 0 1rem;
   }
   
-  .action-buttons {
-    justify-content: start;
+  .magazine-card-status {
+    padding: 0 1rem 1rem 1rem;
   }
   
-  .data-grid {
-    grid-template-columns: 1fr;
+  .magazine-card-footer {
+    padding: 0.75rem 1rem 1rem 1rem;
+  }
+  
+  .magazine-card-title {
+    font-size: 1.125rem;
+    padding-right: 2.5rem;
+  }
+  
+  .magazine-card-number {
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 0.75rem;
   }
   
   .view-toggle {
@@ -785,8 +1041,17 @@ body {
     padding: 1rem;
   }
   
-  .job-card {
-    padding: 0.75rem;
+  .magazine-container {
+    padding: 1rem;
+  }
+  
+  .magazine-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .magazine-card {
+    border-radius: 0.5rem;
   }
   
   .empty-state {
@@ -840,26 +1105,29 @@ body {
   transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
 }
 
-/* Animation - Subtle */
-@keyframes fadeInUp {
+/* Animation - Magazine Style */
+@keyframes fadeInScale {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: scale(0.95) translateY(20px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: scale(1) translateY(0);
   }
 }
 
 .card {
-  animation: fadeInUp 0.3s ease-out;
+  animation: fadeInScale 0.4s ease-out;
 }
 
-.job-card {
-  animation: fadeInUp 0.2s ease-out;
+.magazine-card {
+  animation: fadeInScale 0.3s ease-out;
+  animation-fill-mode: both;
 }
 
-.job-grid-card {
-  animation: fadeInUp 0.2s ease-out;
-}
+.magazine-card:nth-child(1) { animation-delay: 0.1s; }
+.magazine-card:nth-child(2) { animation-delay: 0.2s; }
+.magazine-card:nth-child(3) { animation-delay: 0.3s; }
+.magazine-card:nth-child(4) { animation-delay: 0.4s; }
+.magazine-card:nth-child(5) { animation-delay: 0.5s; }
