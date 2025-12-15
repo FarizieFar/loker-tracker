@@ -30,9 +30,12 @@ class JobApplication(db.Model):
     position = db.Column(db.String(100), nullable=True)  # NEW: Posisi yang dilamar
     location = db.Column(db.String(100))
     address = db.Column(db.String(200))
+
     application_proof = db.Column(db.Text, nullable=True)  # NEW: Link atau path screenshot
     image_proof = db.Column(db.String(255), nullable=True)  # NEW: Path to uploaded image
     source_info = db.Column(db.String(100), nullable=True)  # NEW: Asal info loker
+    logo_url = db.Column(db.String(255), nullable=True)  # NEW: URL logo perusahaan
+    notes = db.Column(db.Text, nullable=True)  # NEW: Keterangan tambahan
     applied_date = db.Column(db.DateTime)
 
     status_id = db.Column(db.Integer, db.ForeignKey('status.id'))

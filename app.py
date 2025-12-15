@@ -1,6 +1,7 @@
 
 
-from flask import Flask, render_template, redirect, url_for, request, flash, abort, jsonify, send_file
+
+from flask import Flask, render_template, redirect, url_for, request, flash, abort, jsonify, send_file, Response
 from datetime import datetime
 from extensions import db
 from models import JobApplication, User, Status
@@ -9,6 +10,18 @@ from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
 import os
 import uuid
+import io
+from io import BytesIO
+
+# Import for PDF and Excel export
+import pandas as pd
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.lib.units import inch
 
 
 app = Flask(__name__)
@@ -332,6 +345,214 @@ def delete_job(id):
     
     return {'success': True, 'message': 'Job berhasil dihapus'}
 
+
+
+# ======================
+# EXPORT PDF
+# ======================
+@app.route('/export/pdf')
+@login_required
+def export_pdf():
+    """Export job applications to PDF"""
+    try:
+        # Get all jobs for current user
+        jobs = JobApplication.query.filter_by(user_id=current_user.id).order_by(JobApplication.applied_date.desc()).all()
+        
+        if not jobs:
+            flash('Tidak ada data untuk diekspor', 'warning')
+            return redirect(url_for('index'))
+        
+        # Create PDF buffer
+        buffer = BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=A4)
+        story = []
+        
+        # Define styles
+        styles = getSampleStyleSheet()
+        title_style = ParagraphStyle(
+            'CustomTitle',
+            parent=styles['Heading1'],
+            fontSize=18,
+            spaceAfter=30,
+            textColor=colors.darkblue
+        )
+        
+        # Add title
+        title = Paragraph("Laporan Lamaran Kerja", title_style)
+        story.append(title)
+        story.append(Spacer(1, 20))
+        
+        # Add generation date
+        date_str = f"Tanggal Generate: {datetime.now().strftime('%d %B %Y, %H:%M')}"
+        story.append(Paragraph(date_str, styles['Normal']))
+        story.append(Spacer(1, 30))
+        
+        # Create table data
+        table_data = [
+            ['No', 'Perusahaan', 'Posisi', 'Lokasi', 'Status', 'Tanggal Apply', 'Sumber Info']
+        ]
+        
+        for idx, job in enumerate(jobs, 1):
+            table_data.append([
+                str(idx),
+                job.company_name or '-',
+                job.position or '-',
+                job.location or '-',
+                job.status.name if job.status else '-',
+                job.applied_date.strftime('%d/%m/%Y') if job.applied_date else '-',
+                job.source_info or '-'
+            ])
+        
+        # Create table
+        table = Table(table_data, colWidths=[0.5*inch, 1.5*inch, 1.2*inch, 1*inch, 1*inch, 1*inch, 1*inch])
+        
+        # Style the table
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.darkblue),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('FONTSIZE', (0, 1), (-1, -1), 9),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ]))
+        
+        story.append(table)
+        
+        # Add summary
+        story.append(Spacer(1, 30))
+        summary_text = f"""
+        <b>Ringkasan:</b><br/>
+        Total Lamaran: {len(jobs)}<br/>
+        Status Terdaftar: {len([j for j in jobs if j.status.name == 'Terdaftar'])}<br/>
+        Status Interview: {len([j for j in jobs if j.status.name == 'Interview'])}<br/>
+        Status Tes: {len([j for j in jobs if j.status.name == 'Tes'])}<br/>
+        Status Diterima: {len([j for j in jobs if j.status.name == 'Diterima'])}<br/>
+        Status Tidak Diterima: {len([j for j in jobs if j.status.name == 'Tidak Diterima'])}
+        """
+        summary = Paragraph(summary_text, styles['Normal'])
+        story.append(summary)
+        
+        # Build PDF
+        doc.build(story)
+        
+        # Prepare response
+        buffer.seek(0)
+        filename = f"laporan_lamaran_kerja_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+        
+        return Response(
+            buffer.getvalue(),
+            mimetype='application/pdf',
+            headers={
+                'Content-Disposition': f'attachment; filename="{filename}"',
+                'Content-Type': 'application/pdf'
+            }
+        )
+        
+    except Exception as e:
+        flash(f'Error dalam export PDF: {str(e)}', 'danger')
+        return redirect(url_for('index'))
+
+# ======================
+# EXPORT EXCEL
+# ======================
+@app.route('/export/excel')
+@login_required
+def export_excel():
+    """Export job applications to Excel"""
+    try:
+        # Get all jobs for current user
+        jobs = JobApplication.query.filter_by(user_id=current_user.id).order_by(JobApplication.applied_date.desc()).all()
+        
+        if not jobs:
+            flash('Tidak ada data untuk diekspor', 'warning')
+            return redirect(url_for('index'))
+        
+        # Prepare data for DataFrame
+        data = []
+        for job in jobs:
+            data.append({
+                'No': len(data) + 1,
+                'Nama Perusahaan': job.company_name or '-',
+                'Posisi': job.position or '-',
+                'Lokasi': job.location or '-',
+                'Alamat': job.address or '-',
+                'Status': job.status.name if job.status else '-',
+                'Tanggal Apply': job.applied_date.strftime('%d/%m/%Y') if job.applied_date else '-',
+                'Sumber Info': job.source_info or '-',
+                'Bukti Lamaran (Link)': job.application_proof or '-',
+                'Catatan': job.notes or '-'
+            })
+        
+        # Create DataFrame
+        df = pd.DataFrame(data)
+        
+        # Create Excel buffer
+        buffer = BytesIO()
+        
+        with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
+            # Write main data
+            df.to_excel(writer, sheet_name='Data Lamaran Kerja', index=False)
+            
+            # Get workbook and worksheet
+            workbook = writer.book
+            worksheet = writer.sheets['Data Lamaran Kerja']
+            
+            # Auto-adjust column widths
+            for column in worksheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(str(cell.value))
+                    except:
+                        pass
+                adjusted_width = min(max_length + 2, 50)
+                worksheet.column_dimensions[column_letter].width = adjusted_width
+            
+
+            # Create summary sheet
+            summary_data = [
+                ['Keterangan', 'Jumlah'],
+                ['Ringkasan Data Lamaran Kerja', ''],
+                ['', ''],
+                ['Total Lamaran', len(jobs)],
+                ['Status Terdaftar', len([j for j in jobs if j.status.name == 'Terdaftar'])],
+                ['Status Interview', len([j for j in jobs if j.status.name == 'Interview'])],
+                ['Status Tes', len([j for j in jobs if j.status.name == 'Tes'])],
+                ['Status Diterima', len([j for j in jobs if j.status.name == 'Diterima'])],
+                ['Status Tidak Diterima', len([j for j in jobs if j.status.name == 'Tidak Diterima'])],
+                ['', ''],
+                ['Tanggal Export', datetime.now().strftime('%d/%m/%Y %H:%M:%S')],
+                ['User', current_user.username]
+            ]
+            
+            summary_df = pd.DataFrame(summary_data)
+            summary_df.to_excel(writer, sheet_name='Ringkasan', index=False)
+            
+            # Style the summary sheet
+            summary_ws = writer.sheets['Ringkasan']
+            summary_ws['A1'].font = summary_ws['A1'].font.copy(bold=True, size=14)
+        
+        buffer.seek(0)
+        filename = f"data_lamaran_kerja_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+        
+        return Response(
+            buffer.getvalue(),
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            headers={
+                'Content-Disposition': f'attachment; filename="{filename}"',
+                'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            }
+        )
+        
+    except Exception as e:
+        flash(f'Error dalam export Excel: {str(e)}', 'danger')
+        return redirect(url_for('index'))
 
 # ======================
 # LOGOUT
