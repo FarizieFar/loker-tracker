@@ -137,6 +137,7 @@
                                       required>{{ job.address }}</textarea>
                         </div>
 
+
                         <!-- Source Info -->
                         <div class="mb-3">
                             <label class="form-label fw-medium text-muted">
@@ -159,6 +160,19 @@
                                 <option value="Media Sosial Lainnya" {% if job.source_info == 'Media Sosial Lainnya' %}selected{% endif %}>📱 Media Sosial Lainnya</option>
                                 <option value="Lainnya" {% if job.source_info == 'Lainnya' %}selected{% endif %}>📝 Lainnya</option>
                             </select>
+                        </div>
+
+                        <!-- Applied Date -->
+                        <div class="mb-3">
+                            <label class="form-label fw-medium text-muted">
+                                <i class="fas fa-calendar me-2"></i>Tanggal Apply
+                            </label>
+                            <input type="date" 
+                                   name="applied_date" 
+                                   value="{{ job.applied_date.strftime('%Y-%m-%d') }}"
+                                   class="form-control form-control-lg rounded-3 border-0 bg-light" 
+                                   style="padding: 0.75rem 1rem;">
+                            <small class="form-text text-muted">Ubah tanggal lamaran kerja</small>
                         </div>
 
                         <!-- Status -->

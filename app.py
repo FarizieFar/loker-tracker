@@ -1,8 +1,9 @@
 
 
 
+
 from flask import Flask, render_template, redirect, url_for, request, flash, abort, jsonify, send_file, Response
-from datetime import datetime
+from datetime import datetime, date
 from extensions import db
 from models import JobApplication, User, Status
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
@@ -78,6 +79,7 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+
 # ======================
 # DASHBOARD
 # ======================
@@ -86,6 +88,8 @@ def load_user(user_id):
 def index():
     search = request.args.get('q')
     status = request.args.get('status')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
     statuses = Status.query.all()
 
     query = JobApplication.query.filter_by(user_id=current_user.id)
@@ -99,6 +103,23 @@ def index():
         query = query.filter(
             JobApplication.status.has(name=status)
         )
+
+    # Filter berdasarkan rentang tanggal
+    if start_date:
+        try:
+            start_date_obj = datetime.strptime(start_date, '%Y-%m-%d').date()
+            query = query.filter(JobApplication.applied_date >= start_date_obj)
+        except ValueError:
+            pass
+
+    if end_date:
+        try:
+            end_date_obj = datetime.strptime(end_date, '%Y-%m-%d').date()
+            # Include the entire end date by adding 1 day and filtering less than
+            end_date_obj = end_date_obj.replace(day=end_date_obj.day + 1)
+            query = query.filter(JobApplication.applied_date < end_date_obj)
+        except ValueError:
+            pass
 
     jobs = query.order_by(JobApplication.applied_date.desc()).all()
 
@@ -143,6 +164,7 @@ def index():
     )
 
 
+
 # ======================
 # ADD JOB
 # ======================
@@ -159,6 +181,13 @@ def add_job():
             if file.filename:
                 image_proof = save_uploaded_image(file)
         
+        # Handle applied_date - if not provided, use current date
+        applied_date = datetime.now()
+        if request.form.get('applied_date'):
+            try:
+                applied_date = datetime.strptime(request.form['applied_date'], '%Y-%m-%d')
+            except ValueError:
+                applied_date = datetime.now()
 
         job = JobApplication(
             company_name=request.form['company_name'],
@@ -169,7 +198,7 @@ def add_job():
             image_proof=image_proof,  # NEW: Handle uploaded image
             source_info=request.form.get('source_info', ''),  # NEW: Handle asal info loker
             status_id=request.form['status_id'],  # ✅ INI PENTING
-            applied_date=datetime.now(),
+            applied_date=applied_date,
             user_id=current_user.id
         )
         db.session.add(job)
@@ -194,6 +223,7 @@ def edit_job(id):
 
 
 
+
     if request.method == 'POST':
 
         job.company_name = request.form['company_name']
@@ -202,6 +232,13 @@ def edit_job(id):
         job.address = request.form['address']
         job.application_proof = request.form.get('application_proof', '')  # NEW: Handle bukti
         job.source_info = request.form.get('source_info', '')  # NEW: Handle asal info loker
+        
+        # Handle applied_date - if provided, update the date
+        if request.form.get('applied_date'):
+            try:
+                job.applied_date = datetime.strptime(request.form['applied_date'], '%Y-%m-%d')
+            except ValueError:
+                pass  # Keep existing date if invalid
         
         # Handle image upload
         if 'image_proof' in request.files:

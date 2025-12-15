@@ -65,6 +65,7 @@
                         </div>
                     </div>
                     
+
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="source_info" class="form-label text-muted fw-medium">
@@ -84,6 +85,27 @@
                                 <option value="Media Sosial Lainnya">📱 Media Sosial Lainnya</option>
                                 <option value="Lainnya">📝 Lainnya</option>
                             </select>
+                        </div>
+                        
+
+                        <div class="col-md-6 mb-3">
+                            <label for="applied_date" class="form-label text-muted fw-medium">
+                                <i class="fas fa-calendar me-1"></i>Tanggal Apply
+                            </label>
+                            <input type="date" class="form-control" id="applied_date" name="applied_date" 
+                                   value="">
+                            <small class="form-text text-muted">Kosongkan untuk menggunakan tanggal hari ini</small>
+                            <script>
+                                // Set default date to today
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    const dateInput = document.getElementById('applied_date');
+                                    const today = new Date();
+                                    const year = today.getFullYear();
+                                    const month = String(today.getMonth() + 1).padStart(2, '0');
+                                    const day = String(today.getDate()).padStart(2, '0');
+                                    dateInput.value = `${year}-${month}-${day}`;
+                                });
+                            </script>
                         </div>
                     </div>
                     
