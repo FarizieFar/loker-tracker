@@ -49,17 +49,46 @@
                                    placeholder="Contoh: Frontend Developer, UI/UX Designer">
                         </div>
 
+
+
+
                         <!-- Location -->
                         <div class="mb-3">
                             <label class="form-label fw-medium text-muted">
-                                <i class="fas fa-map-marker-alt me-2"></i>Lokasi
+                                <i class="fas fa-map-marker-alt me-2"></i>Lokasi Administrasi
                             </label>
-                            <input type="text" 
-                                   name="location" 
-                                   value="{{ job.location }}"
-                                   class="form-control form-control-lg rounded-3 border-0 bg-light" 
-                                   style="padding: 0.75rem 1rem;"
-                                   required>
+                            
+                            <!-- Province Selection -->
+                            <select class="form-select form-select-lg rounded-3 border-0 bg-light mb-2 province-select" 
+                                    style="padding: 0.75rem 1rem;" required>
+                                <option value="">Pilih Provinsi...</option>
+                            </select>
+                            
+                            <!-- Regency/City Selection -->
+                            <select class="form-select form-select-lg rounded-3 border-0 bg-light mb-2 regency-select" 
+                                    style="padding: 0.75rem 1rem;" required disabled>
+                                <option value="">Pilih Kabupaten/Kota...</option>
+                            </select>
+                            
+                            <!-- District Selection -->
+                            <select class="form-select form-select-lg rounded-3 border-0 bg-light mb-2 district-select" 
+                                    style="padding: 0.75rem 1rem;" required disabled>
+                                <option value="">Pilih Kecamatan...</option>
+                            </select>
+                            
+                            <!-- Village/Kelurahan Selection -->
+                            <select class="form-select form-select-lg rounded-3 border-0 bg-light mb-2 village-select" 
+                                    style="padding: 0.75rem 1rem;" required disabled>
+                                <option value="">Pilih Desa/Kelurahan...</option>
+                            </select>
+                            
+                            <!-- Hidden input untuk menyimpan full address -->
+                            <input type="hidden" name="location" class="location-input" value="{{ job.location }}" required>
+                            
+                            <small class="form-text text-muted">
+                                <i class="fas fa-sitemap me-1"></i>
+                                Pilih secara berurutan: Provinsi → Kabupaten/Kota → Kecamatan → Desa/Kelurahan
+                            </small>
                         </div>
 
 
@@ -281,6 +310,7 @@
 </style>
 
 
+
 <script>
 // Custom source toggle functionality for edit page
 function toggleCustomSourceEdit() {
@@ -298,6 +328,78 @@ function toggleCustomSourceEdit() {
             customInput.value = ''; // Clear custom input when switching away
         }
     }
+}
+
+
+// Handle cascading location selection and pre-selection for edit page
+function initLocationEdit() {
+    const locationInput = document.querySelector('.location-input');
+    const provinceSelect = document.querySelector('.province-select');
+    const regencySelect = document.querySelector('.regency-select');
+    const districtSelect = document.querySelector('.district-select');
+    const villageSelect = document.querySelector('.village-select');
+    
+    if (!locationInput) return;
+    
+    // Get existing location value from job data
+    const existingLocation = "{{ job.location }}";
+    
+    // Wait for dropdown options to be populated by base template script
+    setTimeout(function() {
+        if (existingLocation && existingLocation !== 'None') {
+            // Parse the existing address to identify components
+            const addressParts = existingLocation.split(', ');
+            
+            if (addressParts.length >= 4) {
+                const village = addressParts[0].trim();
+                const district = addressParts[1].trim();
+                const regency = addressParts[2].trim();
+                const province = addressParts[3].trim();
+                
+                // Pre-select province
+                const provinceOptions = provinceSelect.querySelectorAll('option');
+                provinceOptions.forEach(option => {
+                    if (option.textContent === province) {
+                        option.selected = true;
+                        provinceSelect.dispatchEvent(new Event('change'));
+                        
+                        // After regency options are populated, select regency
+                        setTimeout(() => {
+                            const regencyOptions = regencySelect.querySelectorAll('option');
+                            regencyOptions.forEach(option => {
+                                if (option.textContent === regency) {
+                                    option.selected = true;
+                                    regencySelect.dispatchEvent(new Event('change'));
+                                    
+                                    // After district options are populated, select district
+                                    setTimeout(() => {
+                                        const districtOptions = districtSelect.querySelectorAll('option');
+                                        districtOptions.forEach(option => {
+                                            if (option.textContent === district) {
+                                                option.selected = true;
+                                                districtSelect.dispatchEvent(new Event('change'));
+                                                
+                                                // After village options are populated, select village
+                                                setTimeout(() => {
+                                                    const villageOptions = villageSelect.querySelectorAll('option');
+                                                    villageOptions.forEach(option => {
+                                                        if (option.textContent === village) {
+                                                            option.selected = true;
+                                                            villageSelect.dispatchEvent(new Event('change'));
+                                                        }
+                                                    });
+                                                }, 200);
+                                            }
+                                        });
+                                    }, 200);
+                                }
+                            });
+                        }, 200);
+                    }
+                });
+            }
+        }
+    }, 500); // Increased timeout to ensure all dropdowns are populated
 }
 
 // File upload functionality (same as add.html)

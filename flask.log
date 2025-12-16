@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/marianaulfahhoesny/Documents/PORTOFOLIO WEB/loker-tracker/app.py", line 5, in <module>
+    from flask import Flask, render_template, redirect, url_for, request, flash, abort, jsonify, send_file, Response
+ModuleNotFoundError: No module named 'flask'

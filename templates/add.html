@@ -45,12 +45,41 @@
                     </div>
                     
                     <div class="row">
+
+
+
                         <div class="col-md-6 mb-3">
-                            <label for="location" class="form-label text-muted fw-medium">
-                                <i class="fas fa-map-marker-alt me-1"></i>Lokasi
+                            <label class="form-label text-muted fw-medium">
+                                <i class="fas fa-map-marker-alt me-1"></i>Lokasi Administrasi
                             </label>
-                            <input type="text" class="form-control" id="location" name="location" 
-                                   placeholder="Contoh: Jakarta, Bandung, Remote" required>
+                            
+                            <!-- Province Selection -->
+                            <select class="form-select mb-2 province-select" required>
+                                <option value="">Pilih Provinsi...</option>
+                            </select>
+                            
+                            <!-- Regency/City Selection -->
+                            <select class="form-select mb-2 regency-select" required disabled>
+                                <option value="">Pilih Kabupaten/Kota...</option>
+                            </select>
+                            
+                            <!-- District Selection -->
+                            <select class="form-select mb-2 district-select" required disabled>
+                                <option value="">Pilih Kecamatan...</option>
+                            </select>
+                            
+                            <!-- Village/Kelurahan Selection -->
+                            <select class="form-select mb-2 village-select" required disabled>
+                                <option value="">Pilih Desa/Kelurahan...</option>
+                            </select>
+                            
+                            <!-- Hidden input untuk menyimpan full address -->
+                            <input type="hidden" name="location" class="location-input" required>
+                            
+                            <small class="form-text text-muted">
+                                <i class="fas fa-sitemap me-1"></i>
+                                Pilih secara berurutan: Provinsi → Kabupaten/Kota → Kecamatan → Desa/Kelurahan
+                            </small>
                         </div>
                         
 
