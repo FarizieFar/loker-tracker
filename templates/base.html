@@ -210,180 +210,299 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
 
-    <!-- Cascading Location Dropdown Integration -->
+    <!-- Smart Single Input Location System -->
     <script>
-        // Hierarchical location data for Indonesia (simplified for demo)
-        const locationHierarchy = {
-            'DKI Jakarta': {
-                'Jakarta Pusat': {
-                    'Gambir': ['Gambir', 'Cideng', 'Duri Pulu', 'Kebon Kelapa', 'Petojo Utara', 'Petojo Selatan'],
-                    'Sawah Besar': ['Gunanagara', 'Karang Anyar', 'Gunung Sahari Utara', 'Gunung Sahari Selatan', 'Pasar Baru'],
-                    'Kemayoran': ['Kemayoran', 'Kampung Ambon', 'Cempaka Baru', 'Sumur Batu', 'Utan Panjang']
-                },
-                'Jakarta Barat': {
-                    'Taman Sari': ['Taman Sari', 'Maphar', 'Pinangsia', 'Glodok', 'Keagungan'],
-                    'Palermo': ['Palermo', 'Kali Baru', 'Kota Bambu Utara', 'Kota Bambu Selatan'],
-                    'Grogol Petamburan': ['Grogol', 'Tomang', 'Jatinegara Kaum', 'Tanjung Duren Utara', 'Tanjung Duren Selatan']
-                },
-                'Jakarta Utara': {
-                    'Koja': ['Koja', 'Rawa Badak Utara', 'Rawa Badak Selatan', 'Tugu Utara', 'Tugu Selatan'],
-                    'Kelapa Gading': ['Kelapa Gading Barat', 'Kelapa Gading Timur'],
-                    'Penjaringan': ['Penjaringan', 'Pluit', 'Kamal Muara', 'Kapuk Muara']
-                }
-            },
-            'Jawa Barat': {
-                'Kota Bandung': {
-                    'Bandung Wetan': ['Bandung Wetan', 'Cicaheum', 'Kebon Pisang'],
-                    'Coblong': ['Coblong', 'Dago', 'Sukagalih', 'Sukajadi'],
-                    'Sukasari': ['Sukasari', 'Gegerkalong', 'Isola', ' Sariwangi']
-                },
-                'Kota Bogor': {
-                    'Bogor Selatan': ['Bogor Selatan', 'Harjasari', 'Mekarwangi', 'Rancamaya'],
-                    'Bogor Tengah': ['Bogor Tengah', 'Pabaton', 'Babakan', 'Kebon Kelapa'],
-                    'Bogor Timur': ['Bogor Timur', 'Baranangsiang', 'Katulampa', 'Sindangrasa']
-                },
-                'Kabupaten Bekasi': {
-                    'Bekasi Timur': ['Bekasi Timur', 'Aren Jaya', 'Duren Jaya', 'Margahayu'],
-                    'Bekasi Barat': ['Bekasi Barat', 'Bintara', 'Bintara Jaya', 'Kranji'],
-                    'Cikarang Selatan': ['Cikarang Selatan', 'Cibatu', 'Cikaragina', 'Cikedokan']
-                }
-            },
-            'Jawa Timur': {
-                'Kota Surabaya': {
-                    'Genteng': ['Genteng', 'Embong Kaliasin', 'Kapasari', 'Pepe'],
-                    'Gubeng': ['Gubeng', 'Barata', 'Kertajaya', 'Mojo', 'Pacar Kembang'],
-                    'Wonokromo': ['Wonokromo', 'Darmo', 'Jagir', 'Ngagel', 'Ngagel Rejo']
-                },
-                'Kota Malang': {
-                    'Klojen': ['Klojen', 'Rampal Celaket', 'Samaan', 'M童年'],
-                    'Blimbing': ['Blimbing', 'Arjosari', 'Polowijen', 'Purwantoro'],
-                    'Sukun': ['Sukun', 'Bandulan', 'Bakalan Krajan', 'Gribig']
-                }
-            }
-        };
+        // Global variable to store locations data
+        let indonesianLocations = [];
 
-        // Initialize cascading location dropdown functionality
-        function initLocationDropdown() {
-            const provinceSelect = document.querySelector('.province-select');
-            const regencySelect = document.querySelector('.regency-select');
-            const districtSelect = document.querySelector('.district-select');
-            const villageSelect = document.querySelector('.village-select');
-            const locationInput = document.querySelector('.location-input');
-            
-            if (!provinceSelect) return;
-            
-            // Populate provinces
-            Object.keys(locationHierarchy).forEach(province => {
-                const option = document.createElement('option');
-                option.value = province;
-                option.textContent = province;
-                provinceSelect.appendChild(option);
+        // Load locations data from JSON file
+        async function loadLocationsData() {
+            try {
+                const response = await fetch('/static/locations.json');
+                const data = await response.json();
+                indonesianLocations = data.locations;
+                console.log('Locations data loaded successfully:', indonesianLocations.length, 'locations');
+            } catch (error) {
+                console.error('Error loading locations data:', error);
+                // Fallback to minimal data if JSON fails to load
+                indonesianLocations = [
+                    { name: 'Jakarta', province: 'DKI Jakarta', type: 'city' },
+                    { name: 'Bandung', province: 'Jawa Barat', type: 'city' },
+                    { name: 'Surabaya', province: 'Jawa Timur', type: 'city' },
+                    { name: 'Medan', province: 'Sumatera Utara', type: 'city' },
+                    { name: 'Makassar', province: 'Sulawesi Selatan', type: 'city' },
+                    { name: 'DKI Jakarta', province: 'DKI Jakarta', type: 'province' },
+                    { name: 'Jawa Barat', province: 'Jawa Barat', type: 'province' },
+                    { name: 'Jawa Timur', province: 'Jawa Timur', type: 'province' }
+                ];
+            }
+        }
+
+        // Initialize smart single input location system
+        async function initSmartLocationInput() {
+            // Load locations data first
+            await loadLocationsData();
+
+            const locationInput = document.querySelector('.smart-location-input');
+            const hiddenLocationInput = document.querySelector('.location-input');
+
+            if (!locationInput) return;
+
+            let autocompleteTimeout;
+            let currentSuggestions = [];
+
+            // Handle input with smart autocomplete
+            locationInput.addEventListener('input', function() {
+                const query = this.value.trim();
+
+                clearTimeout(autocompleteTimeout);
+                clearAutocompleteSuggestions();
+
+                if (query.length < 1) return;
+
+                autocompleteTimeout = setTimeout(() => {
+                    generateSmartSuggestions(query);
+                }, 200);
             });
-            
-            // Handle province selection
-            provinceSelect.addEventListener('change', function() {
-                const selectedProvince = this.value;
-                
-                // Clear dependent dropdowns
-                regencySelect.innerHTML = '<option value="">Pilih Kabupaten/Kota...</option>';
-                districtSelect.innerHTML = '<option value="">Pilih Kecamatan...</option>';
-                villageSelect.innerHTML = '<option value="">Pilih Desa/Kelurahan...</option>';
-                
-                if (selectedProvince && locationHierarchy[selectedProvince]) {
-                    // Populate regencies
-                    Object.keys(locationHierarchy[selectedProvince]).forEach(regency => {
-                        const option = document.createElement('option');
-                        option.value = regency;
-                        option.textContent = regency;
-                        regencySelect.appendChild(option);
-                    });
+
+            locationInput.addEventListener('focus', function() {
+                if (this.value.trim().length >= 1) {
+                    generateSmartSuggestions(this.value.trim());
+                    showAutocompleteSuggestions();
                 }
-                
-                updateFullAddress();
             });
-            
-            // Handle regency selection
-            regencySelect.addEventListener('change', function() {
-                const selectedProvince = provinceSelect.value;
-                const selectedRegency = this.value;
-                
-                // Clear dependent dropdowns
-                districtSelect.innerHTML = '<option value="">Pilih Kecamatan...</option>';
-                villageSelect.innerHTML = '<option value="">Pilih Desa/Kelurahan...</option>';
-                
-                if (selectedProvince && selectedRegency && 
-                    locationHierarchy[selectedProvince][selectedRegency]) {
-                    // Populate districts
-                    Object.keys(locationHierarchy[selectedProvince][selectedRegency]).forEach(district => {
-                        const option = document.createElement('option');
-                        option.value = district;
-                        option.textContent = district;
-                        districtSelect.appendChild(option);
-                    });
-                }
-                
-                updateFullAddress();
+
+            locationInput.addEventListener('blur', function() {
+                // Delay hiding to allow click on suggestions
+                setTimeout(() => {
+                    hideAutocompleteSuggestions();
+                }, 150);
             });
-            
-            // Handle district selection
-            districtSelect.addEventListener('change', function() {
-                const selectedProvince = provinceSelect.value;
-                const selectedRegency = regencySelect.value;
-                const selectedDistrict = this.value;
-                
-                // Clear dependent dropdowns
-                villageSelect.innerHTML = '<option value="">Pilih Desa/Kelurahan...</option>';
-                
-                if (selectedProvince && selectedRegency && selectedDistrict &&
-                    locationHierarchy[selectedProvince][selectedRegency][selectedDistrict]) {
-                    // Populate villages
-                    locationHierarchy[selectedProvince][selectedRegency][selectedDistrict].forEach(village => {
-                        const option = document.createElement('option');
-                        option.value = village;
-                        option.textContent = village;
-                        villageSelect.appendChild(option);
-                    });
-                }
-                
-                updateFullAddress();
-            });
-            
-            // Handle village selection
-            villageSelect.addEventListener('change', updateFullAddress);
-            
-            function updateFullAddress() {
-                const province = provinceSelect.value;
-                const regency = regencySelect.value;
-                const district = districtSelect.value;
-                const village = villageSelect.value;
-                
-                if (locationInput) {
-                    const fullAddress = [village, district, regency, province, 'Indonesia']
-                        .filter(part => part && part !== 'Pilih Desa/Kelurahan...' && 
-                                part !== 'Pilih Kecamatan...' && 
-                                part !== 'Pilih Kabupaten/Kota...' && 
-                                part !== 'Pilih Provinsi...')
-                        .join(', ');
-                    
-                    locationInput.value = fullAddress;
-                    
-                    // Find address input and auto-populate
-                    const addressInput = locationInput.closest('.row').querySelector('textarea[name="address"]') || 
-                                       locationInput.closest('form').querySelector('textarea[name="address"]');
-                    if (addressInput && fullAddress) {
-                        addressInput.value = fullAddress;
+
+            // Handle Enter key to accept first suggestion
+            locationInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const firstSuggestion = document.querySelector('.autocomplete-item');
+                    if (firstSuggestion) {
+                        firstSuggestion.click();
                     }
+                } else if (e.key === 'Escape') {
+                    clearAutocompleteSuggestions();
+                }
+            });
+
+            function generateSmartSuggestions(query) {
+                const lowerQuery = query.toLowerCase();
+
+                // Smart matching algorithm
+                currentSuggestions = indonesianLocations
+                    .filter(location => {
+                        const locationName = location.name.toLowerCase();
+                        const provinceName = location.province.toLowerCase();
+
+                        // Exact matches get highest priority
+                        if (locationName === lowerQuery || provinceName === lowerQuery) {
+                            return true;
+                        }
+
+                        // Starts with query
+                        if (locationName.startsWith(lowerQuery) || provinceName.startsWith(lowerQuery)) {
+                            return true;
+                        }
+
+                        // Contains query
+                        if (locationName.includes(lowerQuery) || provinceName.includes(lowerQuery)) {
+                            return true;
+                        }
+
+                        // Special handling for common abbreviations
+                        if (lowerQuery === 'jakarta' && location.province === 'DKI Jakarta') {
+                            return true;
+                        }
+
+                        return false;
+                    })
+                    .sort((a, b) => {
+                        // Sort by relevance
+                        const aName = a.name.toLowerCase();
+                        const bName = b.name.toLowerCase();
+                        const aProvince = a.province.toLowerCase();
+                        const bProvince = b.province.toLowerCase();
+
+                        // Exact matches first
+                        if (aName === lowerQuery && bName !== lowerQuery) return -1;
+                        if (bName === lowerQuery && aName !== lowerQuery) return 1;
+
+                        // Starts with query
+                        if (aName.startsWith(lowerQuery) && !bName.startsWith(lowerQuery)) return -1;
+                        if (bName.startsWith(lowerQuery) && !aName.startsWith(lowerQuery)) return 1;
+
+                        // Cities before regencies before provinces
+                        const typeOrder = { 'city': 0, 'regency': 1, 'province': 2 };
+                        if (typeOrder[a.type] !== typeOrder[b.type]) {
+                            return typeOrder[a.type] - typeOrder[b.type];
+                        }
+
+                        return a.name.localeCompare(b.name);
+                    })
+                    .slice(0, 8); // Limit to 8 suggestions
+
+                displayAutocompleteSuggestions(currentSuggestions);
+            }
+
+            function displayAutocompleteSuggestions(suggestions) {
+                clearAutocompleteSuggestions();
+
+                if (suggestions.length === 0) return;
+
+                const suggestionsContainer = document.createElement('div');
+                suggestionsContainer.className = 'autocomplete-suggestions';
+                suggestionsContainer.style.cssText = `
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    right: 0;
+                    background: white;
+                    border: 1px solid #ddd;
+                    border-top: none;
+                    border-radius: 0 0 8px 8px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    z-index: 1000;
+                    max-height: 280px;
+                    overflow-y: auto;
+                `;
+
+                suggestions.forEach((suggestion) => {
+                    const suggestionItem = document.createElement('div');
+                    suggestionItem.className = 'autocomplete-item';
+                    suggestionItem.style.cssText = `
+                        padding: 12px 16px;
+                        cursor: pointer;
+                        border-bottom: 1px solid #f0f0f0;
+                        background: white;
+                        transition: background-color 0.2s ease;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                    `;
+
+                    // Create content with icon and text
+                    const contentDiv = document.createElement('div');
+                    contentDiv.style.cssText = 'display: flex; align-items: center; gap: 8px;';
+
+                    const iconSpan = document.createElement('span');
+                    iconSpan.innerHTML = getLocationIcon(suggestion.type);
+                    iconSpan.style.cssText = 'font-size: 14px; color: #6c757d;';
+
+                    const textSpan = document.createElement('span');
+                    textSpan.textContent = suggestion.name;
+                    textSpan.style.cssText = 'font-weight: 500; color: #2c3e50;';
+
+                    const provinceSpan = document.createElement('span');
+                    provinceSpan.textContent = suggestion.province;
+                    provinceSpan.style.cssText = 'font-size: 12px; color: #6c757d; margin-left: 8px;';
+
+                    contentDiv.appendChild(iconSpan);
+                    contentDiv.appendChild(textSpan);
+                    contentDiv.appendChild(provinceSpan);
+
+                    suggestionItem.appendChild(contentDiv);
+
+                    // Hover effects
+                    suggestionItem.addEventListener('mouseenter', function() {
+                        this.style.background = 'linear-gradient(135deg, #f8f9fa, #e9ecef)';
+                        this.style.transform = 'translateX(2px)';
+                    });
+
+                    suggestionItem.addEventListener('mouseleave', function() {
+                        this.style.background = 'white';
+                        this.style.transform = 'translateX(0)';
+                    });
+
+                    // Selection handler
+                    suggestionItem.addEventListener('click', function() {
+                        selectLocation(suggestion);
+                    });
+
+                    suggestionsContainer.appendChild(suggestionItem);
+                });
+
+                locationInput.parentNode.style.position = 'relative';
+                locationInput.parentNode.appendChild(suggestionsContainer);
+            }
+
+            function selectLocation(location) {
+                // Set the input value
+                locationInput.value = location.name;
+
+                // Generate full address for hidden input
+                const fullAddress = generateFullAddress(location);
+                if (hiddenLocationInput) {
+                    hiddenLocationInput.value = fullAddress;
+                }
+
+                // Auto-populate address textarea
+                const addressTextarea = locationInput.closest('.row').querySelector('textarea[name="address"]') ||
+                                       locationInput.closest('form').querySelector('textarea[name="address"]');
+                if (addressTextarea) {
+                    addressTextarea.value = fullAddress;
+                }
+
+                clearAutocompleteSuggestions();
+
+                console.log('Location selected:', location);
+            }
+
+            function generateFullAddress(location) {
+                if (location.type === 'province') {
+                    return `${location.name}, Indonesia`;
+                } else {
+                    return `${location.name}, ${location.province}, Indonesia`;
                 }
             }
-            
-            console.log('Cascading location dropdown initialized');
+
+            function getLocationIcon(type) {
+                switch (type) {
+                    case 'city':
+                        return '<i class="fas fa-city"></i>';
+                    case 'regency':
+                        return '<i class="fas fa-map-marked-alt"></i>';
+                    case 'province':
+                        return '<i class="fas fa-globe-asia"></i>';
+                    default:
+                        return '<i class="fas fa-map-marker-alt"></i>';
+                }
+            }
+
+            function clearAutocompleteSuggestions() {
+                const existingSuggestions = locationInput.parentNode.querySelector('.autocomplete-suggestions');
+                if (existingSuggestions) {
+                    existingSuggestions.remove();
+                }
+            }
+
+            function showAutocompleteSuggestions() {
+                const suggestions = locationInput.parentNode.querySelector('.autocomplete-suggestions');
+                if (suggestions) {
+                    suggestions.style.display = 'block';
+                }
+            }
+
+            function hideAutocompleteSuggestions() {
+                const suggestions = locationInput.parentNode.querySelector('.autocomplete-suggestions');
+                if (suggestions) {
+                    suggestions.style.display = 'none';
+                }
+            }
+
+            console.log('Smart single input location system initialized');
         }
-        
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
-            initLocationDropdown();
-            
+            initSmartLocationInput();
+
             // Initialize location edit functionality if on edit page
             if (typeof initLocationEdit === 'function') {
                 initLocationEdit();

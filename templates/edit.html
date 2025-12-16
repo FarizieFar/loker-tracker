@@ -57,37 +57,22 @@
                             <label class="form-label fw-medium text-muted">
                                 <i class="fas fa-map-marker-alt me-2"></i>Lokasi Administrasi
                             </label>
-                            
-                            <!-- Province Selection -->
-                            <select class="form-select form-select-lg rounded-3 border-0 bg-light mb-2 province-select" 
-                                    style="padding: 0.75rem 1rem;" required>
-                                <option value="">Pilih Provinsi...</option>
-                            </select>
-                            
-                            <!-- Regency/City Selection -->
-                            <select class="form-select form-select-lg rounded-3 border-0 bg-light mb-2 regency-select" 
-                                    style="padding: 0.75rem 1rem;" required disabled>
-                                <option value="">Pilih Kabupaten/Kota...</option>
-                            </select>
-                            
-                            <!-- District Selection -->
-                            <select class="form-select form-select-lg rounded-3 border-0 bg-light mb-2 district-select" 
-                                    style="padding: 0.75rem 1rem;" required disabled>
-                                <option value="">Pilih Kecamatan...</option>
-                            </select>
-                            
-                            <!-- Village/Kelurahan Selection -->
-                            <select class="form-select form-select-lg rounded-3 border-0 bg-light mb-2 village-select" 
-                                    style="padding: 0.75rem 1rem;" required disabled>
-                                <option value="">Pilih Desa/Kelurahan...</option>
-                            </select>
-                            
+
+                            <!-- Smart Single Input Field -->
+                            <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light smart-location-input"
+                                   style="padding: 0.75rem 1rem;" placeholder="Ketik nama kota, kabupaten, atau provinsi..."
+                                   required autocomplete="off">
+                            <small class="form-text text-muted">
+                                <i class="fas fa-search me-1"></i>
+                                Ketik nama lokasi (minimal 1 huruf) - akan muncul suggestions otomatis
+                            </small>
+
                             <!-- Hidden input untuk menyimpan full address -->
                             <input type="hidden" name="location" class="location-input" value="{{ job.location }}" required>
-                            
-                            <small class="form-text text-muted">
-                                <i class="fas fa-sitemap me-1"></i>
-                                Pilih secara berurutan: Provinsi → Kabupaten/Kota → Kecamatan → Desa/Kelurahan
+
+                            <small class="form-text text-muted mt-2">
+                                <i class="fas fa-lightbulb me-1"></i>
+                                Contoh: "Jakarta", "Bandung", "Jawa Barat", "Surabaya"
                             </small>
                         </div>
 
@@ -331,75 +316,49 @@ function toggleCustomSourceEdit() {
 }
 
 
-// Handle cascading location selection and pre-selection for edit page
+// Handle location pre-selection for edit page with smart single input system
 function initLocationEdit() {
-    const locationInput = document.querySelector('.location-input');
-    const provinceSelect = document.querySelector('.province-select');
-    const regencySelect = document.querySelector('.regency-select');
-    const districtSelect = document.querySelector('.district-select');
-    const villageSelect = document.querySelector('.village-select');
-    
-    if (!locationInput) return;
-    
+    const smartLocationInput = document.querySelector('.smart-location-input');
+    const hiddenLocationInput = document.querySelector('.location-input');
+
+    if (!smartLocationInput || !hiddenLocationInput) return;
+
     // Get existing location value from job data
     const existingLocation = "{{ job.location }}";
-    
-    // Wait for dropdown options to be populated by base template script
+
+    // Wait for the smart input system to be initialized
     setTimeout(function() {
         if (existingLocation && existingLocation !== 'None') {
-            // Parse the existing address to identify components
+            // Parse the existing address to extract the main location name
             const addressParts = existingLocation.split(', ');
-            
-            if (addressParts.length >= 4) {
-                const village = addressParts[0].trim();
-                const district = addressParts[1].trim();
-                const regency = addressParts[2].trim();
-                const province = addressParts[3].trim();
-                
-                // Pre-select province
-                const provinceOptions = provinceSelect.querySelectorAll('option');
-                provinceOptions.forEach(option => {
-                    if (option.textContent === province) {
-                        option.selected = true;
-                        provinceSelect.dispatchEvent(new Event('change'));
-                        
-                        // After regency options are populated, select regency
-                        setTimeout(() => {
-                            const regencyOptions = regencySelect.querySelectorAll('option');
-                            regencyOptions.forEach(option => {
-                                if (option.textContent === regency) {
-                                    option.selected = true;
-                                    regencySelect.dispatchEvent(new Event('change'));
-                                    
-                                    // After district options are populated, select district
-                                    setTimeout(() => {
-                                        const districtOptions = districtSelect.querySelectorAll('option');
-                                        districtOptions.forEach(option => {
-                                            if (option.textContent === district) {
-                                                option.selected = true;
-                                                districtSelect.dispatchEvent(new Event('change'));
-                                                
-                                                // After village options are populated, select village
-                                                setTimeout(() => {
-                                                    const villageOptions = villageSelect.querySelectorAll('option');
-                                                    villageOptions.forEach(option => {
-                                                        if (option.textContent === village) {
-                                                            option.selected = true;
-                                                            villageSelect.dispatchEvent(new Event('change'));
-                                                        }
-                                                    });
-                                                }, 200);
-                                            }
-                                        });
-                                    }, 200);
-                                }
-                            });
-                        }, 200);
+
+            if (addressParts.length >= 2) {
+                // For city/regency: "City Name, Province, Indonesia"
+                // For province: "Province Name, Indonesia"
+                let locationName = '';
+
+                if (addressParts.length === 3) {
+                    // City/Regency case: "Jakarta Pusat, DKI Jakarta, Indonesia"
+                    locationName = addressParts[0].trim();
+                } else if (addressParts.length === 2) {
+                    // Province case: "DKI Jakarta, Indonesia"
+                    locationName = addressParts[0].trim();
+                }
+
+                if (locationName) {
+                    // Set the smart input value
+                    smartLocationInput.value = locationName;
+
+                    // Ensure the hidden input has the full address
+                    if (hiddenLocationInput.value !== existingLocation) {
+                        hiddenLocationInput.value = existingLocation;
                     }
-                });
+
+                    console.log('Pre-populated location:', locationName, 'Full address:', existingLocation);
+                }
             }
         }
-    }, 500); // Increased timeout to ensure all dropdowns are populated
+    }, 300); // Shorter timeout since we don't need to wait for dropdown population
 }
 
 // File upload functionality (same as add.html)
