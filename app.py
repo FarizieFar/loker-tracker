@@ -86,10 +86,13 @@ def load_user(user_id):
 @app.route('/')
 @login_required
 def index():
+
     search = request.args.get('q')
     status = request.args.get('status')
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
+    page = request.args.get('page', 1, type=int)
+    per_page = 10  # Show 10 records per page
     statuses = Status.query.all()
 
     query = JobApplication.query.filter_by(user_id=current_user.id)
@@ -121,7 +124,11 @@ def index():
         except ValueError:
             pass
 
-    jobs = query.order_by(JobApplication.applied_date.desc()).all()
+    # Paginate the results
+    pagination = query.order_by(JobApplication.applied_date.desc()).paginate(
+        page=page, per_page=per_page, error_out=False
+    )
+    jobs = pagination.items
 
 
     # 📊 DASHBOARD PER USER
@@ -151,6 +158,7 @@ def index():
     ).count()
 
 
+
     return render_template(
         'index.html',
         jobs=jobs,
@@ -160,7 +168,8 @@ def index():
         interview=interview,
         tes=tes,
         diterima=diterima,
-        ditolak=ditolak
+        ditolak=ditolak,
+        pagination=pagination
     )
 
 

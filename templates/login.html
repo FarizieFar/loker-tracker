@@ -1,7 +1,3 @@
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,1200 +6,431 @@
     <title>Login - Loker Tracker</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
 
     <style>
         /* ============================================
-           NEUTRAL MODERN LOGIN DESIGN SYSTEM
+           CLEAN MODERN LOGIN DESIGN
            ============================================ */
         
-
-        /* Simple and Clean Design */
         :root {
             --primary-color: #6366f1;
-            --background-color: linear-gradient(135deg, 
-                rgba(99, 102, 241, 0.08) 0%, 
-                rgba(139, 92, 246, 0.08) 50%, 
-                rgba(79, 70, 229, 0.08) 100%);
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --card-border: rgba(255, 255, 255, 0.2);
-            --text-primary: #374151;
-            --text-secondary: #6b7280;
+            --primary-hover: #5855eb;
+            --background: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
-        /* Advanced Custom Cursor System */
-        .custom-cursor {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            background: radial-gradient(circle, var(--primary-color), var(--accent-color));
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            mix-blend-mode: difference;
-            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 20px rgba(49, 130, 206, 0.5);
-        }
-        
-        .custom-cursor.hover {
-            width: 40px;
-            height: 40px;
-            background: rgba(49, 130, 206, 0.8);
-            box-shadow: 0 0 30px rgba(49, 130, 206, 0.8);
+        body {
+            background: var(--background);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
         }
 
-        /* Particle Trail System */
-        .particle-trail {
-            position: fixed;
-            width: 6px;
-            height: 6px;
-            background: var(--primary-color);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9998;
-            animation: particleTrail 1s ease-out forwards;
-            box-shadow: 0 0 10px rgba(49, 130, 206, 0.5);
-        }
-
-        @keyframes particleTrail {
-            0% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: scale(0) translateY(-30px);
-            }
-        }
-
-        /* Morphing Background Shapes dengan AI-generated patterns */
-        .morphing-shape {
-            position: absolute;
-            background: linear-gradient(45deg, 
-                rgba(49, 130, 206, 0.1) 0%, 
-                rgba(56, 161, 105, 0.1) 50%, 
-                rgba(159, 122, 234, 0.1) 100%);
-            border-radius: 60% 40% 30% 70%/60% 30% 70% 40%;
-            animation: morphing 8s ease-in-out infinite;
-            filter: blur(1px);
-        }
-
-        @keyframes morphing {
-            0%, 100% { 
-                border-radius: 60% 40% 30% 70%/60% 30% 70% 40%;
-                transform: rotate(0deg) scale(1);
-            }
-            25% { 
-                border-radius: 30% 60% 70% 40%/50% 60% 30% 60%;
-                transform: rotate(90deg) scale(1.1);
-            }
-            50% { 
-                border-radius: 50% 30% 60% 40%/30% 70% 60% 30%;
-                transform: rotate(180deg) scale(0.9);
-            }
-            75% { 
-                border-radius: 70% 50% 40% 60%/40% 30% 70% 50%;
-                transform: rotate(270deg) scale(1.05);
-            }
-        }
-
-        /* Advanced Parallax System dengan Multiple Layers */
-        .parallax-layer {
-            position: absolute;
-            width: 120%;
-            height: 120%;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(49, 130, 206, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(56, 161, 105, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 40% 80%, rgba(159, 122, 234, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 60% 60%, rgba(237, 100, 166, 0.05) 0%, transparent 50%);
-            animation: parallaxFloat 25s ease-in-out infinite;
-        }
-
-        @keyframes parallaxFloat {
-            0%, 100% { 
-                transform: translateY(0px) rotate(0deg) scale(1);
-            }
-            33% { 
-                transform: translateY(-40px) rotate(120deg) scale(1.05);
-            }
-            66% { 
-                transform: translateY(30px) rotate(240deg) scale(0.95);
-            }
-        }
-
-        /* Enhanced 3D Card Effect dengan Real-time Lighting */
-        .card-3d {
-            transform-style: preserve-3d;
-            perspective: 1200px;
-            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        .card-3d:hover {
-            transform: rotateX(8deg) rotateY(8deg) translateZ(30px);
-        }
-
-        .card-3d:hover .login-card-content {
-            transform: rotateX(-4deg) rotateY(-4deg) translateZ(20px);
-        }
-
-        /* Advanced Typing Animation dengan Multiple Effects */
-        .typing-effect {
-            overflow: hidden;
-            border-right: 3px solid var(--primary-color);
-            white-space: nowrap;
-            animation: typing 4s steps(40, end), blink-caret 0.75s step-end infinite;
-            position: relative;
-        }
-
-        .typing-effect::after {
-            content: '';
-            position: absolute;
-            right: -3px;
-            top: 0;
-            width: 3px;
-            height: 100%;
-            background: linear-gradient(to bottom, var(--primary-color), var(--accent-color));
-            animation: gradientBlink 1.5s ease-in-out infinite;
-        }
-
-        @keyframes typing {
-            from { width: 0; }
-            to { width: 100%; }
-        }
-
-        @keyframes blink-caret {
-            from, to { border-color: transparent; }
-            50% { border-color: var(--primary-color); }
-        }
-
-        @keyframes gradientBlink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        /* Quantum Loading Animation dengan Advanced Physics */
-        .quantum-loader {
-            position: relative;
-            width: 50px;
-            height: 50px;
-            margin: 0 auto;
-        }
-
-        .quantum-loader::before,
-        .quantum-loader::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border: 3px solid transparent;
-            border-top: 3px solid var(--primary-color);
-            border-radius: 50%;
-            animation: quantumSpin 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
-        }
-
-        .quantum-loader::after {
-            border-top: 3px solid var(--accent-color);
-            animation-delay: -0.75s;
-            animation-direction: reverse;
-        }
-
-        @keyframes quantumSpin {
-            0% { 
-                transform: rotate(0deg) scale(1);
-                border-top-color: var(--primary-color);
-            }
-            50% {
-                transform: rotate(180deg) scale(1.1);
-                border-top-color: var(--accent-color);
-            }
-            100% { 
-                transform: rotate(360deg) scale(1);
-                border-top-color: var(--primary-color);
-            }
-        }
-
-        /* Interactive Neon Border dengan Dynamic Colors */
-        .neon-border {
-            position: relative;
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            border-radius: 24px;
-        }
-
-        .neon-border::before {
-            content: '';
-            position: absolute;
-            inset: -3px;
-            background: linear-gradient(45deg, 
-                var(--primary-color) 0%, 
-                var(--accent-color) 25%, 
-                #9f7aea 50%, 
-                #ed64a6 75%, 
-                var(--primary-color) 100%);
-            background-size: 400% 400%;
-            border-radius: 27px;
-            z-index: -1;
-            animation: neonGlow 4s ease-in-out infinite alternate;
-            opacity: 0.8;
-        }
-
-        .neon-border::after {
-            content: '';
-            position: absolute;
-            inset: 3px;
-            background: var(--glass-bg);
-            border-radius: 21px;
-            z-index: -1;
-        }
-
-        @keyframes neonGlow {
-            0% { 
-                filter: blur(12px) brightness(1.2);
-                background-position: 0% 50%;
-                box-shadow: 
-                    0 0 20px rgba(49, 130, 206, 0.5),
-                    0 0 40px rgba(56, 161, 105, 0.3);
-            }
-            100% { 
-                filter: blur(18px) brightness(1.4);
-                background-position: 100% 50%;
-                box-shadow: 
-                    0 0 30px rgba(49, 130, 206, 0.8),
-                    0 0 60px rgba(56, 161, 105, 0.5),
-                    0 0 80px rgba(159, 122, 234, 0.3);
-            }
-        }
-
-        /* Enhanced Floating Action Button dengan AI Interactions */
-        .floating-action {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-            border-radius: 50%;
+        .login-container {
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 1.75rem;
-            box-shadow: 
-                0 10px 40px rgba(49, 130, 206, 0.4),
-                0 0 30px rgba(49, 130, 206, 0.6);
-            animation: floatingBounce 4s ease-in-out infinite;
-            cursor: pointer;
-            z-index: 1000;
-            border: none;
-            backdrop-filter: blur(15px);
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            padding: 1rem;
         }
 
-        .floating-action:hover {
-            transform: scale(1.15) rotate(10deg);
-            box-shadow: 
-                0 15px 50px rgba(49, 130, 206, 0.6),
-                0 0 40px rgba(49, 130, 206, 0.8);
-            animation-play-state: paused;
-        }
-
-        @keyframes floatingBounce {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            25% { transform: translateY(-5px) rotate(2deg); }
-            50% { transform: translateY(-15px) rotate(0deg); }
-            75% { transform: translateY(-5px) rotate(-2deg); }
-        }
-
-        /* Magnetic Elements dengan Advanced Physics */
-        .magnetic {
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            position: relative;
-        }
-
-        .magnetic:hover {
-            transform: scale(1.08) rotate(3deg);
-            filter: brightness(1.1) contrast(1.1);
-        }
-
-        /* Custom Scrollbar dengan Modern Design */
-        ::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(49, 130, 206, 0.5);
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(45deg, var(--primary-color), #9f7aea);
-            box-shadow: 0 0 15px rgba(49, 130, 206, 0.8);
-        }
-
-
-
-        /* Simple Background */
-        .simple-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--background-color);
-            z-index: -2;
-        }
-
-        /* Simple Login Card */
-        .simple-login-card {
+        .login-card {
             background: var(--card-bg);
-            border: 1px solid var(--card-border);
             border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            margin-bottom: 1.5rem;
-        }
-
-        /* Simple Form Styling */
-        .login-form .form-label {
-            color: var(--text-primary);
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-
-        .login-form .form-control {
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .login-form .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-            outline: none;
-        }
-
-        .login-form .btn-primary {
-            background: var(--primary-color);
-            border: none;
-            border-radius: 8px;
-            padding: 0.75rem 1.5rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .login-form .btn-primary:hover {
-            background: #5856eb;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-        }
-
-        /* Holographic Text Effects */
-        .holographic-text {
-            position: relative;
-            background: linear-gradient(45deg, 
-                var(--primary-color) 0%, 
-                var(--accent-color) 25%, 
-                #9f7aea 50%, 
-                #ed64a6 75%, 
-                var(--primary-color) 100%);
-            background-size: 400% 400%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: holographicText 5s ease-in-out infinite;
-            filter: drop-shadow(0 0 10px rgba(49, 130, 206, 0.3));
-        }
-
-        @keyframes holographicText {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        /* Advanced Sound Wave Visualizer */
-        .sound-waves {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-
-        .sound-waves.active {
-            opacity: 1;
-        }
-
-        .wave {
-            width: 4px;
-            background: linear-gradient(to top, var(--primary-color), var(--accent-color));
-            border-radius: 2px;
-            animation: waveDance 2s ease-in-out infinite;
-        }
-
-        .wave:nth-child(1) { height: 15px; animation-delay: 0s; }
-        .wave:nth-child(2) { height: 25px; animation-delay: 0.1s; }
-        .wave:nth-child(3) { height: 35px; animation-delay: 0.2s; }
-        .wave:nth-child(4) { height: 25px; animation-delay: 0.3s; }
-        .wave:nth-child(5) { height: 15px; animation-delay: 0.4s; }
-        .wave:nth-child(6) { height: 20px; animation-delay: 0.5s; }
-        .wave:nth-child(7) { height: 30px; animation-delay: 0.6s; }
-
-        @keyframes waveDance {
-            0%, 100% { 
-                transform: scaleY(0.4);
-                opacity: 0.7;
-            }
-            50% { 
-                transform: scaleY(1);
-                opacity: 1;
-            }
-        }
-
-        /* Advanced Progress Indicator */
-        .progress-container {
-            position: relative;
-            margin: 2rem 0;
-        }
-
-        .progress-bar {
+            box-shadow: var(--shadow-lg);
+            padding: 3rem;
             width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 3px;
+            max-width: 400px;
+            border: 1px solid var(--border-color);
+            position: relative;
             overflow: hidden;
-            position: relative;
         }
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-            border-radius: 3px;
-            width: 0%;
-            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-        }
-
-        .progress-fill::after {
+        .login-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
-            animation: progressShine 3s ease-in-out infinite;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-hover));
         }
 
-        @keyframes progressShine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .progress-text {
+        .brand-section {
             text-align: center;
-            margin-top: 0.75rem;
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            font-weight: 600;
+            margin-bottom: 2.5rem;
         }
 
-        /* Ripple Effect System */
-        @keyframes ripple {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
-
-        /* Glitch Effect Enhancement */
-        .glitch-effect {
-            position: relative;
-            display: inline-block;
-        }
-
-        .glitch-effect::before,
-        .glitch-effect::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .glitch-effect::before {
-            animation: glitch-1 0.4s infinite;
-            color: #ff0080;
-            z-index: -1;
-        }
-
-        .glitch-effect::after {
-            animation: glitch-2 0.4s infinite;
-            color: #00ffff;
-            z-index: -2;
-        }
-
-        @keyframes glitch-1 {
-            0%, 100% { transform: translate(0); }
-            10% { transform: translate(-2px, 2px); }
-            20% { transform: translate(-2px, -2px); }
-            30% { transform: translate(2px, 2px); }
-            40% { transform: translate(2px, -2px); }
-            50% { transform: translate(-2px, 2px); }
-            60% { transform: translate(-2px, -2px); }
-            70% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            90% { transform: translate(-2px, 2px); }
-        }
-
-        @keyframes glitch-2 {
-            0%, 100% { transform: translate(0); }
-            15% { transform: translate(2px, -2px); }
-            25% { transform: translate(2px, 2px); }
-            35% { transform: translate(-2px, -2px); }
-            45% { transform: translate(-2px, 2px); }
-            55% { transform: translate(2px, -2px); }
-            65% { transform: translate(2px, 2px); }
-            75% { transform: translate(-2px, -2px); }
-            85% { transform: translate(-2px, 2px); }
-        }
-
-        /* Theme Switcher Styles */
-        .theme-switcher {
-            position: fixed;
-            top: 30px;
-            right: 30px;
-            z-index: 1001;
-        }
-
-        .theme-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border: none;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
+        .brand-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
-            font-size: 1.25rem;
+            margin: 0 auto 1.5rem;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .brand-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .brand-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            display: block;
+            font-size: 0.875rem;
+        }
+
+        .form-control {
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.875rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            background: #ffffff;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            outline: none;
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 0.875rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.25rem;
+            transition: color 0.2s ease;
+        }
+
+        .password-toggle:hover {
             color: var(--primary-color);
         }
 
-        .theme-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15);
-        }
-
-        /* Performance Optimization */
-        .low-performance .morphing-shape,
-        .low-performance .parallax-layer,
-        .low-performance .particle-trail {
-            animation: none;
-        }
-
-
-        /* Quantum Loading Modal */
-        .quantum-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .btn-login {
+            background: var(--primary-color);
+            border: none;
+            border-radius: 12px;
+            padding: 0.875rem 1.5rem;
+            font-weight: 600;
+            font-size: 0.95rem;
             width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(20px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            animation: modalFadeIn 0.5s ease;
-        }
-
-        .quantum-modal-content {
-            background: var(--glass-bg);
-            backdrop-filter: blur(30px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 3rem;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: modalSlideIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        .quantum-modal-content p {
-            margin-top: 1.5rem;
-            font-size: 1.125rem;
-            color: var(--text-secondary);
-            font-weight: 600;
-        }
-
-        @keyframes modalFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes modalSlideIn {
-            from { 
-                opacity: 0;
-                transform: translateY(30px) scale(0.9);
-            }
-            to { 
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        /* AI Chat Widget */
-        .ai-chat-widget {
-            position: fixed;
-            bottom: 120px;
-            right: 30px;
-            width: 350px;
-            height: 500px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(30px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            box-shadow: 
-                0 20px 60px rgba(0, 0, 0, 0.2),
-                0 0 40px rgba(49, 130, 206, 0.1);
-            z-index: 1002;
-            overflow: hidden;
-            animation: chatSlideIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        @keyframes chatSlideIn {
-            from { 
-                opacity: 0;
-                transform: translateY(100px) scale(0.8);
-            }
-            to { 
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .ai-chat-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1.5rem;
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
             color: white;
-        }
-
-        .ai-avatar {
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-        }
-
-        .ai-info h6 {
-            margin: 0;
-            font-size: 1rem;
-            font-weight: 600;
-        }
-
-        .ai-status {
-            font-size: 0.75rem;
-            opacity: 0.9;
-        }
-
-        .ai-chat-close {
-            margin-left: auto;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.125rem;
+            transition: all 0.2s ease;
             cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .ai-chat-close:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.1);
-        }
-
-        .ai-chat-body {
-            height: 320px;
-            padding: 1.5rem;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .ai-message {
-            display: flex;
-            gap: 0.75rem;
-            align-items: flex-start;
-        }
-
-        .ai-avatar-small {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 0.875rem;
-            flex-shrink: 0;
+            gap: 0.5rem;
         }
 
-        .ai-message-content {
-            background: rgba(49, 130, 206, 0.1);
-            padding: 0.75rem 1rem;
-            border-radius: 16px 16px 16px 4px;
-            border: 1px solid rgba(49, 130, 206, 0.2);
-            max-width: 80%;
+        .btn-login:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
         }
 
-        .ai-message-content p {
-            margin: 0;
-            font-size: 0.875rem;
-            color: var(--text-primary);
-            line-height: 1.5;
+        .btn-login:active {
+            transform: translateY(0);
         }
 
-        .ai-chat-footer {
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .alert {
+            border-radius: 12px;
+            border: none;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
             display: flex;
+            align-items: center;
             gap: 0.75rem;
-            padding: 1.5rem;
-            border-top: 1px solid var(--glass-border);
         }
 
-        .ai-chat-input {
-            flex: 1;
-            padding: 0.75rem 1rem;
+        .alert-success {
+            background: rgba(34, 197, 94, 0.1);
+            color: #15803d;
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+
+        .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            color: #2563eb;
+        }
+
+        .demo-credentials {
+            background: #f8fafc;
             border: 1px solid var(--border-color);
-            border-radius: 25px;
-            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-top: 2rem;
+        }
+
+        .demo-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             font-size: 0.875rem;
-            outline: none;
-            transition: all 0.3s ease;
         }
 
-        .ai-chat-input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
-            background: white;
+        .demo-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
         }
 
-        .ai-chat-send {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-            border: none;
-            border-radius: 50%;
-            color: white;
+        .demo-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .demo-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .demo-value {
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            color: var(--primary-color);
+            background: rgba(99, 102, 241, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            margin-left: 0.5rem;
         }
 
-        .ai-chat-send:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 20px rgba(49, 130, 206, 0.4);
+        .copy-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
         }
 
-        /* AI Status Indicator */
-        .ai-status-indicator {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            margin-top: 1rem;
-            padding: 0.75rem 1.5rem;
-            background: rgba(56, 161, 105, 0.1);
-            border: 1px solid rgba(56, 161, 105, 0.3);
-            border-radius: 25px;
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--text-secondary);
             font-size: 0.875rem;
-            color: var(--accent-color);
-            font-weight: 500;
         }
 
-        .ai-pulse {
-            width: 8px;
-            height: 8px;
-            background: var(--accent-color);
+        .loading {
+            display: none;
+        }
+
+        .btn-login.loading .btn-text {
+            display: none;
+        }
+
+        .btn-login.loading .loading {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
             border-radius: 50%;
-            animation: aiPulse 2s ease-in-out infinite;
+            animation: spin 1s linear infinite;
         }
 
-        @keyframes aiPulse {
-            0%, 100% { 
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% { 
-                opacity: 0.5;
-                transform: scale(1.2);
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
             }
         }
 
-        /* Enhanced Input States */
-        .floating-input-wrapper.focused {
-            animation: inputFocus 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
+        /* Mobile Responsive */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 2rem 1.5rem;
+                margin: 0.5rem;
+            }
 
-        @keyframes inputFocus {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
-        }
-
-        /* Advanced Button States */
-        .modern-btn-primary:hover:not(:disabled) {
-            box-shadow: 
-                0 8px 32px rgba(49, 130, 206, 0.4),
-                0 0 20px rgba(49, 130, 206, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-        }
-
-        .modern-btn-primary:active {
-            transform: translateY(0) scale(0.98);
-        }
-
-        /* Enhanced Card Animations */
-        .modern-login-card {
-            animation: cardFloat 6s ease-in-out infinite;
-        }
-
-        @keyframes cardFloat {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-10px) rotate(1deg); }
-        }
-
-        /* Interactive Glitch Effect */
-        .glitch-interactive:hover {
-            animation: glitch-hover 0.5s ease-in-out;
-        }
-
-        @keyframes glitch-hover {
-            0%, 100% { transform: translateX(0); }
-            10% { transform: translateX(-2px); }
-            20% { transform: translateX(-2px); }
-            30% { transform: translateX(2px); }
-            40% { transform: translateX(2px); }
-            50% { transform: translateX(-2px); }
-            60% { transform: translateX(-2px); }
-            70% { transform: translateX(2px); }
-            80% { transform: translateX(2px); }
-            90% { transform: translateX(-2px); }
-        }
-
-        /* Enhanced Demo Card */
-        .demo-credentials-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 
-                0 15px 40px rgba(0, 0, 0, 0.15),
-                0 0 20px rgba(49, 130, 206, 0.2);
-        }
-
-        /* Responsive Enhancements */
-        @media (max-width: 768px) {
-            .floating-action {
-                bottom: 20px;
-                right: 20px;
-                width: 60px;
-                height: 60px;
+            .brand-title {
                 font-size: 1.5rem;
             }
-            
-            .theme-switcher {
-                top: 20px;
-                right: 20px;
-            }
-            
-            .theme-btn {
-                width: 45px;
-                height: 45px;
-                font-size: 1.1rem;
-            }
 
-            .ai-chat-widget {
-                width: 320px;
-                height: 450px;
-                bottom: 100px;
-                right: 20px;
-            }
-
-            .quantum-modal-content {
-                padding: 2rem;
-                margin: 1rem;
+            .brand-icon {
+                width: 56px;
+                height: 56px;
+                font-size: 1.25rem;
             }
         }
 
-        @media (max-width: 480px) {
-            .ai-chat-widget {
-                width: calc(100vw - 2rem);
-                height: 400px;
-                bottom: 90px;
-                right: 1rem;
-                left: 1rem;
-            }
+        /* Focus states for accessibility */
+        .form-control:focus,
+        .btn-login:focus,
+        .copy-btn:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
 
-            .quantum-modal-content {
-                padding: 1.5rem;
-            }
+        /* Smooth transitions */
+        * {
+            transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
         }
     </style>
 </head>
 
-
-<body class="simple-login-bg">
-    <!-- Simple Background Layer -->
-    <div class="simple-background"></div>
-    
-    <!-- Advanced Custom Cursor -->
-    <div class="custom-cursor"></div>
-    
-    <!-- Advanced Background Animation System -->
-    <div class="bg-animation">
-        <!-- Enhanced Parallax Layers -->
-        <div class="parallax-layer" style="animation-delay: 0s;"></div>
-        <div class="parallax-layer" style="animation-delay: -8s; transform: translateY(-50px) rotate(60deg) scale(1.1);"></div>
-        <div class="parallax-layer" style="animation-delay: -16s; transform: translateY(30px) rotate(180deg) scale(0.9);"></div>
-        
-        <!-- Advanced Morphing Shapes dengan AI Patterns -->
-        <div class="morphing-shape" style="width: 500px; height: 500px; top: -250px; left: -250px; animation-delay: 0s;"></div>
-        <div class="morphing-shape" style="width: 350px; height: 350px; top: 15%; right: -175px; animation-delay: -3s;"></div>
-        <div class="morphing-shape" style="width: 280px; height: 280px; bottom: -140px; left: 15%; animation-delay: -6s;"></div>
-        <div class="morphing-shape" style="width: 200px; height: 200px; top: 70%; left: -100px; animation-delay: -9s;"></div>
-        <div class="morphing-shape" style="width: 150px; height: 150px; top: 40%; right: 20%; animation-delay: -12s;"></div>
-        
-        <!-- Original Background Elements -->
-        <div class="bg-shape bg-shape-1"></div>
-        <div class="bg-shape bg-shape-2"></div>
-        <div class="bg-shape bg-shape-3"></div>
-        
-        <!-- Enhanced Particle System -->
-        <div class="bg-particles">
-            <div class="particle" style="animation-delay: 0s;"></div>
-            <div class="particle" style="animation-delay: -5s;"></div>
-            <div class="particle" style="animation-delay: -10s;"></div>
-            <div class="particle" style="animation-delay: -15s;"></div>
-            <div class="particle" style="animation-delay: -20s;"></div>
-            <div class="particle" style="animation-delay: -2s; width: 6px; height: 6px;"></div>
-            <div class="particle" style="animation-delay: -7s; width: 6px; height: 6px;"></div>
-            <div class="particle" style="animation-delay: -12s; width: 6px; height: 6px;"></div>
-        </div>
-    </div>
-
-    <!-- Theme Switcher -->
-    <div class="theme-switcher">
-        <button class="theme-btn magnetic" id="themeToggle" title="Switch Theme">
-            <i class="fas fa-moon"></i>
-        </button>
-    </div>
-
-    <!-- Enhanced Floating Action Button dengan AI Interactions -->
-    <div class="floating-action magnetic" id="floatingHelp" title="Need Help?">
-        <i class="fas fa-question"></i>
-    </div>
-
-
-
-    <!-- Quantum Loading Modal -->
-    <div class="quantum-modal" id="quantumModal" style="display: none;">
-        <div class="quantum-modal-content">
-            <div class="quantum-loader"></div>
-            <p>Processing...</p>
-        </div>
-    </div>
-
-    <!-- AI Assistant Chat Widget -->
-    <div class="ai-chat-widget" id="aiChatWidget" style="display: none;">
-        <div class="ai-chat-header">
-            <div class="ai-avatar">
-                <i class="fas fa-robot"></i>
-            </div>
-            <div class="ai-info">
-                <h6>AI Assistant</h6>
-                <span class="ai-status">Online</span>
-            </div>
-            <button class="ai-chat-close" id="aiChatClose">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="ai-chat-body">
-            <div class="ai-message">
-                <div class="ai-avatar-small">
-                    <i class="fas fa-robot"></i>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="brand-section">
+                <div class="brand-icon">
+                    <i class="fas fa-briefcase"></i>
                 </div>
-                <div class="ai-message-content">
-                    <p>Halo! Saya AI Assistant Anda. Ada yang bisa saya bantu terkait login?</p>
-                </div>
+                <h1 class="brand-title">Loker Tracker</h1>
+                <p class="brand-subtitle">Masuk ke akun Anda</p>
             </div>
-        </div>
-        <div class="ai-chat-footer">
-            <input type="text" class="ai-chat-input" placeholder="Ketik pesan Anda..." id="aiChatInput">
-            <button class="ai-chat-send" id="aiChatSend">
-                <i class="fas fa-paper-plane"></i>
-            </button>
-        </div>
-    </div>
 
-    <div class="container">
-        <div class="row justify-content-center align-items-center min-vh-100">
-            <div class="col-md-6 col-lg-5 col-xl-4">
-
-                <!-- Simple Login Card -->
-                <div class="simple-login-card">
-                    <div class="login-card-content">
-
-
-                        <!-- Enhanced Header Section dengan AI Integration -->
-                        <div class="login-header text-center mb-5">
-                            <!-- Advanced Brand Icon dengan Real-time 3D Effects -->
-                            <div class="brand-icon mb-4">
-                                <div class="icon-container holographic magnetic" id="brandIcon">
-                                    <div class="icon-3d">
-                                        <i class="fas fa-briefcase"></i>
-                                    </div>
-                                    <div class="icon-glow"></div>
-                                    <!-- Advanced Sound Wave Visualizer -->
-                                    <div class="sound-waves" id="soundWaves">
-                                        <div class="wave"></div>
-                                        <div class="wave"></div>
-                                        <div class="wave"></div>
-                                        <div class="wave"></div>
-                                        <div class="wave"></div>
-                                        <div class="wave"></div>
-                                        <div class="wave"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Enhanced Holographic Title dengan Multi-layer Effects -->
-                            <h1 class="brand-title holographic-text mb-3">
-                                <span class="typing-effect" data-text="Loker Tracker">Loker Tracker</span>
-                            </h1>
-                            
-                            <!-- Advanced Interactive Progress Indicator -->
-                            <div class="progress-container mb-4">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" id="loginProgress"></div>
-                                </div>
-                                <div class="progress-text">
-                                    <span id="progressText">Ready to login</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Enhanced Animated Subtitle dengan AI Integration -->
-                            <p class="brand-subtitle animated-subtitle">
-                                <span class="subtitle-text">Masuk ke akun Anda untuk melanjutkan</span>
-                                <div class="subtitle-underline"></div>
-                            </p>
-                            
-                            <!-- AI Status Indicator -->
-                            <div class="ai-status-indicator" id="aiStatusIndicator">
-                                <div class="ai-pulse"></div>
-                                <span>AI Assistant Ready</span>
-                            </div>
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else category }}" role="alert">
+                            <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' if category == 'success' else 'info-circle' }}"></i>
+                            <span>{{ message }}</span>
                         </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
 
-                        <!-- Flash Messages -->
-                        {% with messages = get_flashed_messages(with_categories=true) %}
-                            {% if messages %}
-                                {% for category, message in messages %}
-                                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} modern-alert alert-dismissible fade show" role="alert">
-                                        <div class="alert-content">
-                                            <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' if category == 'success' else 'info-circle' }} alert-icon"></i>
-                                            <span class="alert-message">{{ message }}</span>
-                                        </div>
-                                        <button type="button" class="alert-close" data-bs-dismiss="alert">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                {% endfor %}
-                            {% endif %}
-                        {% endwith %}
+            <!-- Login Form -->
+            <form method="post" id="loginForm">
+                <div class="form-group">
+                    <label for="username" class="form-label">
+                        <i class="fas fa-user me-2"></i>Username
+                    </label>
+                    <input 
+                        type="text" 
+                        name="username" 
+                        id="username" 
+                        class="form-control" 
+                        placeholder="Masukkan username" 
+                        required 
+                        autocomplete="username"
+                    >
+                </div>
 
-
-                        <!-- Simple Login Form -->
-                        <form method="post" class="login-form" id="loginForm">
-                            <div class="form-group mb-3">
-                                <label for="username" class="form-label">
-                                    <i class="fas fa-user me-2"></i>Username
-                                </label>
-                                <input type="text" name="username" id="username" class="form-control" placeholder="Masukkan username" required>
-                            </div>
-                            
-                            <div class="form-group mb-4">
-                                <label for="password" class="form-label">
-                                    <i class="fas fa-lock me-2"></i>Password
-                                </label>
-                                <input type="password" name="password" id="password" class="form-control" placeholder="Masukkan password" required>
-                            </div>
-                            
-                            <button type="submit" class="btn btn-primary w-100" id="loginBtn">
-                                <i class="fas fa-sign-in-alt me-2"></i>Masuk
-                            </button>
-                        </form>
-
-                        <!-- Footer -->
-                        <div class="login-footer text-center">
-                            <p class="footer-text">
-                                <i class="fas fa-code me-1"></i>
-                                Dibuat dengan <i class="fas fa-heart text-danger mx-1"></i> oleh Alfarizi
-                            </p>
-                        </div>
+                <div class="form-group">
+                    <label for="password" class="form-label">
+                        <i class="fas fa-lock me-2"></i>Password
+                    </label>
+                    <div class="password-wrapper">
+                        <input 
+                            type="password" 
+                            name="password" 
+                            id="password" 
+                            class="form-control" 
+                            placeholder="Masukkan password" 
+                            required 
+                            autocomplete="current-password"
+                        >
+                        <button type="button" class="password-toggle" id="passwordToggle" aria-label="Toggle password visibility">
+                            <i class="fas fa-eye"></i>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Demo Credentials Card -->
-                <div class="demo-credentials-card">
-                    <div class="demo-card-content">
-                        <div class="demo-header">
-                            <i class="fas fa-info-circle demo-icon"></i>
-                            <h6 class="demo-title">Demo Credentials</h6>
-                        </div>
-                        <div class="demo-credentials">
-                            <div class="demo-item">
-                                <div class="demo-label">Username</div>
-                                <div class="demo-value">admin</div>
-                            </div>
-                            <div class="demo-divider"></div>
-                            <div class="demo-item">
-                                <div class="demo-label">Password</div>
-                                <div class="demo-value">admin123</div>
-                            </div>
-                        </div>
-                        <button class="demo-copy-btn" id="copyCredentials">
+                <button type="submit" class="btn-login" id="loginBtn">
+                    <span class="btn-text">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Masuk
+                    </span>
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <span>Memproses...</span>
+                    </div>
+                </button>
+            </form>
+
+            <!-- Demo Credentials -->
+            <div class="demo-credentials">
+                <div class="demo-title">
+                    <i class="fas fa-info-circle"></i>
+                    Akun Demo
+                </div>
+                <div class="demo-item">
+                    <span class="demo-label">Username:</span>
+                    <div>
+                        <span class="demo-value" id="demoUsername">admin</span>
+                        <button class="copy-btn" data-copy="username">
                             <i class="fas fa-copy"></i>
                         </button>
                     </div>
                 </div>
+                <div class="demo-item">
+                    <span class="demo-label">Password:</span>
+                    <div>
+                        <span class="demo-value" id="demoPassword">admin123</span>
+                        <button class="copy-btn" data-copy="password">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <i class="fas fa-code me-1"></i>
+                Dibuat dengan <i class="fas fa-heart text-danger mx-1"></i> oleh Alfarizi
             </div>
         </div>
     </div>
@@ -1212,1048 +439,138 @@
 
     <script>
         // ============================================
-        // ADVANCED INTERACTIVE FEATURES
+        // SIMPLE & CLEAN FUNCTIONALITY
         // ============================================
         
-        // Custom Cursor System
-        class CustomCursor {
-            constructor() {
-                this.cursor = document.querySelector('.custom-cursor');
-                this.init();
-            }
+        document.addEventListener('DOMContentLoaded', function() {
+            // Password Toggle Functionality
+            const passwordToggle = document.getElementById('passwordToggle');
+            const passwordField = document.getElementById('password');
             
-            init() {
-                if (!this.cursor) return;
-                
-                document.addEventListener('mousemove', (e) => {
-                    this.cursor.style.left = e.clientX + 'px';
-                    this.cursor.style.top = e.clientY + 'px';
-                });
-                
-                // Add hover effects to interactive elements
-                const interactiveElements = document.querySelectorAll('button, input, a, .floating-action');
-                interactiveElements.forEach(el => {
-                    el.addEventListener('mouseenter', () => this.cursor.classList.add('hover'));
-                    el.addEventListener('mouseleave', () => this.cursor.classList.remove('hover'));
-                });
-                
-                // Particle trail effect
-                document.addEventListener('mousemove', (e) => {
-                    if (Math.random() > 0.7) {
-                        this.createParticleTrail(e.clientX, e.clientY);
-                    }
+            if (passwordToggle && passwordField) {
+                passwordToggle.addEventListener('click', function() {
+                    const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordField.setAttribute('type', type);
+                    
+                    const icon = passwordToggle.querySelector('i');
+                    icon.classList.toggle('fa-eye');
+                    icon.classList.toggle('fa-eye-slash');
                 });
             }
-            
-            createParticleTrail(x, y) {
-                const particle = document.createElement('div');
-                particle.className = 'particle-trail';
-                particle.style.left = x + 'px';
-                particle.style.top = y + 'px';
-                document.body.appendChild(particle);
-                
-                setTimeout(() => particle.remove(), 1000);
-            }
-        }
 
-        // Sound Wave Visualizer
-        class SoundWaveVisualizer {
-            constructor() {
-                this.waves = document.querySelectorAll('.wave');
-                this.isActive = false;
-                this.init();
-            }
+            // Form Submission Handling
+            const loginForm = document.getElementById('loginForm');
+            const loginBtn = document.getElementById('loginBtn');
             
-            init() {
-                // Activate on input focus
-                const inputs = document.querySelectorAll('.modern-input');
-                inputs.forEach(input => {
-                    input.addEventListener('focus', () => this.activate());
-                    input.addEventListener('blur', () => this.deactivate());
-                });
-                
-                // Activate on button hover
-                const buttons = document.querySelectorAll('.modern-btn-primary');
-                buttons.forEach(btn => {
-                    btn.addEventListener('mouseenter', () => this.activate());
-                    btn.addEventListener('mouseleave', () => this.deactivate());
+            if (loginForm && loginBtn) {
+                loginForm.addEventListener('submit', function() {
+                    // Add loading state
+                    loginBtn.classList.add('loading');
+                    loginBtn.disabled = true;
+                    
+                    // Reset after 5 seconds if still loading
+                    setTimeout(() => {
+                        loginBtn.classList.remove('loading');
+                        loginBtn.disabled = false;
+                    }, 5000);
                 });
             }
-            
-            activate() {
-                const container = document.querySelector('.sound-waves');
-                if (container) {
-                    container.classList.add('active');
-                    this.isActive = true;
-                }
-            }
-            
-            deactivate() {
-                setTimeout(() => {
-                    const container = document.querySelector('.sound-waves');
-                    if (container && !this.isActive) {
-                        container.classList.remove('active');
-                    }
-                }, 500);
-            }
-        }
 
-        // Progress Indicator System
-        class ProgressIndicator {
-            constructor() {
-                this.progressBar = document.getElementById('loginProgress');
-                this.progressText = document.getElementById('progressText');
-                this.stages = [
-                    { progress: 20, text: 'Starting...' },
-                    { progress: 40, text: 'Processing...' },
-                    { progress: 60, text: 'Validating...' },
-                    { progress: 80, text: 'Almost there...' },
-                    { progress: 100, text: 'Welcome!' }
-                ];
-                this.currentStage = 0;
-                this.init();
-            }
-            
-            init() {
-                const inputs = document.querySelectorAll('.modern-input');
-                inputs.forEach((input, index) => {
-                    input.addEventListener('focus', () => this.updateProgress(index + 1));
-                    input.addEventListener('blur', () => {
-                        if (!input.value) this.updateProgress(index);
-                    });
-                });
-            }
-            
-            updateProgress(stage) {
-                if (stage >= this.stages.length) stage = this.stages.length - 1;
-                if (stage < 0) stage = 0;
-                
-                this.currentStage = stage;
-                const current = this.stages[stage];
-                
-                if (this.progressBar) {
-                    this.progressBar.style.width = current.progress + '%';
-                }
-                if (this.progressText) {
-                    this.progressText.textContent = current.text;
-                }
-            }
-        }
-
-        // Typing Animation Controller
-        class TypingController {
-            constructor() {
-                this.init();
-            }
-            
-            init() {
-                const typingElements = document.querySelectorAll('.typing-effect');
-                typingElements.forEach(element => {
-                    this.animateTyping(element);
-                });
-            }
-            
-            animateTyping(element) {
-                const text = element.getAttribute('data-text') || element.textContent;
-                element.textContent = '';
-                element.style.borderRight = '3px solid var(--primary)';
-                
-                let i = 0;
-                const typeWriter = () => {
-                    if (i < text.length) {
-                        element.textContent += text.charAt(i);
-                        i++;
-                        setTimeout(typeWriter, 100);
-                    } else {
-                        // Remove cursor after typing is complete
-                        setTimeout(() => {
-                            element.style.borderRight = 'none';
-                        }, 1000);
-                    }
-                };
-                
-                // Start typing animation after a delay
-                setTimeout(typeWriter, 1000);
-            }
-        }
-
-        // Enhanced Form Interactions
-        class EnhancedForm {
-            constructor() {
-                this.init();
-            }
-            
-            init() {
-                this.setupPasswordToggle();
-                this.setupFormLoading();
-                this.setupCopyCredentials();
-                this.setupInputAnimations();
-                this.setupMagneticEffects();
-            }
-            
-            setupPasswordToggle() {
-                const passwordToggle = document.getElementById('passwordToggle');
-                const passwordField = document.getElementById('password');
-                
-                if (passwordToggle && passwordField) {
-                    passwordToggle.addEventListener('click', () => {
-                        const icon = passwordToggle.querySelector('i');
-                        
-                        if (passwordField.type === 'password') {
-                            passwordField.type = 'text';
-                            icon.classList.remove('fa-eye');
-                            icon.classList.add('fa-eye-slash');
-                            this.createRippleEffect(passwordToggle);
-                        } else {
-                            passwordField.type = 'password';
-                            icon.classList.remove('fa-eye-slash');
-                            icon.classList.add('fa-eye');
-                        }
-                    });
-                }
-            }
-            
-
-            setupFormLoading() {
-                const loginForm = document.getElementById('loginForm');
-                const loginBtn = document.getElementById('loginBtn');
-                
-                if (loginForm && loginBtn) {
-                    loginForm.addEventListener('submit', (e) => {
-                        console.log('Form submitted - checking validation');
-                        
-                        const username = document.getElementById('username').value;
-                        const password = document.getElementById('password').value;
-                        
-                        // Basic validation
-                        if (!username || !password) {
-                            console.log('Missing username or password');
-                            return; // Let the browser handle validation
-                        }
-                        
-                        // Allow normal form submission - don't prevent default
-                        console.log('Form validation passed - allowing submission');
-                        
-                        // Show loading state briefly
-                        const btnText = loginBtn.querySelector('.btn-text');
-                        const btnLoader = loginBtn.querySelector('.btn-loader');
-                        
-                        if (btnText && btnLoader) {
-                            btnText.style.display = 'none';
-                            btnLoader.style.display = 'flex';
-                            loginBtn.disabled = true;
-                        }
-                        
-                        // Reset after 5 seconds maximum to prevent infinite loading
-                        setTimeout(() => {
-                            if (btnText && btnLoader) {
-                                btnText.style.display = 'flex';
-                                btnLoader.style.display = 'none';
-                                loginBtn.disabled = false;
-                            }
-                        }, 5000);
-                    });
-                }
-            }
-            
-            setupCopyCredentials() {
-                const copyBtn = document.getElementById('copyCredentials');
-                
-                if (copyBtn) {
-                    copyBtn.addEventListener('click', () => {
-                        const credentials = 'Username: admin\nPassword: admin123';
-                        
-                        navigator.clipboard.writeText(credentials).then(() => {
-                            const icon = copyBtn.querySelector('i');
-                            icon.classList.remove('fa-copy');
-                            icon.classList.add('fa-check');
-                            copyBtn.style.background = 'var(--success)';
-                            copyBtn.style.transform = 'scale(1.1)';
+            // Copy Demo Credentials
+            const copyButtons = document.querySelectorAll('.copy-btn');
+            copyButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const type = this.getAttribute('data-copy');
+                    const demoElement = document.getElementById(`demo${type.charAt(0).toUpperCase() + type.slice(1)}`);
+                    
+                    if (demoElement) {
+                        const text = demoElement.textContent;
+                        navigator.clipboard.writeText(text).then(() => {
+                            // Visual feedback
+                            const icon = this.querySelector('i');
+                            const originalClass = icon.className;
+                            
+                            icon.className = 'fas fa-check';
+                            this.style.background = 'var(--primary-color)';
+                            this.style.color = 'white';
                             
                             setTimeout(() => {
-                                icon.classList.remove('fa-check');
-                                icon.classList.add('fa-copy');
-                                copyBtn.style.background = '';
-                                copyBtn.style.transform = '';
+                                icon.className = originalClass;
+                                this.style.background = '';
+                                this.style.color = '';
                             }, 2000);
-                            
-                            this.createRippleEffect(copyBtn);
                         });
-                    });
-                }
-            }
-            
-            setupInputAnimations() {
-                const inputs = document.querySelectorAll('.modern-input');
-                
-                inputs.forEach(input => {
-                    input.addEventListener('focus', () => {
-                        input.parentElement.classList.add('focused');
-                        this.activateSoundWaves();
-                    });
-                    
-                    input.addEventListener('blur', () => {
-                        if (!input.value) {
-                            input.parentElement.classList.remove('focused');
-                        }
-                    });
-                    
-                    input.addEventListener('input', () => {
-                        if (input.value.length > 0) {
-                            input.parentElement.classList.add('focused');
-                        }
-                    });
-                    
-                    // Check if input has value on page load
-                    if (input.value) {
-                        input.parentElement.classList.add('focused');
                     }
                 });
-            }
-            
-            setupMagneticEffects() {
-                const magneticElements = document.querySelectorAll('.magnetic');
-                
-                magneticElements.forEach(element => {
-                    element.addEventListener('mousemove', (e) => {
-                        const rect = element.getBoundingClientRect();
-                        const x = e.clientX - rect.left - rect.width / 2;
-                        const y = e.clientY - rect.top - rect.height / 2;
-                        
-                        element.style.transform = `translate(${x * 0.1}px, ${y * 0.1}px)`;
-                    });
-                    
-                    element.addEventListener('mouseleave', () => {
-                        element.style.transform = '';
-                    });
-                });
-            }
-            
-            createRippleEffect(element) {
-                const ripple = document.createElement('span');
-                ripple.style.position = 'absolute';
-                ripple.style.borderRadius = '50%';
-                ripple.style.background = 'rgba(255, 255, 255, 0.6)';
-                ripple.style.transform = 'scale(0)';
-                ripple.style.animation = 'ripple 0.6s linear';
-                ripple.style.left = '50%';
-                ripple.style.top = '50%';
-                ripple.style.width = '20px';
-                ripple.style.height = '20px';
-                ripple.style.marginLeft = '-10px';
-                ripple.style.marginTop = '-10px';
-                
-                element.style.position = 'relative';
-                element.appendChild(ripple);
-                
-                setTimeout(() => ripple.remove(), 600);
-            }
-            
-            activateSoundWaves() {
-                const soundWaves = document.querySelector('.sound-waves');
-                if (soundWaves) {
-                    soundWaves.classList.add('active');
-                    setTimeout(() => {
-                        soundWaves.classList.remove('active');
-                    }, 2000);
-                }
-            }
-        }
-
-        // Glitch Effect for Demo Text
-        class GlitchController {
-            constructor() {
-                this.init();
-            }
-            
-            init() {
-                const demoValues = document.querySelectorAll('.demo-value');
-                demoValues.forEach(element => {
-                    element.addEventListener('mouseenter', () => {
-                        element.classList.add('glitch-effect');
-                        element.setAttribute('data-text', element.textContent);
-                    });
-                    
-                    element.addEventListener('mouseleave', () => {
-                        element.classList.remove('glitch-effect');
-                    });
-                });
-            }
-        }
-
-        // ============================================
-        // INITIALIZATION
-        // ============================================
-        
-        // Initialize all systems when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            new CustomCursor();
-            new SoundWaveVisualizer();
-            new ProgressIndicator();
-            new TypingController();
-            new EnhancedForm();
-            new GlitchController();
-            
-            // Add CSS for ripple animation
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes ripple {
-                    to {
-                        transform: scale(4);
-                        opacity: 0;
-                    }
-                }
-            `;
-            document.head.appendChild(style);
-        });
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            // Ctrl/Cmd + Enter to submit form
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                const form = document.getElementById('loginForm');
-                if (form) form.submit();
-            }
-            
-            // Escape to clear focus
-            if (e.key === 'Escape') {
-                document.activeElement.blur();
-            }
-        });
-
-
-        // Performance optimization: Reduce animations on low-end devices
-        if (navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4) {
-            document.body.classList.add('low-performance');
-        }
-
-        // ============================================
-        // ADVANCED FEATURES INTEGRATION
-        // ============================================
-        
-        // Theme Switcher System
-        class ThemeSwitcher {
-            constructor() {
-                this.currentTheme = localStorage.getItem('theme') || 'default';
-                this.themes = {
-                    default: {
-                        primary: '#3182ce',
-                        accent: '#38a169',
-                        background: 'linear-gradient(135deg, rgba(49, 130, 206, 0.15) 0%, rgba(56, 161, 105, 0.15) 25%, rgba(159, 122, 234, 0.15) 50%, rgba(237, 100, 166, 0.15) 75%, rgba(49, 130, 206, 0.15) 100%)'
-                    },
-                    dark: {
-                        primary: '#4a5568',
-                        accent: '#2d3748',
-                        background: 'linear-gradient(135deg, rgba(74, 85, 104, 0.2) 0%, rgba(45, 55, 72, 0.2) 25%, rgba(113, 128, 150, 0.2) 50%, rgba(45, 55, 72, 0.2) 75%, rgba(74, 85, 104, 0.2) 100%)'
-                    },
-                    purple: {
-                        primary: '#9f7aea',
-                        accent: '#b794f6',
-                        background: 'linear-gradient(135deg, rgba(159, 122, 234, 0.2) 0%, rgba(183, 148, 246, 0.2) 25%, rgba(237, 100, 166, 0.2) 50%, rgba(159, 122, 234, 0.2) 75%, rgba(183, 148, 246, 0.2) 100%)'
-                    },
-                    sunset: {
-                        primary: '#ed8936',
-                        accent: '#f6ad55',
-                        background: 'linear-gradient(135deg, rgba(237, 137, 54, 0.2) 0%, rgba(246, 173, 85, 0.2) 25%, rgba(237, 100, 166, 0.2) 50%, rgba(237, 137, 54, 0.2) 75%, rgba(246, 173, 85, 0.2) 100%)'
-                    }
-                };
-                this.init();
-            }
-            
-            init() {
-                this.applyTheme(this.currentTheme);
-                this.setupToggleButton();
-            }
-            
-            setupToggleButton() {
-                const themeToggle = document.getElementById('themeToggle');
-                if (themeToggle) {
-                    themeToggle.addEventListener('click', () => this.cycleTheme());
-                }
-            }
-            
-            cycleTheme() {
-                const themeKeys = Object.keys(this.themes);
-                const currentIndex = themeKeys.indexOf(this.currentTheme);
-                const nextIndex = (currentIndex + 1) % themeKeys.length;
-                const nextTheme = themeKeys[nextIndex];
-                
-                this.currentTheme = nextTheme;
-                this.applyTheme(nextTheme);
-                localStorage.setItem('theme', nextTheme);
-                
-                // Update button icon
-                const icon = document.querySelector('#themeToggle i');
-                if (icon) {
-                    const icons = ['fa-moon', 'fa-sun', 'fa-palette', 'fa-star'];
-                    icon.className = `fas ${icons[nextIndex]}`;
-                }
-                
-                // Create ripple effect
-                this.createThemeRipple(themeToggle);
-            }
-            
-            applyTheme(themeName) {
-                const theme = this.themes[themeName];
-                if (!theme) return;
-                
-                const root = document.documentElement;
-                root.style.setProperty('--primary-color', theme.primary);
-                root.style.setProperty('--accent-color', theme.accent);
-                root.style.setProperty('--background-primary', theme.background);
-                
-                // Update all gradient elements
-                this.updateGradients();
-            }
-            
-            updateGradients() {
-                const primary = getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
-                const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent-color');
-                
-                // Update quantum loader
-                const loader = document.querySelector('.quantum-loader');
-                if (loader) {
-                    loader.style.setProperty('--primary', primary);
-                    loader.style.setProperty('--accent', accent);
-                }
-            }
-            
-            createThemeRipple(element) {
-                const ripple = document.createElement('div');
-                ripple.style.position = 'absolute';
-                ripple.style.borderRadius = '50%';
-                ripple.style.background = 'rgba(255, 255, 255, 0.6)';
-                ripple.style.transform = 'scale(0)';
-                ripple.style.animation = 'ripple 0.6s linear';
-                ripple.style.left = '50%';
-                ripple.style.top = '50%';
-                ripple.style.width = '40px';
-                ripple.style.height = '40px';
-                ripple.style.marginLeft = '-20px';
-                ripple.style.marginTop = '-20px';
-                
-                element.style.position = 'relative';
-                element.appendChild(ripple);
-                
-                setTimeout(() => ripple.remove(), 600);
-            }
-        }
-
-        // AI Chat Widget System
-        class AIChatWidget {
-            constructor() {
-                this.isOpen = false;
-                this.messages = [];
-                this.responses = {
-                    'halo': 'Halo! Selamat datang di Loker Tracker. Saya siap membantu Anda!',
-                    'login': 'Untuk login, gunakan username: admin dan password: admin123',
-                    'bantuan': 'Saya dapat membantu Anda dengan: login, fitur aplikasi, dan troubleshooting',
-                    'fitur': 'Loker Tracker memiliki fitur: tracking lowongan, manajemen data, dan dashboard analytics',
-                    'default': 'Maaf, saya belum memahami pertanyaan Anda. Coba tanyakan tentang login atau fitur aplikasi.'
-                };
-                this.init();
-            }
-            
-            init() {
-                this.setupFloatingAction();
-                this.setupChatControls();
-                this.setupChatInput();
-            }
-            
-            setupFloatingAction() {
-                const floatingHelp = document.getElementById('floatingHelp');
-                if (floatingHelp) {
-                    floatingHelp.addEventListener('click', () => this.toggleChat());
-                }
-            }
-            
-            setupChatControls() {
-                const chatClose = document.getElementById('aiChatClose');
-                if (chatClose) {
-                    chatClose.addEventListener('click', () => this.closeChat());
-                }
-            }
-            
-            setupChatInput() {
-                const chatInput = document.getElementById('aiChatInput');
-                const chatSend = document.getElementById('aiChatSend');
-                
-                if (chatInput && chatSend) {
-                    chatInput.addEventListener('keypress', (e) => {
-                        if (e.key === 'Enter') {
-                            this.sendMessage();
-                        }
-                    });
-                    
-                    chatSend.addEventListener('click', () => this.sendMessage());
-                }
-            }
-            
-            toggleChat() {
-                const chatWidget = document.getElementById('aiChatWidget');
-                if (chatWidget) {
-                    if (this.isOpen) {
-                        this.closeChat();
-                    } else {
-                        this.openChat();
-                    }
-                }
-            }
-            
-            openChat() {
-                const chatWidget = document.getElementById('aiChatWidget');
-                if (chatWidget) {
-                    chatWidget.style.display = 'block';
-                    this.isOpen = true;
-                    
-                    // Animate opening
-                    chatWidget.style.animation = 'chatSlideIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                    
-                    // Update AI status
-                    this.updateAIStatus('typing', 'AI sedang mengetik...');
-                    
-                    setTimeout(() => {
-                        this.addMessage('assistant', 'Halo! Saya AI Assistant Anda. Ada yang bisa saya bantu terkait login?');
-                        this.updateAIStatus('online', 'Online');
-                    }, 1000);
-                }
-            }
-            
-            closeChat() {
-                const chatWidget = document.getElementById('aiChatWidget');
-                if (chatWidget) {
-                    chatWidget.style.animation = 'chatSlideOut 0.5s ease-in-out';
-                    setTimeout(() => {
-                        chatWidget.style.display = 'none';
-                        this.isOpen = false;
-                    }, 500);
-                }
-            }
-            
-            sendMessage() {
-                const chatInput = document.getElementById('aiChatInput');
-                if (!chatInput || !chatInput.value.trim()) return;
-                
-                const message = chatInput.value.trim();
-                this.addMessage('user', message);
-                chatInput.value = '';
-                
-                // Show typing indicator
-                this.updateAIStatus('typing', 'AI sedang mengetik...');
-                
-                // Simulate AI response
-                setTimeout(() => {
-                    const response = this.getResponse(message.toLowerCase());
-                    this.addMessage('assistant', response);
-                    this.updateAIStatus('online', 'Online');
-                }, 1500);
-            }
-            
-            addMessage(sender, message) {
-                const chatBody = document.querySelector('.ai-chat-body');
-                if (!chatBody) return;
-                
-                const messageElement = document.createElement('div');
-                messageElement.className = 'ai-message';
-                
-                if (sender === 'user') {
-                    messageElement.innerHTML = `
-                        <div class="ai-message-content" style="background: rgba(56, 161, 105, 0.1); margin-left: auto; border-radius: 16px 16px 4px 16px;">
-                            <p>${message}</p>
-                        </div>
-                    `;
-                } else {
-                    messageElement.innerHTML = `
-                        <div class="ai-avatar-small">
-                            <i class="fas fa-robot"></i>
-                        </div>
-                        <div class="ai-message-content">
-                            <p>${message}</p>
-                        </div>
-                    `;
-                }
-                
-                chatBody.appendChild(messageElement);
-                chatBody.scrollTop = chatBody.scrollHeight;
-            }
-            
-            getResponse(message) {
-                for (const [key, response] of Object.entries(this.responses)) {
-                    if (message.includes(key)) {
-                        return response;
-                    }
-                }
-                return this.responses.default;
-            }
-            
-            updateAIStatus(status, text) {
-                const statusIndicator = document.querySelector('.ai-status');
-                const aiStatusIndicator = document.getElementById('aiStatusIndicator');
-                
-                if (statusIndicator) {
-                    statusIndicator.textContent = text;
-                }
-                
-                if (aiStatusIndicator) {
-                    const pulse = aiStatusIndicator.querySelector('.ai-pulse');
-                    const span = aiStatusIndicator.querySelector('span');
-                    
-                    if (span) span.textContent = text;
-                    
-                    if (status === 'typing') {
-                        pulse.style.background = '#f6ad55';
-                        pulse.style.animation = 'aiPulse 0.5s ease-in-out infinite';
-                    } else {
-                        pulse.style.background = 'var(--accent-color)';
-                        pulse.style.animation = 'aiPulse 2s ease-in-out infinite';
-                    }
-                }
-            }
-        }
-
-
-        // Enhanced Quantum Loading Modal
-        class QuantumLoadingSystem {
-            constructor() {
-                this.modal = document.getElementById('quantumModal');
-                this.init();
-            }
-            
-            init() {
-                this.setupFormSubmission();
-                this.setupPageLoad();
-            }
-            
-            setupPageLoad() {
-                // Ensure modal is hidden on page load
-                if (this.modal) {
-                    this.modal.style.display = 'none';
-                }
-            }
-            
-            setupFormSubmission() {
-                const loginForm = document.getElementById('loginForm');
-                if (loginForm) {
-                    loginForm.addEventListener('submit', (e) => {
-                        // Only show loading if form is valid
-                        const username = document.getElementById('username').value;
-                        const password = document.getElementById('password').value;
-                        
-                        if (username && password) {
-                            this.showLoading();
-                        }
-                    });
-                }
-            }
-            
-            showLoading() {
-                if (this.modal) {
-                    this.modal.style.display = 'flex';
-                    this.modal.style.animation = 'modalFadeIn 0.5s ease';
-                    console.log('🔄 Quantum Loading Modal Shown');
-                }
-            }
-            
-            hideLoading() {
-                if (this.modal) {
-                    this.modal.style.animation = 'modalFadeOut 0.5s ease';
-                    setTimeout(() => {
-                        this.modal.style.display = 'none';
-                        console.log('✅ Quantum Loading Modal Hidden');
-                    }, 500);
-                }
-            }
-        }
-
-        // Advanced Particle System
-        class AdvancedParticleSystem {
-            constructor() {
-                this.particles = [];
-                this.init();
-            }
-            
-            init() {
-                this.createFloatingParticles();
-                this.animateParticles();
-            }
-            
-            createFloatingParticles() {
-                const particleContainer = document.querySelector('.bg-particles');
-                if (!particleContainer) return;
-                
-                // Create additional floating particles
-                for (let i = 0; i < 15; i++) {
-                    const particle = document.createElement('div');
-                    particle.className = 'floating-particle';
-                    particle.style.cssText = `
-                        position: absolute;
-                        width: ${Math.random() * 4 + 2}px;
-                        height: ${Math.random() * 4 + 2}px;
-                        background: var(--primary-color);
-                        border-radius: 50%;
-                        left: ${Math.random() * 100}%;
-                        top: ${Math.random() * 100}%;
-                        opacity: ${Math.random() * 0.5 + 0.2};
-                        animation: float ${Math.random() * 20 + 10}s linear infinite;
-                        pointer-events: none;
-                        z-index: 1;
-                    `;
-                    particleContainer.appendChild(particle);
-                }
-            }
-            
-            animateParticles() {
-                // Add floating animation to CSS
-                const style = document.createElement('style');
-                style.textContent = `
-                    @keyframes float {
-                        0% {
-                            transform: translateY(100vh) rotate(0deg);
-                            opacity: 0;
-                        }
-                        10% {
-                            opacity: 1;
-                        }
-                        90% {
-                            opacity: 1;
-                        }
-                        100% {
-                            transform: translateY(-100px) rotate(360deg);
-                            opacity: 0;
-                        }
-                    }
-                    
-                    @keyframes chatSlideOut {
-                        from {
-                            opacity: 1;
-                            transform: translateY(0) scale(1);
-                        }
-                        to {
-                            opacity: 0;
-                            transform: translateY(100px) scale(0.8);
-                        }
-                    }
-                    
-                    @keyframes modalFadeOut {
-                        from { opacity: 1; }
-                        to { opacity: 0; }
-                    }
-                `;
-                document.head.appendChild(style);
-            }
-        }
-
-        // Smart Input Validation
-        class SmartInputValidation {
-            constructor() {
-                this.rules = {
-                    username: {
-                        minLength: 3,
-                        maxLength: 20,
-                        pattern: /^[a-zA-Z0-9_]+$/
-                    },
-                    password: {
-                        minLength: 6,
-                        maxLength: 50
-                    }
-                };
-                this.init();
-            }
-            
-            init() {
-                this.setupRealTimeValidation();
-            }
-            
-            setupRealTimeValidation() {
-                const usernameInput = document.getElementById('username');
-                const passwordInput = document.getElementById('password');
-                
-                if (usernameInput) {
-                    usernameInput.addEventListener('input', () => this.validateField('username', usernameInput));
-                    usernameInput.addEventListener('blur', () => this.validateField('username', usernameInput, true));
-                }
-                
-                if (passwordInput) {
-                    passwordInput.addEventListener('input', () => this.validateField('password', passwordInput));
-                    passwordInput.addEventListener('blur', () => this.validateField('password', passwordInput, true));
-                }
-            }
-            
-            validateField(fieldName, input, showErrors = false) {
-                const value = input.value;
-                const rules = this.rules[fieldName];
-                let isValid = true;
-                let errorMessage = '';
-                
-                if (value.length < rules.minLength) {
-                    isValid = false;
-                    errorMessage = `Minimal ${rules.minLength} karakter`;
-                } else if (value.length > rules.maxLength) {
-                    isValid = false;
-                    errorMessage = `Maksimal ${rules.maxLength} karakter`;
-                } else if (rules.pattern && !rules.pattern.test(value)) {
-                    isValid = false;
-                    errorMessage = 'Hanya huruf, angka, dan underscore';
-                }
-                
-                this.updateFieldValidation(input, isValid, errorMessage, showErrors);
-                return isValid;
-            }
-            
-            updateFieldValidation(input, isValid, errorMessage, showErrors) {
-                const wrapper = input.closest('.floating-input-wrapper');
-                if (!wrapper) return;
-                
-                // Remove existing validation states
-                wrapper.classList.remove('valid', 'invalid');
-                
-                if (input.value) {
-                    wrapper.classList.add(isValid ? 'valid' : 'invalid');
-                    
-                    // Update floating label
-                    const label = wrapper.querySelector('.floating-label');
-                    if (label) {
-                        label.style.color = isValid ? 'var(--accent-color)' : '#e53e3e';
-                    }
-                }
-                
-                // Show error message if needed
-                let errorElement = wrapper.querySelector('.validation-error');
-                if (showErrors && !isValid) {
-                    if (!errorElement) {
-                        errorElement = document.createElement('div');
-                        errorElement.className = 'validation-error';
-                        wrapper.appendChild(errorElement);
-                    }
-                    errorElement.textContent = errorMessage;
-                    errorElement.style.cssText = `
-                        color: #e53e3e;
-                        font-size: 0.75rem;
-                        margin-top: 0.25rem;
-                        animation: slideInDown 0.3s ease;
-                    `;
-                } else if (errorElement) {
-                    errorElement.remove();
-                }
-            }
-        }
-
-
-        // Initialize all advanced systems
-        document.addEventListener('DOMContentLoaded', () => {
-            try {
-                console.log('🚀 Modern Login System Initializing...');
-                
-                // Initialize existing systems
-                new CustomCursor();
-                new SoundWaveVisualizer();
-                new ProgressIndicator();
-                new TypingController();
-                new EnhancedForm();
-                new GlitchController();
-                
-                // Initialize new advanced systems
-                new ThemeSwitcher();
-                new AIChatWidget();
-                new QuantumLoadingSystem();
-                new AdvancedParticleSystem();
-                new SmartInputValidation();
-                
-                // Ensure quantum modal is hidden on page load
-                const quantumModal = document.getElementById('quantumModal');
-                if (quantumModal) {
-                    quantumModal.style.display = 'none';
-                    console.log('✅ Quantum Modal hidden on load');
-                }
-                
-                // Add additional CSS animations
-                const style = document.createElement('style');
-                style.textContent = `
-                    @keyframes slideInDown {
-                        from {
-                            opacity: 0;
-                            transform: translateY(-10px);
-                        }
-                        to {
-                            opacity: 1;
-                            transform: translateY(0);
-                        }
-                    }
-                    
-                    .floating-input-wrapper.valid .modern-input {
-                        border-color: var(--accent-color);
-                        box-shadow: 0 0 0 3px rgba(56, 161, 105, 0.1);
-                    }
-                    
-                    .floating-input-wrapper.invalid .modern-input {
-                        border-color: #e53e3e;
-                        box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
-                    }
-                    
-                    .validation-error {
-                        animation: slideInDown 0.3s ease;
-                    }
-                `;
-                document.head.appendChild(style);
-                
-                console.log('✅ Modern Login System Ready!');
-                
-            } catch (error) {
-                console.error('❌ Error initializing Modern Login System:', error);
-                // Fallback: ensure no blocking elements remain
-                const quantumModal = document.getElementById('quantumModal');
-                if (quantumModal) {
-                    quantumModal.style.display = 'none';
-                }
-            }
-        });
-
-        // Enhanced keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            // Ctrl/Cmd + Enter to submit form
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                const form = document.getElementById('loginForm');
-                if (form) form.submit();
-            }
-            
-            // Escape to clear focus
-            if (e.key === 'Escape') {
-                document.activeElement.blur();
-            }
-            
-            // Ctrl/Cmd + T for theme switcher
-            if ((e.ctrlKey || e.metaKey) && e.key === 't') {
-                e.preventDefault();
-                const themeToggle = document.getElementById('themeToggle');
-                if (themeToggle) themeToggle.click();
-            }
-            
-            // Ctrl/Cmd + H for AI help
-            if ((e.ctrlKey || e.metaKey) && e.key === 'h') {
-                e.preventDefault();
-                const floatingHelp = document.getElementById('floatingHelp');
-                if (floatingHelp) floatingHelp.click();
-            }
-        });
-
-        // Performance monitoring
-        if ('performance' in window) {
-            window.addEventListener('load', () => {
-                setTimeout(() => {
-                    const perfData = performance.getEntriesByType('navigation')[0];
-                    if (perfData.loadEventEnd > 3000) {
-                        document.body.classList.add('low-performance');
-                    }
-                }, 0);
             });
-        }
 
-        // Auto-hide quantum modal on successful navigation
-        window.addEventListener('beforeunload', () => {
-            const quantumModal = document.getElementById('quantumModal');
-            if (quantumModal && quantumModal.style.display === 'flex') {
-                quantumModal.style.display = 'none';
+            // Auto-fill demo credentials on click
+            const demoUsername = document.getElementById('demoUsername');
+            const demoPassword = document.getElementById('demoPassword');
+            const usernameField = document.getElementById('username');
+            const passwordFieldInput = document.getElementById('password');
+            
+            if (demoUsername && usernameField) {
+                demoUsername.addEventListener('click', () => {
+                    usernameField.value = 'admin';
+                    usernameField.focus();
+                });
             }
+            
+            if (demoPassword && passwordFieldInput) {
+                demoPassword.addEventListener('click', () => {
+                    passwordFieldInput.value = 'admin123';
+                    passwordFieldInput.focus();
+                });
+            }
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Enter to submit form
+                if (e.key === 'Enter' && e.target.tagName !== 'BUTTON') {
+                    const form = document.getElementById('loginForm');
+                    if (form && !loginBtn.disabled) {
+                        form.submit();
+                    }
+                }
+                
+                // Escape to clear form
+                if (e.key === 'Escape') {
+                    usernameField.value = '';
+                    passwordFieldInput.value = '';
+                    usernameField.focus();
+                }
+            });
+
+            // Form validation feedback
+            const inputs = document.querySelectorAll('.form-control');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    if (this.value.trim()) {
+                        this.style.borderColor = 'var(--primary-color)';
+                    } else {
+                        this.style.borderColor = 'var(--border-color)';
+                    }
+                });
+                
+                input.addEventListener('blur', function() {
+                    if (this.value.trim()) {
+                        this.style.borderColor = 'var(--primary-color)';
+                    } else {
+                        this.style.borderColor = 'var(--border-color)';
+                    }
+                });
+            });
+
+            // Focus first input on page load
+            if (usernameField) {
+                setTimeout(() => usernameField.focus(), 100);
+            }
+        });
+
+        // Simple error handling
+        window.addEventListener('error', function(e) {
+            console.error('Login page error:', e.error);
         });
     </script>
 </body>

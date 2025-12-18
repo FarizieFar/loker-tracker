@@ -2,115 +2,46 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<!-- Modern Header Section -->
-<div class="glassmorphism-header" 
-     style="background: rgba(255, 255, 255, 0.1); 
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 24px; 
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);">
-    <div class="d-flex justify-content-between align-items-center">
-        <div class="header-content">
-            <h1 class="page-title" 
-                style="font-family: 'Space Grotesk', sans-serif; 
-                       font-size: 2.5rem; font-weight: 700; margin: 0 0 0.5rem 0;
-                       background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 50%, #e6f3ff 100%);
-                       -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
-                       background-clip: text;">
-                <i class="fas fa-plus-circle me-3" style="background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
-                Tambah Lamaran Kerja
-            </h1>
-            <p class="page-subtitle" 
-               style="font-size: 1.125rem; font-weight: 500; margin: 0; 
-                      color: rgba(255,255,255,0.8);">
-                Catat informasi lamaran kerja baru Anda
-            </p>
-        </div>
-        <div class="header-actions">
-            <a href="/" 
-               class="back-btn"
-               style="background: rgba(255, 255, 255, 0.1); 
-                      backdrop-filter: blur(10px);
-                      border: 1px solid rgba(255, 255, 255, 0.2);
-                      color: white; 
-                      padding: 1rem 1.5rem; 
-                      border-radius: 16px; 
-                      text-decoration: none;
-                      font-weight: 600; 
-                      font-size: 0.875rem;
-                      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                      display: flex; align-items: center; gap: 0.75rem;
-                      box-shadow: 0 4px 16px rgba(31, 38, 135, 0.2);">
-                <i class="fas fa-arrow-left"></i>Kembali
-            </a>
+
+<!-- Clean Header Section -->
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="card-title mb-1">
+                    <i class="fas fa-plus-circle me-2"></i>
+                    Tambah Lamaran Kerja
+                </h1>
+                <p class="card-subtitle mb-0 opacity-75">
+                    Catat informasi lamaran kerja baru Anda
+                </p>
+            </div>
+            <div>
+                <a href="/" class="btn btn-light">
+                    <i class="fas fa-arrow-left me-2"></i>Kembali
+                </a>
+            </div>
         </div>
     </div>
 </div>
 
-<style>
-    .back-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(31, 38, 135, 0.4) !important;
-        text-decoration: none;
-        color: white !important;
-        background: rgba(255, 255, 255, 0.2) !important;
-    }
-    
-    @media (max-width: 768px) {
-        .glassmorphism-header {
-            padding: 1.5rem !important;
-        }
-        
-        .page-title {
-            font-size: 2rem !important;
-        }
-        
-        .header-actions {
-            margin-top: 1rem;
-        }
-        
-        .back-btn {
-            width: 100%;
-            justify-content: center;
-        }
-    }
-</style>
 
 
-<!-- Modern Form Card -->
+<!-- Clean Form Card -->
 <div class="row justify-content-center">
     <div class="col-lg-8">
-        <div class="glassmorphism-form-card" 
-             style="background: rgba(255, 255, 255, 0.1); 
-                    backdrop-filter: blur(20px);
-                    border: 1px solid rgba(255, 255, 255, 0.2);
-                    border-radius: 24px; 
-                    overflow: hidden;
-                    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);">
-            
-            <div class="form-header" 
-                 style="background: rgba(255, 255, 255, 0.05); 
-                        padding: 2rem 2rem 1rem 2rem; 
-                        border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
-                <h5 class="form-title" 
-                    style="font-family: 'Space Grotesk', sans-serif; 
-                           font-size: 1.5rem; font-weight: 600; margin: 0;
-                           background: linear-gradient(135deg, #ffffff, #f0f8ff);
-                           -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
-                           background-clip: text;">
-                    <i class="fas fa-building me-2" style="color: rgba(255,255,255,0.9);"></i>
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-1">
+                    <i class="fas fa-building me-2"></i>
                     Informasi Lamaran Kerja
                 </h5>
-                <p class="form-subtitle" 
-                   style="font-size: 0.875rem; font-weight: 500; margin: 0.5rem 0 0 0; 
-                          color: rgba(255,255,255,0.7);">
+                <p class="card-subtitle mb-0">
                     Lengkapi informasi berikut untuk mencatat lamaran kerja baru
                 </p>
             </div>
             
-            <div class="form-body" style="padding: 2rem;">
+            <div class="card-body">
 
                 <form method="post" enctype="multipart/form-data">
 
