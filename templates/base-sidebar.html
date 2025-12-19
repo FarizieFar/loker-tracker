@@ -148,13 +148,42 @@
                 </div>
             </div>
             
+
             <div class="header-right">
                 {% if current_user.is_authenticated %}
                 <div class="header-actions">
-                    <button class="btn-action" title="Notifikasi">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge">3</span>
-                    </button>
+                    <!-- Notification Dropdown -->
+                    <div class="notification-dropdown">
+                        <button class="btn-action notification-btn" id="notificationBtn" title="Notifikasi">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge" id="notificationBadge">0</span>
+                        </button>
+
+                        <div class="notification-panel" id="notificationPanel">
+                            <div class="notification-header">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">Notifikasi</h6>
+                                    <div class="notification-actions">
+                                        <button class="btn btn-sm btn-link text-info p-1 me-2" onclick="markAllNotificationsRead()" title="Tandai Semua Dibaca">
+                                            <i class="fas fa-check-double"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-link text-danger p-1" onclick="clearAllNotifications()" title="Hapus Semua Notifikasi">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="notification-list" id="notificationList">
+                                <div class="text-center py-3">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <p class="text-muted mb-0">Memuat notifikasi...</p>
+                                </div>
+                            </div>
+                            <div class="notification-footer">
+                                <a href="#" class="text-center d-block text-muted small">Lihat Semua Notifikasi</a>
+                            </div>
+                        </div>
+                    </div>
                     <button class="btn-action" title="Theme Toggle">
                         <i class="fas fa-moon" id="themeToggle"></i>
                     </button>
@@ -292,6 +321,7 @@
                 }
             });
 
+
             // Load saved theme
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'dark') {
@@ -299,9 +329,313 @@
                 themeToggle.querySelector('i').className = 'fas fa-sun';
             }
 
-            // Status management and other existing functionality
-            // (Keeping all existing JavaScript from base.html)
+            // Notification system functionality
+            initNotificationSystem();
         });
+
+        // Notification System Functions
+        function initNotificationSystem() {
+            const notificationBtn = document.getElementById('notificationBtn');
+            const notificationPanel = document.getElementById('notificationPanel');
+            const notificationList = document.getElementById('notificationList');
+            const notificationBadge = document.getElementById('notificationBadge');
+
+            if (!notificationBtn || !notificationPanel) return;
+
+            // Load notifications on page load
+            loadNotifications();
+
+            // Toggle notification panel
+            notificationBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                notificationPanel.classList.toggle('show');
+                
+                if (notificationPanel.classList.contains('show')) {
+                    loadNotifications();
+                }
+            });
+
+            // Close panel when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!notificationPanel.contains(e.target) && !notificationBtn.contains(e.target)) {
+                    notificationPanel.classList.remove('show');
+                }
+            });
+
+            // Update notification badge periodically
+            setInterval(updateNotificationBadge, 30000); // Update every 30 seconds
+        }
+
+        async function loadNotifications() {
+            const notificationList = document.getElementById('notificationList');
+            if (!notificationList) return;
+
+            try {
+                const response = await fetch('/api/notifications');
+                const data = await response.json();
+
+                if (data.success) {
+                    renderNotifications(data.notifications, data.unread_count);
+                } else {
+                    showNotificationError();
+                }
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+                showNotificationError();
+            }
+        }
+
+        function renderNotifications(notifications, unreadCount) {
+            const notificationList = document.getElementById('notificationList');
+            const notificationBadge = document.getElementById('notificationBadge');
+            
+            // Update badge
+            if (unreadCount > 0) {
+                notificationBadge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                notificationBadge.classList.remove('hidden');
+            } else {
+                notificationBadge.classList.add('hidden');
+            }
+
+            // Render notification list
+            if (notifications.length === 0) {
+                notificationList.innerHTML = `
+                    <div class="notification-empty">
+                        <i class="fas fa-bell-slash"></i>
+                        <p>Belum ada notifikasi</p>
+                    </div>
+                `;
+                return;
+            }
+
+
+            notificationList.innerHTML = notifications.map(notification => `
+                <div class="notification-item ${notification.type} ${!notification.is_read ? 'unread' : ''}" 
+                     onclick="markNotificationRead(${notification.id})">
+                    <div class="notification-content">
+                        <div class="notification-title">${notification.title}</div>
+                        <div class="notification-message">${notification.message}</div>
+                        <div class="notification-time">${formatTimeAgo(notification.created_at)}</div>
+                    </div>
+                    <div class="notification-actions">
+                        <button class="btn btn-sm btn-link text-danger p-1" 
+                                onclick="event.stopPropagation(); deleteNotification(${notification.id})" 
+                                title="Hapus Notifikasi">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showNotificationError() {
+            const notificationList = document.getElementById('notificationList');
+            if (notificationList) {
+                notificationList.innerHTML = `
+                    <div class="notification-empty">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Gagal memuat notifikasi</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function markNotificationRead(notificationId) {
+            try {
+                const response = await fetch(`/api/notifications/${notificationId}/read`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    // Update badge count
+                    const badge = document.getElementById('notificationBadge');
+                    if (badge) {
+                        if (data.unread_count > 0) {
+                            badge.textContent = data.unread_count > 99 ? '99+' : data.unread_count;
+                            badge.classList.remove('hidden');
+                        } else {
+                            badge.classList.add('hidden');
+                        }
+                    }
+                    
+                    // Reload notifications to reflect read status
+                    loadNotifications();
+                }
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+            }
+        }
+
+
+        async function markAllNotificationsRead() {
+            try {
+                const response = await fetch('/api/notifications/mark_all_read', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    // Hide badge
+                    const badge = document.getElementById('notificationBadge');
+                    if (badge) {
+                        badge.classList.add('hidden');
+                    }
+                    
+                    // Reload notifications
+                    loadNotifications();
+                    
+                    // Show success message
+                    showToast('Semua notifikasi ditandai sebagai dibaca', 'success');
+                }
+            } catch (error) {
+                console.error('Error marking all notifications as read:', error);
+                showToast('Gagal menandai notifikasi', 'error');
+            }
+        }
+
+
+        async function deleteNotification(notificationId) {
+            try {
+                const response = await fetch(`/api/notifications/${notificationId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    // Update badge count
+                    const badge = document.getElementById('notificationBadge');
+                    if (badge) {
+                        if (data.unread_count > 0) {
+                            badge.textContent = data.unread_count > 99 ? '99+' : data.unread_count;
+                            badge.classList.remove('hidden');
+                        } else {
+                            badge.classList.add('hidden');
+                        }
+                    }
+                    
+                    // Reload notifications to reflect deletion
+                    loadNotifications();
+                    
+                    // Show success message
+                    showToast('Notifikasi berhasil dihapus', 'success');
+                } else {
+                    showToast('Gagal menghapus notifikasi', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting notification:', error);
+                showToast('Gagal menghapus notifikasi', 'error');
+            }
+        }
+
+        async function clearAllNotifications() {
+            // Show confirmation modal
+            showConfirmationModal(
+                'Hapus Semua Notifikasi',
+                'Apakah Anda yakin ingin menghapus semua notifikasi? Aksi ini tidak dapat dibatalkan.',
+                async function() {
+                    try {
+                        const response = await fetch('/api/notifications/clear_all', {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            }
+                        });
+
+                        const data = await response.json();
+                        if (data.success) {
+                            // Hide badge
+                            const badge = document.getElementById('notificationBadge');
+                            if (badge) {
+                                badge.classList.add('hidden');
+                            }
+                            
+                            // Reload notifications
+                            loadNotifications();
+                            
+                            // Show success message
+                            showToast('Semua notifikasi berhasil dihapus', 'success');
+                        } else {
+                            showToast('Gagal menghapus semua notifikasi', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error clearing all notifications:', error);
+                        showToast('Gagal menghapus semua notifikasi', 'error');
+                    }
+                }
+            );
+        }
+
+        function formatTimeAgo(dateString) {
+            const now = new Date();
+            const date = new Date(dateString);
+            const diffInSeconds = Math.floor((now - date) / 1000);
+
+            if (diffInSeconds < 60) {
+                return 'Baru saja';
+            } else if (diffInSeconds < 3600) {
+                const minutes = Math.floor(diffInSeconds / 60);
+                return `${minutes} menit yang lalu`;
+            } else if (diffInSeconds < 86400) {
+                const hours = Math.floor(diffInSeconds / 3600);
+                return `${hours} jam yang lalu`;
+            } else if (diffInSeconds < 2592000) {
+                const days = Math.floor(diffInSeconds / 86400);
+                return `${days} hari yang lalu`;
+            } else {
+                return date.toLocaleDateString('id-ID');
+            }
+        }
+
+        function updateNotificationBadge() {
+            // This function can be called periodically to update badge count
+            // without refreshing the entire notification list
+            fetch('/api/notifications')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const badge = document.getElementById('notificationBadge');
+                        if (badge && data.unread_count > 0) {
+                            badge.textContent = data.unread_count > 99 ? '99+' : data.unread_count;
+                            badge.classList.remove('hidden');
+                        } else if (badge) {
+                            badge.classList.add('hidden');
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating notification badge:', error);
+                });
+        }
+
+        function showToast(message, type = 'info') {
+            // Create toast notification
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed`;
+            toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            toast.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.remove();
+                }
+            }, 3000);
+        }
 
 
 
@@ -389,10 +723,16 @@
 
 
 
+
+
         // Make functions available globally
         window.showImageModal = showImageModal;
         window.closeImageModal = closeImageModal;
         window.showConfirmationModal = showConfirmationModal;
+        window.markNotificationRead = markNotificationRead;
+        window.markAllNotificationsRead = markAllNotificationsRead;
+        window.deleteNotification = deleteNotification;
+        window.clearAllNotifications = clearAllNotifications;
         
         // Keyboard event handler for closing modal
         document.addEventListener('keydown', function(event) {

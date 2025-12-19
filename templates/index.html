@@ -753,31 +753,8 @@ function closeAllStatusDropdowns() {
     });
 }
 
-// Image Modal Functions
-function showImageModal(imageSrc, title) {
-    const modal = document.getElementById('imageModal');
-    const modalImage = document.getElementById('modalImage');
-    const modalTitle = document.getElementById('modalTitle');
-    
-    modalImage.src = imageSrc;
-    modalTitle.textContent = title;
-    modal.style.display = 'block';
-    
-    // Add fade in animation
-    modal.style.opacity = '0';
-    setTimeout(() => {
-        modal.style.transition = 'opacity 0.3s ease';
-        modal.style.opacity = '1';
-    }, 10);
-}
 
-function closeImageModal() {
-    const modal = document.getElementById('imageModal');
-    modal.style.opacity = '0';
-    setTimeout(() => {
-        modal.style.display = 'none';
-    }, 300);
-}
+
 
 
 // Enhanced notification system
@@ -833,18 +810,10 @@ document.addEventListener('click', function(event) {
     }
 });
 
-// Close modal when clicking outside
-window.addEventListener('click', function(event) {
-    const modal = document.getElementById('imageModal');
-    if (event.target === modal) {
-        closeImageModal();
-    }
-});
 
 // Close modal with Escape key
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
-        closeImageModal();
         closeAllStatusDropdowns();
     }
 });

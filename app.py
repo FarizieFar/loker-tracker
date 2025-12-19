@@ -5,7 +5,8 @@
 from flask import Flask, render_template, redirect, url_for, request, flash, abort, jsonify, send_file, Response
 from datetime import datetime, date
 from extensions import db
-from models import JobApplication, User, Status
+
+from models import JobApplication, User, Status, Notification
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
@@ -394,8 +395,43 @@ def update_job_status(job_id):
         if not status:
             return jsonify({'success': False, 'message': 'Status tidak ditemukan'}), 400
         
+
         # Update job status
         job.status_id = status.id
+        db.session.commit()
+        
+        # Create notification for status change
+        notification_title = "Status Lamaran Diupdate"
+        notification_message = f"Status lamaran di {job.company_name} berhasil diubah menjadi {status_name}"
+        notification_type = "info"
+        
+        # Set notification type based on status
+        if status_name == "Diterima":
+            notification_type = "success"
+            notification_title = "🎉 Selamat! Lamaran Diterima!"
+            notification_message = f"Selamat! Lamaran Anda di {job.company_name} untuk posisi {job.position or 'Posisi'} telah diterima!"
+        elif status_name == "Tidak Diterima":
+            notification_type = "warning"
+            notification_title = "Lamaran Tidak Diterima"
+            notification_message = f"Maaf, lamaran Anda di {job.company_name} untuk posisi {job.position or 'Posisi'} tidak diterima. Jangan menyerah!"
+        elif status_name == "Interview":
+            notification_type = "info"
+            notification_title = "📞 Undangan Interview"
+            notification_message = f"Anda mendapat undangan interview untuk posisi {job.position or 'Posisi'} di {job.company_name}. Persiapkan diri dengan baik!"
+        elif status_name == "Tes":
+            notification_type = "info"
+            notification_title = "📝 Undangan Tes"
+            notification_message = f"Anda mendapat undangan tes untuk posisi {job.position or 'Posisi'} di {job.company_name}. Belajar dan persiapan yang matang!"
+        
+        # Create notification record
+        notification = Notification(
+            user_id=current_user.id,
+            title=notification_title,
+            message=notification_message,
+            type=notification_type,
+            job_id=job.id
+        )
+        db.session.add(notification)
         db.session.commit()
         
         # Calculate updated statistics
@@ -436,7 +472,144 @@ def update_job_status(job_id):
         
     except Exception as e:
         print(f"Error updating status: {str(e)}")
+
         return jsonify({'success': False, 'message': str(e)}), 500
+
+# ======================
+# NOTIFICATION SYSTEM API
+# ======================
+
+@app.route('/api/notifications')
+@login_required
+def get_notifications():
+    """API endpoint untuk mendapatkan notifikasi user"""
+    try:
+        notifications = Notification.query.filter_by(user_id=current_user.id)\
+            .order_by(Notification.created_at.desc())\
+            .limit(20).all()
+        
+        notifications_data = []
+        for notif in notifications:
+            notifications_data.append({
+                'id': notif.id,
+                'title': notif.title,
+                'message': notif.message,
+                'type': notif.type,
+                'is_read': notif.is_read,
+                'created_at': notif.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                'job_id': notif.job_id
+            })
+        
+        # Get unread count
+        unread_count = Notification.query.filter_by(user_id=current_user.id, is_read=False).count()
+        
+        return jsonify({
+            'success': True,
+            'notifications': notifications_data,
+            'unread_count': unread_count
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/notifications/<int:notification_id>/read', methods=['POST'])
+@login_required
+def mark_notification_read(notification_id):
+    """API endpoint untuk menandai notifikasi sebagai dibaca"""
+    try:
+        notification = Notification.query.filter_by(
+            id=notification_id, 
+            user_id=current_user.id
+        ).first()
+        
+        if not notification:
+            return jsonify({'success': False, 'error': 'Notifikasi tidak ditemukan'}), 404
+        
+        notification.is_read = True
+        db.session.commit()
+        
+        # Get updated unread count
+        unread_count = Notification.query.filter_by(user_id=current_user.id, is_read=False).count()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Notifikasi berhasil ditandai sebagai dibaca',
+            'unread_count': unread_count
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/notifications/mark_all_read', methods=['POST'])
+@login_required
+def mark_all_notifications_read():
+    """API endpoint untuk menandai semua notifikasi sebagai dibaca"""
+    try:
+        unread_notifications = Notification.query.filter_by(
+            user_id=current_user.id, 
+            is_read=False
+        ).all()
+        
+        for notification in unread_notifications:
+            notification.is_read = True
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': f'{len(unread_notifications)} notifikasi berhasil ditandai sebagai dibaca',
+            'unread_count': 0
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/notifications/<int:notification_id>', methods=['DELETE'])
+@login_required
+def delete_notification(notification_id):
+    """API endpoint untuk menghapus notifikasi"""
+    try:
+        notification = Notification.query.filter_by(
+            id=notification_id, 
+            user_id=current_user.id
+        ).first()
+        
+        if not notification:
+            return jsonify({'success': False, 'error': 'Notifikasi tidak ditemukan'}), 404
+        
+        db.session.delete(notification)
+        db.session.commit()
+        
+        # Get updated unread count
+        unread_count = Notification.query.filter_by(user_id=current_user.id, is_read=False).count()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Notifikasi berhasil dihapus',
+            'unread_count': unread_count
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/notifications/clear_all', methods=['DELETE'])
+@login_required
+def clear_all_notifications():
+    """API endpoint untuk menghapus semua notifikasi"""
+    try:
+        # Delete all notifications for current user
+        deleted_count = Notification.query.filter_by(user_id=current_user.id).delete()
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': f'{deleted_count} notifikasi berhasil dihapus',
+            'unread_count': 0
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 

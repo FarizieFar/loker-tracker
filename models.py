@@ -1,6 +1,10 @@
 
+
+
+
 from flask_login import UserMixin
 from extensions import db
+from datetime import datetime as dt
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -9,6 +13,12 @@ class User(db.Model, UserMixin):
 
     jobs = db.relationship(
         'JobApplication',
+        backref='user',
+        lazy=True
+    )
+    
+    notifications = db.relationship(
+        'Notification',
         backref='user',
         lazy=True
     )
@@ -38,8 +48,22 @@ class JobApplication(db.Model):
     notes = db.Column(db.Text, nullable=True)  # NEW: Keterangan tambahan
     applied_date = db.Column(db.DateTime)
 
+
     status_id = db.Column(db.Integer, db.ForeignKey('status.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    title = db.Column(db.String(100), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    type = db.Column(db.String(20), default='info')  # info, success, warning, danger
+    is_read = db.Column(db.Boolean, default=False)
+
+    created_at = db.Column(db.DateTime, default=dt.utcnow)
+    
+    # Link to related job if applicable
+    job_id = db.Column(db.Integer, db.ForeignKey('job_application.id'), nullable=True)
 
 
 
