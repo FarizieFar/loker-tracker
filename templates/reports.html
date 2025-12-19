@@ -1,0 +1,602 @@
+{% extends 'base-sidebar.html' %}
+
+{% block title %}Laporan & Export - Loker Tracker{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item active">Laporan & Export</li>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">
+                <i class="fas fa-chart-bar me-3"></i>
+                Laporan & Export Data
+            </h1>
+            <p class="page-subtitle">
+                Export dan analisis data lamaran kerja Anda
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Export Section -->
+<div class="row mb-6">
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="fas fa-file-pdf text-danger me-2"></i>
+                    Export PDF
+                </h5>
+                <p class="card-subtitle">
+                    Download laporan lengkap dalam format PDF
+                </p>
+            </div>
+            <div class="card-body">
+                <form method="GET" action="{{ url_for('export_pdf') }}" class="export-form">
+                    <div class="form-group mb-4">
+                        <label for="pdf_date_from" class="form-label">
+                            <i class="fas fa-calendar me-2"></i>Tanggal Dari
+                        </label>
+                        <input type="date" 
+                               id="pdf_date_from" 
+                               name="date_from" 
+                               class="form-control"
+                               value="{{ request.args.get('date_from', '') }}">
+                    </div>
+                    
+                    <div class="form-group mb-4">
+                        <label for="pdf_date_to" class="form-label">
+                            <i class="fas fa-calendar me-2"></i>Tanggal Sampai
+                        </label>
+                        <input type="date" 
+                               id="pdf_date_to" 
+                               name="date_to" 
+                               class="form-control"
+                               value="{{ request.args.get('date_to', '') }}">
+                    </div>
+                    
+                    <div class="form-group mb-4">
+                        <label for="pdf_status" class="form-label">
+                            <i class="fas fa-filter me-2"></i>Filter Status
+                        </label>
+                        <select id="pdf_status" name="status" class="form-select">
+                            <option value="">Semua Status</option>
+                            <option value="terdaftar" {{ 'selected' if request.args.get('status') == 'terdaftar' else '' }}>Terdaftar</option>
+                            <option value="interview" {{ 'selected' if request.args.get('status') == 'interview' else '' }}>Interview</option>
+                            <option value="tes" {{ 'selected' if request.args.get('status') == 'tes' else '' }}>Tes</option>
+                            <option value="diterima" {{ 'selected' if request.args.get('status') == 'diterima' else '' }}>Diterima</option>
+                            <option value="tidak-diterima" {{ 'selected' if request.args.get('status') == 'tidak-diterima' else '' }}>Tidak Diterima</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-danger w-100">
+                        <i class="fas fa-download me-2"></i>
+                        Download PDF Report
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="fas fa-file-excel text-success me-2"></i>
+                    Export Excel
+                </h5>
+                <p class="card-subtitle">
+                    Download data dalam format Excel untuk analisis lebih lanjut
+                </p>
+            </div>
+            <div class="card-body">
+                <form method="GET" action="{{ url_for('export_excel') }}" class="export-form">
+                    <div class="form-group mb-4">
+                        <label for="excel_date_from" class="form-label">
+                            <i class="fas fa-calendar me-2"></i>Tanggal Dari
+                        </label>
+                        <input type="date" 
+                               id="excel_date_from" 
+                               name="date_from" 
+                               class="form-control"
+                               value="{{ request.args.get('date_from', '') }}">
+                    </div>
+                    
+                    <div class="form-group mb-4">
+                        <label for="excel_date_to" class="form-label">
+                            <i class="fas fa-calendar me-2"></i>Tanggal Sampai
+                        </label>
+                        <input type="date" 
+                               id="excel_date_to" 
+                               name="date_to" 
+                               class="form-control"
+                               value="{{ request.args.get('date_to', '') }}">
+                    </div>
+                    
+                    <div class="form-group mb-4">
+                        <label for="excel_status" class="form-label">
+                            <i class="fas fa-filter me-2"></i>Filter Status
+                        </label>
+                        <select id="excel_status" name="status" class="form-select">
+                            <option value="">Semua Status</option>
+                            <option value="terdaftar" {{ 'selected' if request.args.get('status') == 'terdaftar' else '' }}>Terdaftar</option>
+                            <option value="interview" {{ 'selected' if request.args.get('status') == 'interview' else '' }}>Interview</option>
+                            <option value="tes" {{ 'selected' if request.args.get('status') == 'tes' else '' }}>Tes</option>
+                            <option value="diterima" {{ 'selected' if request.args.get('status') == 'diterima' else '' }}>Diterima</option>
+                            <option value="tidak-diterima" {{ 'selected' if request.args.get('status') == 'tidak-diterima' else '' }}>Tidak Diterima</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="fas fa-download me-2"></i>
+                        Download Excel Report
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Analytics Section -->
+<div class="row mb-6">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="fas fa-chart-pie text-primary me-2"></i>
+                    Analisis Data Lamaran
+                </h5>
+                <p class="card-subtitle">
+                    Statistik dan analisis performa lamaran kerja
+                </p>
+            </div>
+            <div class="card-body">
+                <!-- Summary Stats -->
+                <div class="stats-grid mb-6">
+                    <div class="stat-card">
+                        <div class="stat-icon primary">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div class="stat-number">{{ total_jobs }}</div>
+                        <div class="stat-label">Total Lamaran</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon warning">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-number">{{ pending_jobs }}</div>
+                        <div class="stat-label">Menunggu Respon</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-number">{{ interview_jobs }}</div>
+                        <div class="stat-label">Interview/Tes</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon danger">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="stat-number">{{ accepted_jobs }}</div>
+                        <div class="stat-label">Diterima</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon gray">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="stat-number">{{ rejected_jobs }}</div>
+                        <div class="stat-label">Tidak Diterima</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon success">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stat-number">{{ "%.1f"|format(success_rate) }}%</div>
+                        <div class="stat-label">Tingkat Keberhasilan</div>
+                    </div>
+                </div>
+                
+                <!-- Status Distribution Chart Placeholder -->
+                <div class="row">
+                    <div class="col-lg-6 mb-4">
+                        <div class="chart-container">
+                            <h6 class="chart-title">
+                                <i class="fas fa-chart-bar me-2"></i>
+                                Distribusi Status Lamaran
+                            </h6>
+                            <div class="chart-placeholder">
+                                <div class="chart-bars">
+                                    {% for status, count in status_distribution %}
+                                    <div class="chart-bar-container">
+                                        <div class="chart-bar {{ 'bar-' + status.replace(' ', '-') }}" 
+                                             style="height: {{ (count / total_jobs * 100) if total_jobs > 0 else 0 }}%">
+                                            <span class="bar-value">{{ count }}</span>
+                                        </div>
+                                        <span class="bar-label">{{ status.replace('-', ' ').title() }}</span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6 mb-4">
+                        <div class="chart-container">
+                            <h6 class="chart-title">
+                                <i class="fas fa-chart-line me-2"></i>
+                                Sumber Lamaran Terbanyak
+                            </h6>
+                            <div class="chart-placeholder">
+                                <div class="chart-bars horizontal">
+                                    {% for source, count in top_sources %}
+                                    <div class="chart-bar-horizontal">
+                                        <span class="source-name">{{ source }}</span>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" 
+                                                 style="width: {{ (count / total_jobs * 100) if total_jobs > 0 else 0 }}%"></div>
+                                        </div>
+                                        <span class="source-count">{{ count }}</span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="fas fa-history text-info me-2"></i>
+                    Aktivitas Terbaru
+                </h5>
+                <p class="card-subtitle">
+                    Lamaran kerja yang baru saja ditambahkan atau diperbarui
+                </p>
+            </div>
+            <div class="card-body">
+                {% if recent_jobs %}
+                <div class="activity-list">
+                    {% for job in recent_jobs %}
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-plus text-success"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">
+                                <strong>{{ job.position }}</strong> di {{ job.company }}
+                            </div>
+                            <div class="activity-meta">
+                                <span class="status-badge {{ 'status-' + job.status.replace(' ', '-') }}">
+                                    {{ job.status.replace('-', ' ').title() }}
+                                </span>
+                                <span class="activity-date">{{ job.applied_date.strftime('%d/%m/%Y %H:%M') }}</span>
+                            </div>
+                        </div>
+                        <div class="activity-actions">
+
+                            <a href="{{ url_for('edit_job', id=job.id) }}"
+                               class="btn btn-sm btn-secondary"
+                               title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-history"></i>
+                    <p>Belum ada aktivitas</p>
+                    <small>Data aktivitas akan muncul setelah Anda menambahkan lamaran kerja</small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="fas fa-lightbulb text-warning me-2"></i>
+                    Tips & Insights
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="tips-list">
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="fas fa-target"></i>
+                        </div>
+                        <div class="tip-content">
+                            <strong>Fokus pada Sumber Terbaik</strong>
+                            <p>Tingkatkan frekuensi apply di platform yang memberikan hasil terbaik.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="tip-content">
+                            <strong>Konsistensi Aplikasi</strong>
+                            <p>Aplikasikan secara rutin untuk meningkatkan peluang berhasil.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="tip-content">
+                            <strong>Track Progress</strong>
+                            <p>Pantau tingkat keberhasilan untuk strategi yang lebih efektif.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="tip-content">
+                            <strong>Dokumentasi Lengkap</strong>
+                            <p>Selalu simpan bukti dan screenshot setiap lamaran.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.chart-container {
+    padding: var(--space-4);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+}
+
+.chart-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-4);
+}
+
+.chart-placeholder {
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chart-bars {
+    display: flex;
+    align-items: end;
+    gap: var(--space-4);
+    height: 180px;
+    width: 100%;
+}
+
+.chart-bars.horizontal {
+    flex-direction: column;
+    height: auto;
+    gap: var(--space-3);
+}
+
+.chart-bar-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.chart-bar {
+    width: 100%;
+    background: var(--primary);
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    position: relative;
+    min-height: 20px;
+    display: flex;
+    align-items: start;
+    justify-content: center;
+    padding-top: var(--space-1);
+}
+
+.chart-bar.terdaftar { background: #64748b; }
+.chart-bar.interview { background: #f59e0b; }
+.chart-bar.tes { background: #3b82f6; }
+.chart-bar.diterima { background: #10b981; }
+.chart-bar.tidak-diterima { background: #ef4444; }
+
+.bar-value {
+    color: white;
+    font-weight: 600;
+    font-size: 0.75rem;
+}
+
+.bar-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-align: center;
+    font-weight: 500;
+}
+
+.chart-bar-horizontal {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.source-name {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    min-width: 80px;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--gray-200);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--primary);
+    transition: width var(--transition-normal);
+}
+
+.source-count {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    min-width: 30px;
+    text-align: right;
+}
+
+.activity-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--gray-200);
+    transition: background var(--transition-normal);
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-item:hover {
+    background: var(--bg-secondary);
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--gray-100);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-title {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    margin-bottom: var(--space-1);
+}
+
+.activity-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.activity-date {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.tips-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.tip-item {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--gray-200);
+}
+
+.tip-icon {
+    width: 32px;
+    height: 32px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+}
+
+.tip-content strong {
+    display: block;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    margin-bottom: var(--space-1);
+}
+
+.tip-content p {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    margin: 0;
+    line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+    .chart-bars {
+        gap: var(--space-2);
+    }
+    
+    .chart-bar-container {
+        min-width: 40px;
+    }
+    
+    .bar-label {
+        font-size: 0.625rem;
+    }
+    
+    .activity-item {
+        flex-direction: column;
+        align-items: start;
+        gap: var(--space-2);
+    }
+    
+    .activity-meta {
+        flex-wrap: wrap;
+    }
+}
+</style>
+{% endblock %}

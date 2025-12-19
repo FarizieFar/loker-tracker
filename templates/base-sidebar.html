@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loker Tracker - Aplikasi Manajemen Lamaran Kerja</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/sidebar.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-brand">
+                <div class="brand-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <div class="brand-text">
+                    <div class="brand-title">Loker Tracker</div>
+                    <div class="brand-subtitle">Manajemen Lamaran Kerja</div>
+                </div>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="sidebar-menu">
+            <!-- Main Navigation -->
+            <div class="menu-section">
+                <div class="menu-section-title">UTAMA</div>
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <a href="{{ url_for('index') }}" class="menu-link {{ 'active' if request.endpoint == 'index' else '' }}">
+                            <i class="menu-icon fas fa-home"></i>
+                            <span class="menu-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ url_for('jobs') }}" class="menu-link {{ 'active' if request.endpoint == 'jobs' else '' }}">
+                            <i class="menu-icon fas fa-list"></i>
+                            <span class="menu-text">Daftar Lamaran</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ url_for('add_job') }}" class="menu-link {{ 'active' if request.endpoint == 'add_job' else '' }}">
+                            <i class="menu-icon fas fa-plus"></i>
+                            <span class="menu-text">Tambah Lamaran</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Reports Section -->
+            <div class="menu-section">
+                <div class="menu-section-title">LAPORAN</div>
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <a href="{{ url_for('reports') }}" class="menu-link {{ 'active' if request.endpoint == 'reports' else '' }}">
+                            <i class="menu-icon fas fa-chart-bar"></i>
+                            <span class="menu-text">Laporan & Export</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ url_for('export_pdf') }}" class="menu-link">
+                            <i class="menu-icon fas fa-file-pdf"></i>
+                            <span class="menu-text">Export PDF</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ url_for('export_excel') }}" class="menu-link">
+                            <i class="menu-icon fas fa-file-excel"></i>
+                            <span class="menu-text">Export Excel</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Settings Section -->
+            <div class="menu-section">
+                <div class="menu-section-title">PENGATURAN</div>
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <a href="{{ url_for('settings') }}" class="menu-link {{ 'active' if request.endpoint == 'settings' else '' }}">
+                            <i class="menu-icon fas fa-cog"></i>
+                            <span class="menu-text">Pengaturan</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+
+
+                        <a href="{{ url_for('help') }}" class="menu-link {{ 'active' if request.endpoint == 'help' else '' }}">
+                            <i class="menu-icon fas fa-question-circle"></i>
+                            <span class="menu-text">Bantuan</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- User Profile Section -->
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <div class="user-name">{{ current_user.username if current_user.is_authenticated else 'Guest' }}</div>
+                    <div class="user-role">Administrator</div>
+                </div>
+            </div>
+            <a href="{{ url_for('logout') }}" class="logout-btn" title="Keluar">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="header-left">
+                <button class="sidebar-toggle-mobile" id="sidebarToggleMobile">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="breadcrumb">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb-list">
+                            <li class="breadcrumb-item">
+                                <i class="fas fa-home"></i>
+                                <a href="{{ url_for('index') }}">Home</a>
+                            </li>
+                            {% block breadcrumb %}{% endblock %}
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+            
+            <div class="header-right">
+                {% if current_user.is_authenticated %}
+                <div class="header-actions">
+                    <button class="btn-action" title="Notifikasi">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <button class="btn-action" title="Theme Toggle">
+                        <i class="fas fa-moon" id="themeToggle"></i>
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <main class="page-content">
+            <div class="container-fluid">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                                <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' if category == 'success' else 'info-circle' }} me-2"></i>
+                                <span>{{ message }}</span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+
+    <!-- Image Preview Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true" data-bs-backdrop="true" data-bs-keyboard="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="imageModalLabel">
+                        <i class="fas fa-image me-2"></i>Preview Bukti Lamaran
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onclick="closeImageModal()"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <img id="modalImage" src="" alt="Preview Bukti Lamaran" class="img-fluid" style="max-height: 80vh; object-fit: contain;">
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" onclick="closeImageModal()">
+                        <i class="fas fa-times me-2"></i>Tutup
+                    </button>
+                    <a id="downloadImage" href="#" download class="btn btn-primary" target="_blank">
+                        <i class="fas fa-download me-2"></i>Download
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Confirmation Modal -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-warning bg-opacity-20 rounded-circle p-3 me-3">
+                            <i class="fas fa-question-circle text-warning fa-2x"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-1" id="confirmModalLabel">
+                                Konfirmasi Aksi
+                            </h5>
+                            <p class="text-muted mb-0 small">Pastikan aksi yang akan Anda lakukan</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pt-3">
+                    <div class="text-center mb-4">
+                        <h6 class="fw-semibold text-dark mb-2" id="confirmTitle">Apakah Anda yakin?</h6>
+                        <p class="text-muted mb-0" id="confirmMessage">Aksi ini tidak dapat dibatalkan.</p>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 justify-content-center">
+                    <button type="button" class="btn btn-secondary me-3" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Batalkan
+                    </button>
+                    <button type="button" class="btn btn-danger" id="confirmAction">
+                        <i class="fas fa-check me-2"></i>Ya, Lanjutkan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Sidebar functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarToggleMobile = document.getElementById('sidebarToggleMobile');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+            function toggleSidebar() {
+                sidebar.classList.toggle('collapsed');
+                sidebarOverlay.classList.toggle('show');
+            }
+
+            function closeSidebar() {
+                sidebar.classList.remove('show');
+                sidebarOverlay.classList.remove('show');
+            }
+
+            // Event listeners
+            sidebarToggle?.addEventListener('click', toggleSidebar);
+            sidebarToggleMobile?.addEventListener('click', () => {
+                sidebar.classList.toggle('show');
+                sidebarOverlay.classList.toggle('show');
+            });
+            sidebarOverlay?.addEventListener('click', closeSidebar);
+
+            // Theme toggle
+            const themeToggle = document.getElementById('themeToggle');
+            themeToggle?.addEventListener('click', function() {
+                document.body.classList.toggle('dark-theme');
+                localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
+                
+                // Update icon
+                const icon = this.querySelector('i');
+                if (document.body.classList.contains('dark-theme')) {
+                    icon.className = 'fas fa-sun';
+                } else {
+                    icon.className = 'fas fa-moon';
+                }
+            });
+
+            // Load saved theme
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+                themeToggle.querySelector('i').className = 'fas fa-sun';
+            }
+
+            // Status management and other existing functionality
+            // (Keeping all existing JavaScript from base.html)
+        });
+
+
+
+        // Global functions for modal and confirmation
+        let currentImageModal = null;
+        
+        function showImageModal(imageSrc, imageAlt = 'Preview Bukti Lamaran') {
+            const modalImage = document.getElementById('modalImage');
+            const modalElement = document.getElementById('imageModal');
+            const downloadLink = document.getElementById('downloadImage');
+            
+            // Ensure imageSrc is a valid URL
+            if (!imageSrc.startsWith('http') && !imageSrc.startsWith('/')) {
+                imageSrc = '/' + imageSrc;
+            }
+            
+            // Set image source and alt text
+            modalImage.src = imageSrc;
+            modalImage.alt = imageAlt;
+            downloadLink.href = imageSrc;
+            downloadLink.download = imageAlt + '.jpg';
+            
+            // Handle image load error
+            modalImage.onerror = function() {
+                this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY5NzQ4MSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkdhbWJhciB0aWRhayBkaW11YXQ8L3RleHQ+PC9zdmc+';
+                console.error('Failed to load image:', imageSrc);
+            };
+            
+            // Hide any existing modal first
+            if (currentImageModal) {
+                currentImageModal.hide();
+            }
+            
+            // Create and show new modal
+            currentImageModal = new bootstrap.Modal(modalElement, {
+                backdrop: true,
+                keyboard: true,
+                focus: true
+            });
+            currentImageModal.show();
+            
+            // Clear image when modal is closed
+            modalElement.addEventListener('hidden.bs.modal', function () {
+                modalImage.src = '';
+                currentImageModal = null;
+            }, { once: true });
+        }
+        
+        function closeImageModal() {
+            const modalElement = document.getElementById('imageModal');
+            if (modalElement.classList.contains('show')) {
+                const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                if (modalInstance) {
+                    modalInstance.hide();
+                } else {
+                    // Fallback if Bootstrap instance is not available
+                    modalElement.classList.remove('show');
+                    modalElement.style.display = 'none';
+                    document.body.classList.remove('modal-open');
+                    const backdrop = document.querySelector('.modal-backdrop');
+                    if (backdrop) backdrop.remove();
+                }
+            }
+            currentImageModal = null;
+        }
+
+        let confirmCallback = null;
+        
+        function showConfirmationModal(title, message, callback) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            confirmCallback = callback;
+            
+            const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+            modal.show();
+        }
+        
+        document.getElementById('confirmAction').addEventListener('click', function() {
+            if (confirmCallback && typeof confirmCallback === 'function') {
+                confirmCallback();
+            }
+            const modal = bootstrap.Modal.getInstance(document.getElementById('confirmModal'));
+            modal.hide();
+        });
+
+
+
+        // Make functions available globally
+        window.showImageModal = showImageModal;
+        window.closeImageModal = closeImageModal;
+        window.showConfirmationModal = showConfirmationModal;
+        
+        // Keyboard event handler for closing modal
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && currentImageModal) {
+                closeImageModal();
+            }
+        });
+        
+        // Click outside to close modal - setup after DOM is ready
+        function setupModalCloseHandlers() {
+            const imageModal = document.getElementById('imageModal');
+            if (imageModal) {
+                imageModal.addEventListener('click', function(event) {
+                    if (event.target === this) {
+                        closeImageModal();
+                    }
+                });
+            }
+        }
+        
+        // Setup handlers when DOM is ready
+        setupModalCloseHandlers();
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

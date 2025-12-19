@@ -1,19 +1,12 @@
-
-
-
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loker Tracker - Aplikasi Manajemen Lamaran Kerja</title>
+    <title>Loker Tracker - Aplikasi Manajemen Lamaran Kerja Modern</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -23,683 +16,262 @@
 </head>
 <body>
 
-
-
-
-
-
-
-
-
-<!-- Enhanced Modern Navigation -->
-<nav class="navbar navbar-modern">
-    <div class="container-fluid px-4">
-        <div class="d-flex justify-content-between align-items-center w-100">
-            
-            <!-- Enhanced Brand Logo -->
-            <a class="navbar-brand-enhanced" href="{{ url_for('index') }}" aria-label="Kembali ke dashboard">
-                <div class="brand-icon">
-                    <i class="fas fa-briefcase"></i>
-                </div>
-                <div class="brand-text">
-                    <div class="brand-title">Loker Tracker</div>
-                    <div class="brand-subtitle">Job Application Manager</div>
-                </div>
+<!-- Modern Header -->
+<header class="header">
+    <div class="container">
+        <div class="header-content">
+            <a href="{{ url_for('index') }}" class="brand">
+                <i class="fas fa-briefcase me-2"></i>
+                Loker Tracker
             </a>
-
-
-            <!-- Clean Navigation - Only essential elements -->
-            <div class="navbar-nav-container d-none d-lg-flex">
-                <!-- Removed duplicate navigation items as they're already in dashboard -->
-            </div>
-
-            <!-- Enhanced User Actions -->
-            <div class="user-actions">
-                {% if current_user.is_authenticated %}
-                <!-- User Profile -->
-                <div class="user-profile">
-                    <div class="user-avatar">
-                        <i class="fas fa-user"></i>
+            {% if current_user.is_authenticated %}
+            <div class="d-flex align-items-center gap-4">
+                <div style="display: flex; align-items: center; gap: var(--space-3);">
+                    <div style="width: 32px; height: 32px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">
+                        {{ current_user.username[0].upper() }}
                     </div>
-                    <div class="user-info d-none d-xl-block">
-                        <div class="user-name">{{ current_user.username }}</div>
-                        <div class="user-status">Administrator</div>
-                    </div>
+                    <span style="color: var(--text-secondary); font-size: 0.875rem; font-weight: 500;">Welcome, {{ current_user.username }}</span>
                 </div>
-                
-                <!-- Enhanced Logout Button -->
-                <a href="{{ url_for('logout') }}" class="btn-logout" aria-label="Keluar dari aplikasi" title="Keluar">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span class="d-none d-md-inline">Logout</span>
+                <a href="{{ url_for('logout') }}" class="btn btn-secondary btn-sm">
+                    <i class="fas fa-sign-out-alt me-2"></i>
+                    Logout
                 </a>
-                {% endif %}
             </div>
+            {% endif %}
         </div>
     </div>
-</nav>
+</header>
 
-<!-- Mobile Navigation Toggle -->
-<div class="mobile-nav-toggle d-lg-none">
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNav" aria-controls="mobileNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-</div>
-
-
-<!-- Mobile Navigation Menu - Simplified -->
-<div class="collapse navbar-collapse mobile-nav" id="mobileNav">
-    <div class="mobile-nav-content">
-        <div class="mobile-nav-item">
-            <div class="mobile-user-info">
-                <div class="user-avatar">
-                    <i class="fas fa-user"></i>
-                </div>
-                <div>
-                    <div class="user-name">{{ current_user.username }}</div>
-                    <div class="user-status">Administrator</div>
-                </div>
-            </div>
-        </div>
-        <div class="mobile-nav-item">
-            <a class="mobile-nav-link logout" href="{{ url_for('logout') }}">
-                <i class="fas fa-sign-out-alt me-3"></i>
-                <span>Logout</span>
-            </a>
-        </div>
-    </div>
-</div>
-
-
-    <!-- Custom Styles -->
-    <style>
-        /* Responsive Navigation */
-        @media (max-width: 768px) {
-            .navbar-nav {
-                display: none !important;
-            }
-        }
-    </style>
-
-
-
-
-
-
-    <!-- Main Content -->
-    <main class="main-container">
-        <div class="container">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
+<!-- Main Content -->
+<main class="main-container">
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div style="margin-bottom: var(--space-6);">
                     {% for category, message in messages %}
-                        <div class="alert alert-{{ 'danger' if category == 'error' else category }}" role="alert">
-                            <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' if category == 'success' else 'info-circle' }}"></i>
-                            <span>{{ message }}</span>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        <div class="alert alert-{{ 'danger' if category == 'error' else category }}" style="margin-bottom: var(--space-3);">
+                            <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' if category == 'success' else 'info-circle' }} me-2"></i>
+                            {{ message }}
                         </div>
                     {% endfor %}
-                {% endif %}
-            {% endwith %}
-            
-            {% block content %}{% endblock %}
-        </div>
-    </main>
-
-
-
-    <!-- Image Preview Modal -->
-    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="imageModalLabel">
-                        <i class="fas fa-image me-2"></i>Preview Bukti Lamaran
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body p-4 text-center">
-                    <img id="modalImage" src="" alt="Preview Bukti Lamaran" class="img-fluid">
-                </div>
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </div>
+</main>
+
+<!-- Modern Footer -->
+<footer style="background: var(--bg-primary); border-top: 1px solid var(--gray-200); padding: var(--space-12) 0; margin-top: var(--space-20);">
+    <div class="container">
+        <div class="text-center">
+            <div class="brand mb-3" style="font-size: 1.5rem;">
+                <i class="fas fa-briefcase me-2"></i>
+                Loker Tracker
+            </div>
+            <p style="color: var(--text-secondary); margin-bottom: var(--space-4); max-width: 500px; margin-left: auto; margin-right: auto;">
+                Aplikasi manajemen lamaran kerja yang modern, efisien, dan user-friendly untuk membantu Anda melacak progress karirer dengan mudah.
+            </p>
+            <div style="color: var(--text-muted); font-size: 0.875rem;">
+                © 2024 Loker Tracker. Dibuat dengan ❤️ untuk kemajuan karirer Anda.
             </div>
         </div>
     </div>
+</footer>
 
-
-    <!-- Custom Confirmation Modal -->
-    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <div class="d-flex align-items-center">
-                        <div class="bg-warning bg-opacity-20 rounded-circle p-3 me-3">
-                            <i class="fas fa-question-circle text-warning fa-2x"></i>
-                        </div>
-                        <div>
-                            <h5 class="modal-title fw-bold mb-1" id="confirmModalLabel">
-                                Konfirmasi Aksi
-                            </h5>
-                            <p class="text-muted mb-0 small">Pastikan aksi yang akan Anda lakukan</p>
-                        </div>
-                    </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body pt-3">
-                    <div class="text-center mb-4">
-                        <h6 class="fw-semibold text-dark mb-2" id="confirmTitle">Apakah Anda yakin?</h6>
-                        <p class="text-muted mb-0" id="confirmMessage">Aksi ini tidak dapat dibatalkan.</p>
-                    </div>
-                </div>
-                <div class="modal-footer border-0 pt-0 justify-content-center">
-                    <button type="button" class="btn btn-secondary me-3" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-2"></i>Batalkan
-                    </button>
-                    <button type="button" class="btn btn-danger" id="confirmAction">
-                        <i class="fas fa-check me-2"></i>Ya, Lanjutkan
-                    </button>
-                </div>
-            </div>
+<!-- Modern Image Modal -->
+<div id="imageModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); z-index: 1000; backdrop-filter: blur(4px);">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 90%; max-height: 90%; background: var(--bg-primary); padding: var(--space-6); border-radius: var(--radius-xl); box-shadow: var(--shadow-xl); border: 1px solid var(--gray-200);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6);">
+            <h3 id="modalTitle" style="margin: 0; color: var(--text-primary); font-weight: 600;"></h3>
+            <button onclick="closeImageModal()" 
+                    style="background: var(--gray-100); border: none; width: 36px; height: 36px; border-radius: var(--radius-md); cursor: pointer; color: var(--text-secondary); display: flex; align-items: center; justify-content: center; transition: all var(--transition-normal);">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
+        <img id="modalImage" src="" alt="Preview" style="max-width: 100%; height: auto; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
     </div>
+</div>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-light py-4 mt-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <h6 class="fw-bold mb-2">
-                        <i class="fas fa-briefcase me-2"></i>Loker Tracker
-                    </h6>
-                    <p class="text-muted mb-0">Track your job applications efficiently and professionally.</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <p class="text-muted mb-0">
-                        <i class="fas fa-code me-1"></i>
-                        Built with <i class="fas fa-heart text-danger mx-1"></i> by Alfarizi
-                    </p>
-                </div>
-            </div>
-        </div>
-    </footer>
+<!-- Modern Alert System -->
+<div id="alertContainer" style="position: fixed; top: var(--space-6); right: var(--space-6); z-index: 1100; display: flex; flex-direction: column; gap: var(--space-3);">
+    <!-- Alerts will be inserted here dynamically -->
+</div>
 
-
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Modern Alert System
+function showAlert(message, type = 'info', duration = 4000) {
+    const container = document.getElementById('alertContainer');
     
-
-    <!-- Smart Single Input Location System -->
-    <script>
-        // Global variable to store locations data
-        let indonesianLocations = [];
-
-        // Load locations data from JSON file
-        async function loadLocationsData() {
-            try {
-                const response = await fetch('/static/locations.json');
-                const data = await response.json();
-                indonesianLocations = data.locations;
-                console.log('Locations data loaded successfully:', indonesianLocations.length, 'locations');
-            } catch (error) {
-                console.error('Error loading locations data:', error);
-                // Fallback to minimal data if JSON fails to load
-                indonesianLocations = [
-                    { name: 'Jakarta', province: 'DKI Jakarta', type: 'city' },
-                    { name: 'Bandung', province: 'Jawa Barat', type: 'city' },
-                    { name: 'Surabaya', province: 'Jawa Timur', type: 'city' },
-                    { name: 'Medan', province: 'Sumatera Utara', type: 'city' },
-                    { name: 'Makassar', province: 'Sulawesi Selatan', type: 'city' },
-                    { name: 'DKI Jakarta', province: 'DKI Jakarta', type: 'province' },
-                    { name: 'Jawa Barat', province: 'Jawa Barat', type: 'province' },
-                    { name: 'Jawa Timur', province: 'Jawa Timur', type: 'province' }
-                ];
-            }
-        }
-
-        // Initialize smart single input location system
-        async function initSmartLocationInput() {
-            // Load locations data first
-            await loadLocationsData();
-
-            const locationInput = document.querySelector('.smart-location-input');
-            const hiddenLocationInput = document.querySelector('.location-input');
-
-            if (!locationInput) return;
-
-            let autocompleteTimeout;
-            let currentSuggestions = [];
-
-            // Handle input with smart autocomplete
-            locationInput.addEventListener('input', function() {
-                const query = this.value.trim();
-
-                clearTimeout(autocompleteTimeout);
-                clearAutocompleteSuggestions();
-
-                if (query.length < 1) return;
-
-                autocompleteTimeout = setTimeout(() => {
-                    generateSmartSuggestions(query);
-                }, 200);
-            });
-
-            locationInput.addEventListener('focus', function() {
-                if (this.value.trim().length >= 1) {
-                    generateSmartSuggestions(this.value.trim());
-                    showAutocompleteSuggestions();
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-' + type;
+    alertDiv.style.cssText = `
+        min-width: 320px;
+        max-width: 400px;
+        padding: var(--space-4) var(--space-6);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        transform: translateX(100%);
+        transition: all var(--transition-normal);
+        border: 1px solid;
+        background: var(--bg-primary);
+        animation: slideIn 0.3s ease-out;
+    `;
+    
+    const iconMap = {
+        'success': { icon: 'check-circle', color: 'var(--success)' },
+        'error': { icon: 'exclamation-triangle', color: 'var(--danger)' },
+        'warning': { icon: 'exclamation-circle', color: 'var(--warning)' },
+        'info': { icon: 'info-circle', color: 'var(--primary)' }
+    };
+    
+    const config = iconMap[type] || iconMap.info;
+    
+    alertDiv.innerHTML = `
+        <i class="fas fa-${config.icon}" style="color: ${config.color}; font-size: 1.125rem;"></i>
+        <span style="font-weight: 500; color: var(--text-primary);">${message}</span>
+        <button onclick="this.parentElement.remove()" 
+                style="background: none; border: none; margin-left: auto; color: var(--text-muted); cursor: pointer; padding: var(--space-1);">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    
+    // Set border color based on type
+    const borderColors = {
+        'success': 'var(--success)',
+        'error': 'var(--danger)',
+        'warning': 'var(--warning)',
+        'info': 'var(--primary)'
+    };
+    alertDiv.style.borderColor = borderColors[type] || borderColors.info;
+    
+    container.appendChild(alertDiv);
+    
+    // Animate in
+    setTimeout(() => {
+        alertDiv.style.transform = 'translateX(0)';
+    }, 10);
+    
+    // Auto remove
+    if (duration > 0) {
+        setTimeout(() => {
+            alertDiv.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
                 }
-            });
+            }, 300);
+        }, duration);
+    }
+}
 
-            locationInput.addEventListener('blur', function() {
-                // Delay hiding to allow click on suggestions
+// Modern Image Modal functions
+function showImageModal(imageSrc, title = 'Preview Bukti Lamaran') {
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalTitle = document.getElementById('modalTitle');
+    
+    modalImage.src = imageSrc;
+    modalTitle.textContent = title;
+    modal.style.display = 'block';
+    
+    // Fade in animation
+    modal.style.opacity = '0';
+    setTimeout(() => {
+        modal.style.transition = 'opacity 0.3s ease';
+        modal.style.opacity = '1';
+    }, 10);
+}
+
+function closeImageModal() {
+    const modal = document.getElementById('imageModal');
+    modal.style.opacity = '0';
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300);
+}
+
+// Global functions
+window.showAlert = showAlert;
+window.showImageModal = showImageModal;
+window.closeImageModal = closeImageModal;
+
+// Close modal when clicking outside
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('imageModal');
+    if (event.target === modal) {
+        closeImageModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeImageModal();
+    }
+});
+
+// Add loading states to all forms
+document.addEventListener('DOMContentLoaded', function() {
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn && !submitBtn.disabled) {
+                const originalContent = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Memproses...';
+                submitBtn.disabled = true;
+                
+                // Re-enable after 5 seconds as fallback
                 setTimeout(() => {
-                    hideAutocompleteSuggestions();
-                }, 150);
-            });
-
-            // Handle Enter key to accept first suggestion
-            locationInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    const firstSuggestion = document.querySelector('.autocomplete-item');
-                    if (firstSuggestion) {
-                        firstSuggestion.click();
-                    }
-                } else if (e.key === 'Escape') {
-                    clearAutocompleteSuggestions();
-                }
-            });
-
-            function generateSmartSuggestions(query) {
-                const lowerQuery = query.toLowerCase();
-
-                // Smart matching algorithm
-                currentSuggestions = indonesianLocations
-                    .filter(location => {
-                        const locationName = location.name.toLowerCase();
-                        const provinceName = location.province.toLowerCase();
-
-                        // Exact matches get highest priority
-                        if (locationName === lowerQuery || provinceName === lowerQuery) {
-                            return true;
-                        }
-
-                        // Starts with query
-                        if (locationName.startsWith(lowerQuery) || provinceName.startsWith(lowerQuery)) {
-                            return true;
-                        }
-
-                        // Contains query
-                        if (locationName.includes(lowerQuery) || provinceName.includes(lowerQuery)) {
-                            return true;
-                        }
-
-                        // Special handling for common abbreviations
-                        if (lowerQuery === 'jakarta' && location.province === 'DKI Jakarta') {
-                            return true;
-                        }
-
-                        return false;
-                    })
-                    .sort((a, b) => {
-                        // Sort by relevance
-                        const aName = a.name.toLowerCase();
-                        const bName = b.name.toLowerCase();
-                        const aProvince = a.province.toLowerCase();
-                        const bProvince = b.province.toLowerCase();
-
-                        // Exact matches first
-                        if (aName === lowerQuery && bName !== lowerQuery) return -1;
-                        if (bName === lowerQuery && aName !== lowerQuery) return 1;
-
-                        // Starts with query
-                        if (aName.startsWith(lowerQuery) && !bName.startsWith(lowerQuery)) return -1;
-                        if (bName.startsWith(lowerQuery) && !aName.startsWith(lowerQuery)) return 1;
-
-                        // Cities before regencies before provinces
-                        const typeOrder = { 'city': 0, 'regency': 1, 'province': 2 };
-                        if (typeOrder[a.type] !== typeOrder[b.type]) {
-                            return typeOrder[a.type] - typeOrder[b.type];
-                        }
-
-                        return a.name.localeCompare(b.name);
-                    })
-                    .slice(0, 8); // Limit to 8 suggestions
-
-                displayAutocompleteSuggestions(currentSuggestions);
-            }
-
-            function displayAutocompleteSuggestions(suggestions) {
-                clearAutocompleteSuggestions();
-
-                if (suggestions.length === 0) return;
-
-                const suggestionsContainer = document.createElement('div');
-                suggestionsContainer.className = 'autocomplete-suggestions';
-                suggestionsContainer.style.cssText = `
-                    position: absolute;
-                    top: 100%;
-                    left: 0;
-                    right: 0;
-                    background: white;
-                    border: 1px solid #ddd;
-                    border-top: none;
-                    border-radius: 0 0 8px 8px;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                    z-index: 1000;
-                    max-height: 280px;
-                    overflow-y: auto;
-                `;
-
-                suggestions.forEach((suggestion) => {
-                    const suggestionItem = document.createElement('div');
-                    suggestionItem.className = 'autocomplete-item';
-                    suggestionItem.style.cssText = `
-                        padding: 12px 16px;
-                        cursor: pointer;
-                        border-bottom: 1px solid #f0f0f0;
-                        background: white;
-                        transition: background-color 0.2s ease;
-                        display: flex;
-                        align-items: center;
-                        justify-content: space-between;
-                    `;
-
-                    // Create content with icon and text
-                    const contentDiv = document.createElement('div');
-                    contentDiv.style.cssText = 'display: flex; align-items: center; gap: 8px;';
-
-                    const iconSpan = document.createElement('span');
-                    iconSpan.innerHTML = getLocationIcon(suggestion.type);
-                    iconSpan.style.cssText = 'font-size: 14px; color: #6c757d;';
-
-                    const textSpan = document.createElement('span');
-                    textSpan.textContent = suggestion.name;
-                    textSpan.style.cssText = 'font-weight: 500; color: #2c3e50;';
-
-                    const provinceSpan = document.createElement('span');
-                    provinceSpan.textContent = suggestion.province;
-                    provinceSpan.style.cssText = 'font-size: 12px; color: #6c757d; margin-left: 8px;';
-
-                    contentDiv.appendChild(iconSpan);
-                    contentDiv.appendChild(textSpan);
-                    contentDiv.appendChild(provinceSpan);
-
-                    suggestionItem.appendChild(contentDiv);
-
-                    // Hover effects
-                    suggestionItem.addEventListener('mouseenter', function() {
-                        this.style.background = 'linear-gradient(135deg, #f8f9fa, #e9ecef)';
-                        this.style.transform = 'translateX(2px)';
-                    });
-
-                    suggestionItem.addEventListener('mouseleave', function() {
-                        this.style.background = 'white';
-                        this.style.transform = 'translateX(0)';
-                    });
-
-                    // Selection handler
-                    suggestionItem.addEventListener('click', function() {
-                        selectLocation(suggestion);
-                    });
-
-                    suggestionsContainer.appendChild(suggestionItem);
-                });
-
-                locationInput.parentNode.style.position = 'relative';
-                locationInput.parentNode.appendChild(suggestionsContainer);
-            }
-
-            function selectLocation(location) {
-                // Set the input value
-                locationInput.value = location.name;
-
-                // Generate full address for hidden input
-                const fullAddress = generateFullAddress(location);
-                if (hiddenLocationInput) {
-                    hiddenLocationInput.value = fullAddress;
-                }
-
-                // Auto-populate address textarea
-                const addressTextarea = locationInput.closest('.row').querySelector('textarea[name="address"]') ||
-                                       locationInput.closest('form').querySelector('textarea[name="address"]');
-                if (addressTextarea) {
-                    addressTextarea.value = fullAddress;
-                }
-
-                clearAutocompleteSuggestions();
-
-                console.log('Location selected:', location);
-            }
-
-            function generateFullAddress(location) {
-                if (location.type === 'province') {
-                    return `${location.name}, Indonesia`;
-                } else {
-                    return `${location.name}, ${location.province}, Indonesia`;
-                }
-            }
-
-            function getLocationIcon(type) {
-                switch (type) {
-                    case 'city':
-                        return '<i class="fas fa-city"></i>';
-                    case 'regency':
-                        return '<i class="fas fa-map-marked-alt"></i>';
-                    case 'province':
-                        return '<i class="fas fa-globe-asia"></i>';
-                    default:
-                        return '<i class="fas fa-map-marker-alt"></i>';
-                }
-            }
-
-            function clearAutocompleteSuggestions() {
-                const existingSuggestions = locationInput.parentNode.querySelector('.autocomplete-suggestions');
-                if (existingSuggestions) {
-                    existingSuggestions.remove();
-                }
-            }
-
-            function showAutocompleteSuggestions() {
-                const suggestions = locationInput.parentNode.querySelector('.autocomplete-suggestions');
-                if (suggestions) {
-                    suggestions.style.display = 'block';
-                }
-            }
-
-            function hideAutocompleteSuggestions() {
-                const suggestions = locationInput.parentNode.querySelector('.autocomplete-suggestions');
-                if (suggestions) {
-                    suggestions.style.display = 'none';
-                }
-            }
-
-            console.log('Smart single input location system initialized');
-        }
-
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            initSmartLocationInput();
-
-            // Initialize location edit functionality if on edit page
-            if (typeof initLocationEdit === 'function') {
-                initLocationEdit();
+                    submitBtn.innerHTML = originalContent;
+                    submitBtn.disabled = false;
+                }, 5000);
             }
         });
-    </script>
-
-    <!-- Status Color Management -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-
-            // Function to apply status colors
-            function applyStatusColors() {
-                const statusSelects = document.querySelectorAll('.status-dropdown');
-                statusSelects.forEach(select => {
-                    const options = select.querySelectorAll('option');
-                    options.forEach(option => {
-                        const statusClass = option.className;
-                        if (statusClass && statusClass.startsWith('status-')) {
-                            // Apply the status color class
-                            option.style.background = '';
-                            option.style.color = '';
-                            
-                            if (statusClass.includes('terdaftar')) {
-                                option.classList.add('bg-secondary', 'text-white');
-                            } else if (statusClass.includes('interview')) {
-                                option.classList.add('bg-warning', 'text-dark');
-                            } else if (statusClass.includes('tes')) {
-                                option.classList.add('bg-info', 'text-white');
-                            } else if (statusClass.includes('diterima')) {
-                                option.classList.add('bg-success', 'text-white');
-                            } else if (statusClass.includes('tidak-diterima')) {
-                                option.classList.add('bg-danger', 'text-white');
-                            }
-                        }
-                    });
+    });
+    
+    // Add smooth scrolling to anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
                 });
             }
-
-            // Apply colors on page load
-            applyStatusColors();
-
-            // Handle status changes with AJAX
-            document.addEventListener('change', function(e) {
-                if (e.target.classList.contains('status-dropdown')) {
-                    const select = e.target;
-                    const jobId = select.dataset.jobId;
-                    const newStatusId = select.value;
-                    const companyName = select.closest('tr').querySelector('td:first-child').textContent.trim();
-
-                    // Show loading state
-                    const originalHTML = select.outerHTML;
-                    select.disabled = true;
-                    select.style.opacity = '0.6';
-
-                    // AJAX request to update status
-                    fetch(`/update_status/${jobId}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest'
-                        },
-                        body: JSON.stringify({ status_id: newStatusId })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Show success message
-                            showAlert(`Status "${companyName}" berhasil diupdate!`, 'success');
-                            
-                            // Update statistics
-                            updateStatistics(data.stats);
-                        } else {
-                            showAlert('Gagal mengupdate status!', 'error');
-                            // Revert selection
-                            select.value = select.getAttribute('data-original-value') || select.value;
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showAlert('Terjadi kesalahan saat mengupdate status!', 'error');
-                        // Revert selection
-                        select.value = select.getAttribute('data-original-value') || select.value;
-                    })
-                    .finally(() => {
-                        select.disabled = false;
-                        select.style.opacity = '1';
-                        applyStatusColors();
-                    });
-                }
-            });
-
-            // Store original values
-            document.querySelectorAll('.status-dropdown').forEach(select => {
-                select.setAttribute('data-original-value', select.value);
-            });
-
-            // Show alert function
-            function showAlert(message, type) {
-                const alertDiv = document.createElement('div');
-                alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show shadow-sm position-fixed`;
-                alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-                alertDiv.innerHTML = `
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
-                    ${message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                `;
-                
-                document.body.appendChild(alertDiv);
-                
-                // Auto dismiss after 3 seconds
-                setTimeout(() => {
-                    if (alertDiv.parentNode) {
-                        alertDiv.remove();
-                    }
-                }, 3000);
-            }
-
-            // Update statistics function
-
-            function updateStatistics(stats) {
-                if (stats) {
-                    const elements = {
-                        'total': document.querySelector('[data-stat="total"]'),
-                        'interview': document.querySelector('[data-stat="interview"]'),
-                        'tes': document.querySelector('[data-stat="tes"]'),
-                        'diterima': document.querySelector('[data-stat="diterima"]'),
-                        'ditolak': document.querySelector('[data-stat="ditolak"]')
-                    };
-                    
-                    Object.keys(stats).forEach(key => {
-                        if (elements[key]) {
-                            elements[key].textContent = stats[key];
-                        }
-                    });
-                }
-            }
-
-            // Custom Confirmation Modal Handler
-            let confirmCallback = null;
-            
-            function showConfirmationModal(title, message, callback) {
-                document.getElementById('confirmTitle').textContent = title;
-                document.getElementById('confirmMessage').textContent = message;
-                confirmCallback = callback;
-                
-                const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
-                modal.show();
-            }
-            
-            // Handle confirmation action
-            document.getElementById('confirmAction').addEventListener('click', function() {
-                if (confirmCallback && typeof confirmCallback === 'function') {
-                    confirmCallback();
-                }
-                const modal = bootstrap.Modal.getInstance(document.getElementById('confirmModal'));
-                modal.hide();
-            });
-            
-            // Clear callback when modal is hidden
-            document.getElementById('confirmModal').addEventListener('hidden.bs.modal', function () {
-                confirmCallback = null;
-            });
-
-
-            // Make showConfirmationModal available globally
-            window.showConfirmationModal = showConfirmationModal;
-
-            // Image Modal Handler
-            function showImageModal(imageSrc, imageAlt = 'Preview Bukti Lamaran') {
-                const modalImage = document.getElementById('modalImage');
-                modalImage.src = imageSrc;
-                modalImage.alt = imageAlt;
-                
-                const modal = new bootstrap.Modal(document.getElementById('imageModal'));
-                modal.show();
-            }
-
-            // Make showImageModal available globally
-            window.showImageModal = showImageModal;
         });
-    </script>
+    });
+});
+
+// CSS Animations
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from { 
+            transform: translateX(100%); 
+            opacity: 0; 
+        }
+        to { 
+            transform: translateX(0); 
+            opacity: 1; 
+        }
+    }
+    
+    .alert:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-xl);
+    }
+`;
+document.head.appendChild(style);
+</script>
+
 </body>
 </html>
+

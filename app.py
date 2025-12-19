@@ -311,6 +311,7 @@ def login():
 
 
 
+
 # ======================
 # UPDATE STATUS AJAX
 # ======================
@@ -369,6 +370,74 @@ def update_status(job_id):
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+# ======================
+# UPDATE STATUS VIA STRING (NEW API)
+# ======================
+@app.route('/api/job/<int:job_id>/status', methods=['POST'])
+@login_required
+def update_job_status(job_id):
+    """API endpoint untuk update status menggunakan string status"""
+    try:
+        job = JobApplication.query.get_or_404(job_id)
+        
+        if job.user_id != current_user.id:
+            return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        
+        data = request.get_json()
+        if not data or 'status' not in data:
+            return jsonify({'success': False, 'message': 'Invalid data'}), 400
+        
+        status_name = data['status']
+        
+        # Find status by name
+        status = Status.query.filter_by(name=status_name).first()
+        if not status:
+            return jsonify({'success': False, 'message': 'Status tidak ditemukan'}), 400
+        
+        # Update job status
+        job.status_id = status.id
+        db.session.commit()
+        
+        # Calculate updated statistics
+        total = JobApplication.query.filter_by(user_id=current_user.id).count()
+        terdaftar = JobApplication.query.filter(
+            JobApplication.user_id == current_user.id,
+            JobApplication.status.has(name='Terdaftar')
+        ).count()
+        interview = JobApplication.query.filter(
+            JobApplication.user_id == current_user.id,
+            JobApplication.status.has(name='Interview')
+        ).count()
+        tes = JobApplication.query.filter(
+            JobApplication.user_id == current_user.id,
+            JobApplication.status.has(name='Tes')
+        ).count()
+        diterima = JobApplication.query.filter(
+            JobApplication.user_id == current_user.id,
+            JobApplication.status.has(name='Diterima')
+        ).count()
+        ditolak = JobApplication.query.filter(
+            JobApplication.user_id == current_user.id,
+            JobApplication.status.has(name='Tidak Diterima')
+        ).count()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Status berhasil diupdate',
+            'stats': {
+                'total': total,
+                'terdaftar': terdaftar,
+                'interview': interview,
+                'tes': tes,
+                'diterima': diterima,
+                'ditolak': ditolak
+            }
+        })
+        
+    except Exception as e:
+        print(f"Error updating status: {str(e)}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+
 
 
 
@@ -380,6 +449,134 @@ def uploaded_file(filename):
     """Serve uploaded proof images"""
     return send_file(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
+
+
+# ======================
+# SIDEBAR NAVIGATION PAGES
+# ======================
+
+# Jobs List Page
+@app.route('/jobs')
+@login_required
+def jobs():
+    """Halaman daftar lamaran kerja dengan fitur pencarian dan filter"""
+    search = request.args.get('q', '')
+    status = request.args.get('status', 'All')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
+    
+    statuses = Status.query.all()
+    query = JobApplication.query.filter_by(user_id=current_user.id)
+
+    if search:
+        query = query.filter(
+            JobApplication.company_name.ilike(f'%{search}%')
+        )
+
+    if status and status != 'All':
+        query = query.filter(
+            JobApplication.status.has(name=status)
+        )
+
+    # Filter berdasarkan rentang tanggal
+    if start_date:
+        try:
+            start_date_obj = datetime.strptime(start_date, '%Y-%m-%d').date()
+            query = query.filter(JobApplication.applied_date >= start_date_obj)
+        except ValueError:
+            pass
+
+    if end_date:
+        try:
+            end_date_obj = datetime.strptime(end_date, '%Y-%m-%d').date()
+            end_date_obj = end_date_obj.replace(day=end_date_obj.day + 1)
+            query = query.filter(JobApplication.applied_date < end_date_obj)
+        except ValueError:
+            pass
+
+    pagination = query.order_by(JobApplication.applied_date.desc()).paginate(
+        page=page, per_page=per_page, error_out=False
+    )
+    jobs = pagination.items
+
+    return render_template('jobs.html', 
+                         jobs=jobs, 
+                         statuses=statuses, 
+                         pagination=pagination,
+                         search=search,
+                         selected_status=status,
+                         start_date=start_date,
+                         end_date=end_date)
+
+# Reports & Export Page
+@app.route('/reports')
+@login_required
+def reports():
+    """Halaman laporan dan export data"""
+    # Get statistics for current user
+    total = JobApplication.query.filter_by(user_id=current_user.id).count()
+    terdaftar = JobApplication.query.filter(
+        JobApplication.user_id == current_user.id,
+        JobApplication.status.has(name='Terdaftar')
+    ).count()
+    interview = JobApplication.query.filter(
+        JobApplication.user_id == current_user.id,
+        JobApplication.status.has(name='Interview')
+    ).count()
+    tes = JobApplication.query.filter(
+        JobApplication.user_id == current_user.id,
+        JobApplication.status.has(name='Tes')
+    ).count()
+    diterima = JobApplication.query.filter(
+        JobApplication.user_id == current_user.id,
+        JobApplication.status.has(name='Diterima')
+    ).count()
+    ditolak = JobApplication.query.filter(
+        JobApplication.user_id == current_user.id,
+        JobApplication.status.has(name='Tidak Diterima')
+    ).count()
+
+    # Calculate success rate
+    success_rate = 0
+    if total > 0:
+        success_rate = round((diterima / total) * 100, 1)
+
+    return render_template('reports.html',
+                         total=total,
+                         terdaftar=terdaftar,
+                         interview=interview,
+                         tes=tes,
+                         diterima=diterima,
+                         ditolak=ditolak,
+                         success_rate=success_rate)
+
+# Settings Page
+@app.route('/settings')
+@login_required
+def settings():
+    """Halaman pengaturan aplikasi"""
+    # Get current user statistics
+    total_jobs = JobApplication.query.filter_by(user_id=current_user.id).count()
+    
+    # Get database file size
+    db_path = 'instance/database.db'
+    db_size = 0
+    if os.path.exists(db_path):
+        db_size = os.path.getsize(db_path)
+    
+    return render_template('settings.html',
+                         total_jobs=total_jobs,
+                         db_size=db_size)
+
+
+# Help Page
+@app.route('/help')
+@login_required
+def help():
+    """Halaman bantuan dan panduan penggunaan"""
+    return render_template('help.html')
 
 # ======================
 # DELETE JOB

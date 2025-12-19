@@ -1,52 +1,50 @@
 
 
+{% extends 'base-sidebar.html' %}
 
-{% extends 'base.html' %}
+{% block title %}Dashboard - Loker Tracker{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item active">Dashboard</li>
+{% endblock %}
+
 {% block content %}
 
-
-<!-- Enhanced Dashboard Header with Gradient -->
-<div class="card card-gradient-header mb-6">
-    <div class="card-header">
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-4">
-            <div>
-                <h1 class="card-title mb-2">
-                    <i class="fas fa-chart-line me-3"></i>
-                    Dashboard Overview
-                </h1>
-                <p class="card-subtitle mb-0">
-                    Kelola dan lacak lamaran kerja Anda dengan mudah
-                </p>
-            </div>
-            <div class="d-flex gap-3 flex-wrap">
-                <a href="{{ url_for('export_pdf') }}" class="btn btn-danger">
-                    <i class="fas fa-file-pdf me-2"></i>Export PDF
-                </a>
-                <a href="{{ url_for('export_excel') }}" class="btn btn-success">
-                    <i class="fas fa-file-excel me-2"></i>Export Excel
-                </a>
-
-                <a href="{{ url_for('add_job') }}" class="btn btn-light">
-                    <i class="fas fa-plus me-2"></i>Tambah Lamaran
-                </a>
-            </div>
+<!-- Clean Modern Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center flex-wrap" style="gap: var(--space-4);">
+        <div>
+            <h1 class="page-title">
+                <i class="fas fa-chart-line me-3"></i>
+                Dashboard Overview
+            </h1>
+            <p class="page-subtitle">
+                Kelola dan lacak lamaran kerja Anda dengan mudah dan efisien
+            </p>
+        </div>
+        <div class="action-buttons">
+            <a href="{{ url_for('export_pdf') }}" class="btn btn-danger">
+                <i class="fas fa-file-pdf me-2"></i>Export PDF
+            </a>
+            <a href="{{ url_for('export_excel') }}" class="btn btn-success">
+                <i class="fas fa-file-excel me-2"></i>Export Excel
+            </a>
+            <a href="{{ url_for('add_job') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Tambah Lamaran
+            </a>
         </div>
     </div>
 </div>
 
-
-
-
-
-<!-- Clean Statistics Cards -->
+<!-- Modern Statistics Cards -->
 <div class="stats-grid">
     <!-- Total Lamaran Card -->
     <div class="stat-card">
         <div class="stat-icon primary">
             <i class="fas fa-briefcase"></i>
         </div>
-        <div class="stat-label">Total Lamaran</div>
         <div class="stat-number" data-stat="total">{{ total }}</div>
+        <div class="stat-label">Total Lamaran</div>
     </div>
 
     <!-- Status Cards -->
@@ -54,71 +52,69 @@
         <div class="stat-icon gray">
             <i class="fas fa-clock"></i>
         </div>
-        <div class="stat-label">Terdaftar</div>
         <div class="stat-number" data-stat="terdaftar">{{ terdaftar }}</div>
+        <div class="stat-label">Terdaftar</div>
     </div>
 
     <div class="stat-card">
         <div class="stat-icon warning">
             <i class="fas fa-calendar-check"></i>
         </div>
-        <div class="stat-label">Interview</div>
         <div class="stat-number" data-stat="interview">{{ interview }}</div>
+        <div class="stat-label">Interview</div>
     </div>
 
     <div class="stat-card">
-        <div class="stat-icon warning">
+        <div class="stat-icon primary">
             <i class="fas fa-clipboard-list"></i>
         </div>
-        <div class="stat-label">Tes</div>
         <div class="stat-number" data-stat="tes">{{ tes }}</div>
+        <div class="stat-label">Tes</div>
     </div>
 
     <div class="stat-card">
         <div class="stat-icon success">
             <i class="fas fa-check-circle"></i>
         </div>
-        <div class="stat-label">Diterima</div>
         <div class="stat-number" data-stat="diterima">{{ diterima }}</div>
+        <div class="stat-label">Diterima</div>
     </div>
 
     <div class="stat-card">
         <div class="stat-icon error">
             <i class="fas fa-times-circle"></i>
         </div>
-        <div class="stat-label">Tidak Diterima</div>
         <div class="stat-number" data-stat="ditolak">{{ ditolak }}</div>
+        <div class="stat-label">Tidak Diterima</div>
     </div>
 </div>
 
-
-
-
-
-
-
-
-<!-- Enhanced Filter Section -->
-<div class="card filter-section mb-6">
+<!-- Modern Filter Section -->
+<div class="card filter-section">
     <div class="card-header">
-        <h5 class="card-title mb-4">
-            <i class="fas fa-filter me-3"></i>
+        <h5 class="card-title">
+            <i class="fas fa-filter me-2"></i>
             Filter & Pencarian
         </h5>
-        <form method="get" class="row g-4">
-            <div class="col-md-3">
+    </div>
+    <div class="card-body">
+        <form method="get" class="filter-form">
+            <div class="form-group">
                 <label class="form-label">
-                    <i class="fas fa-search me-2"></i>Cari Perusahaan
+                    <i class="fas fa-building me-2"></i>
+                    Nama Perusahaan
                 </label>
                 <input type="text" 
                        name="q" 
                        class="form-control" 
-                       placeholder="Masukkan nama perusahaan..." 
+                       placeholder="Cari nama perusahaan..." 
                        value="{{ request.args.get('q', '') }}">
             </div>
-            <div class="col-md-2">
+            
+            <div class="form-group">
                 <label class="form-label">
-                    <i class="fas fa-flag me-2"></i>Status
+                    <i class="fas fa-flag me-2"></i>
+                    Status
                 </label>
                 <select name="status" class="form-select">
                     <option value="All" {% if request.args.get('status') == 'All' %}selected{% endif %}>Semua Status</option>
@@ -129,152 +125,200 @@
                     <option value="Tidak Diterima" {% if request.args.get('status') == 'Tidak Diterima' %}selected{% endif %}>Tidak Diterima</option>
                 </select>
             </div>
-            <div class="col-md-2">
+            
+            <div class="form-group">
                 <label class="form-label">
-                    <i class="fas fa-calendar me-2"></i>Tanggal Awal
+                    <i class="fas fa-calendar me-2"></i>
+                    Tanggal Awal
                 </label>
                 <input type="date" 
                        name="start_date" 
                        class="form-control" 
                        value="{{ request.args.get('start_date', '') }}">
             </div>
-            <div class="col-md-2">
+            
+            <div class="form-group">
                 <label class="form-label">
-                    <i class="fas fa-calendar me-2"></i>Tanggal Akhir
+                    <i class="fas fa-calendar me-2"></i>
+                    Tanggal Akhir
                 </label>
                 <input type="date" 
                        name="end_date" 
                        class="form-control" 
                        value="{{ request.args.get('end_date', '') }}">
             </div>
-            <div class="col-md-3 d-flex align-items-end">
-                <div class="d-flex gap-3 w-100">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search me-2"></i>Filter
-                    </button>
-                    <a href="/" class="btn btn-outline">
-                        <i class="fas fa-refresh me-2"></i>Reset
-                    </a>
-                </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search me-2"></i>Cari
+                </button>
+                <a href="/" class="btn btn-secondary">
+                    <i class="fas fa-refresh me-2"></i>Reset
+                </a>
             </div>
         </form>
     </div>
 </div>
 
-
-
-
-
-
-
-
-<!-- Clean Jobs Table -->
-<div class="card">
+<!-- Modern Jobs Table -->
+<div class="card table-section">
     <div class="card-header">
-        <h5 class="card-title mb-0">
+        <h5 class="card-title">
             <i class="fas fa-list me-2"></i>
             Daftar Lamaran Kerja
+            {% if jobs|length > 0 %}
+                <span class="text-muted">({{ jobs|length }} item)</span>
+            {% endif %}
         </h5>
     </div>
     
-    <div class="table-wrapper" style="overflow-x: auto;">
-    <div class="card-body p-0">
-        <div class="table-responsive" style="overflow: visible;">
-            <table class="table table-hover mb-0" style="overflow: visible;">
+    <div class="table-container">
+        <table class="jobs-table">
+            <thead>
+                <tr>
+                    <th class="text-center">
+                        <i class="fas fa-hashtag"></i>
+                    </th>
+                    <th>
+                        <i class="fas fa-building me-2"></i>
+                        Perusahaan
+                    </th>
+                    <th>
+                        <i class="fas fa-user-tie me-2"></i>
+                        Posisi
+                    </th>
+                    <th>
+                        <i class="fas fa-share-alt me-2"></i>
+                        Sumber Info
+                    </th>
+                    <th>
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        Lokasi
+                    </th>
+                    <th>
+                        <i class="fas fa-camera me-2"></i>
+                        Bukti Lamaran
+                    </th>
+                    <th>
+                        <i class="fas fa-flag me-2"></i>
+                        Status
+                    </th>
+                    <th>
+                        <i class="fas fa-calendar me-2"></i>
+                        Tanggal Apply
+                    </th>
+                    <th class="text-center">
+                        <i class="fas fa-cog me-2"></i>
+                        Aksi
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job in jobs %}
+                <tr>
+                    <td class="text-center">
+                        <span class="badge bg-light text-dark fw-bold">{{ loop.index }}</span>
+                    </td>
+                    
+                    <td data-label="Perusahaan">
+                        <div class="company-name">{{ job.company_name }}</div>
+                    </td>
 
-
-
-                <thead>
-                    <tr>
-                        <th class="text-center" style="width: 60px;"><i class="fas fa-hashtag"></i></th>
-                        <th><i class="fas fa-building me-1"></i>Perusahaan</th>
-                        <th><i class="fas fa-user-tie me-1"></i>Posisi</th>
-                        <th><i class="fas fa-share-alt me-1"></i>Sumber Info</th>
-                        <th><i class="fas fa-map-marker-alt me-1"></i>Lokasi</th>
-                        <th><i class="fas fa-camera me-1"></i>Bukti Lamaran</th>
-                        <th><i class="fas fa-flag me-1"></i>Status</th>
-                        <th><i class="fas fa-calendar me-1"></i>Tanggal Apply</th>
-                        <th class="text-center" style="width: 120px;"><i class="fas fa-cogs me-1"></i>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-
-
-
-                    {% for job in jobs %}
-                    <tr>
-                        <td class="text-center">
-                            <span class="badge bg-light text-dark fw-bold">{{ loop.index }}</span>
-                        </td>
-                        <td data-label="Perusahaan">
-                            <div class="fw-semibold">{{ job.company_name }}</div>
-                        </td>
-
-                        <td data-label="Posisi">
-                            <div class="position-info">
+                    <td data-label="Posisi">
+                        <div class="position-info">
+                            {% if job.position %}
                                 <i class="fas fa-user-tie"></i>
-                                {{ job.position or '<span class="text-muted">-</span>' }}
-                            </div>
-                        </td>
-                        
-
-
-                        <td data-label="Sumber Info">
-                            {% if job.source_info %}
-                                {% if job.source_info == 'LinkedIn' %}
-                                    <span class="source-badge linkedin"><i class="fab fa-linkedin me-1"></i>LinkedIn</span>
-                                {% elif job.source_info == 'Instagram' %}
-                                    <span class="source-badge instagram"><i class="fab fa-instagram me-1"></i>Instagram</span>
-                                {% elif job.source_info == 'TikTok' %}
-                                    <span class="source-badge tiktok"><i class="fab fa-tiktok me-1"></i>TikTok</span>
-                                {% elif job.source_info == 'WhatsApp' %}
-                                    <span class="source-badge whatsapp"><i class="fab fa-whatsapp me-1"></i>WhatsApp</span>
-                                {% elif job.source_info == 'JobStreet' %}
-                                    <span class="source-badge jobstreet"><i class="fas fa-briefcase me-1"></i>JobStreet</span>
-                                {% elif job.source_info == 'Indeed' %}
-                                    <span class="source-badge indeed"><i class="fas fa-search me-1"></i>Indeed</span>
-                                {% elif job.source_info == 'Website Perusahaan' %}
-                                    <span class="source-badge website"><i class="fas fa-globe me-1"></i>Website</span>
-                                {% elif job.source_info == 'Email/Newsletter' %}
-                                    <span class="source-badge email"><i class="fas fa-envelope me-1"></i>Email</span>
-                                {% elif job.source_info == 'Teman/Kolega' %}
-                                    <span class="source-badge friend"><i class="fas fa-users me-1"></i>Teman</span>
-                                {% elif job.source_info == 'Job Fair/Expo' %}
-                                    <span class="source-badge jobfair"><i class="fas fa-calendar-alt me-1"></i>Job Fair</span>
-                                {% elif job.source_info == 'Media Sosial Lainnya' %}
-                                    <span class="source-badge social"><i class="fas fa-share-alt me-1"></i>Social</span>
-                                {% elif job.source_info == 'Custom' %}
-                                    <span class="source-badge custom"><i class="fas fa-edit me-1"></i>Custom</span>
-                                {% else %}
-                                    <span class="source-badge custom"><i class="fas fa-pencil-alt me-1"></i>{{ job.source_info }}</span>
-                                {% endif %}
+                                {{ job.position }}
                             {% else %}
                                 <span class="text-muted">-</span>
                             {% endif %}
-                        </td>
-                        
-                        <td data-label="Lokasi">
-                            <div class="location-info">
-                                <i class="fas fa-map-marker-alt"></i>
-                                {{ job.location }}
-                            </div>
-                        </td>
+                        </div>
+                    </td>
 
-                        <td data-label="Bukti Lamaran">
-                            {% if job.application_proof or job.image_proof %}
+                    <td data-label="Sumber Info">
+                        {% if job.source_info %}
+                            {% if job.source_info == 'LinkedIn' %}
+                                <span class="source-badge linkedin">
+                                    <i class="fab fa-linkedin"></i>LinkedIn
+                                </span>
+                            {% elif job.source_info == 'Instagram' %}
+                                <span class="source-badge instagram">
+                                    <i class="fab fa-instagram"></i>Instagram
+                                </span>
+                            {% elif job.source_info == 'TikTok' %}
+                                <span class="source-badge tiktok">
+                                    <i class="fab fa-tiktok"></i>TikTok
+                                </span>
+                            {% elif job.source_info == 'WhatsApp' %}
+                                <span class="source-badge whatsapp">
+                                    <i class="fab fa-whatsapp"></i>WhatsApp
+                                </span>
+                            {% elif job.source_info == 'JobStreet' %}
+                                <span class="source-badge jobstreet">
+                                    <i class="fas fa-briefcase"></i>JobStreet
+                                </span>
+                            {% elif job.source_info == 'Indeed' %}
+                                <span class="source-badge indeed">
+                                    <i class="fas fa-search"></i>Indeed
+                                </span>
+                            {% elif job.source_info == 'Website Perusahaan' %}
+                                <span class="source-badge website">
+                                    <i class="fas fa-globe"></i>Website
+                                </span>
+                            {% elif job.source_info == 'Email/Newsletter' %}
+                                <span class="source-badge email">
+                                    <i class="fas fa-envelope"></i>Email
+                                </span>
+                            {% elif job.source_info == 'Teman/Kolega' %}
+                                <span class="source-badge friend">
+                                    <i class="fas fa-users"></i>Teman
+                                </span>
+                            {% elif job.source_info == 'Job Fair/Expo' %}
+                                <span class="source-badge jobfair">
+                                    <i class="fas fa-calendar-alt"></i>Job Fair
+                                </span>
+                            {% elif job.source_info == 'Media Sosial Lainnya' %}
+                                <span class="source-badge social">
+                                    <i class="fas fa-share-alt"></i>Social
+                                </span>
+                            {% elif job.source_info == 'Custom' %}
+                                <span class="source-badge custom">
+                                    <i class="fas fa-edit"></i>Custom
+                                </span>
+                            {% else %}
+                                <span class="source-badge custom">
+                                    <i class="fas fa-pencil-alt"></i>{{ job.source_info }}
+                                </span>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                    
+                    <td data-label="Lokasi">
+                        <div class="location-info">
+                            <i class="fas fa-map-marker-alt"></i>
+                            {{ job.location }}
+                        </div>
+                    </td>
+
+                    <td data-label="Bukti Lamaran">
+                        {% if job.application_proof or job.image_proof %}
+                            <div style="display: flex; flex-direction: column; gap: var(--space-2);">
                                 <!-- Link Bukti -->
                                 {% if job.application_proof and job.application_proof.startswith('http') %}
                                     <a href="{{ job.application_proof }}" target="_blank" class="proof-link">
-                                        <i class="fas fa-external-link-alt me-1"></i>Link
+                                        <i class="fas fa-external-link-alt me-1"></i>
+                                        Link Bukti
                                     </a>
-                                    <br>
                                 {% endif %}
                                 
 
                                 <!-- Screenshot -->
                                 {% if job.image_proof %}
-                                    <button onclick="showImageModal('/uploads/proofs/{{ job.image_proof }}', 'Bukti Lamaran - {{ job.company_name }}')" class="proof-screenshot">
-                                        <i class="fas fa-image me-1"></i>Screenshot
+                                    <button onclick="showImageModal('/uploads/proofs/{{ job.image_proof }}', 'Bukti Lamaran - {{ job.company_name }}')" class="btn btn-sm btn-info proof-screenshot">
+                                        <i class="fas fa-image me-1"></i>
+                                        Screenshot
                                     </button>
                                 {% endif %}
                                 
@@ -282,142 +326,111 @@
                                 {% if job.application_proof and not job.application_proof.startswith('http') %}
                                     <span class="text-muted">-</span>
                                 {% endif %}
-                            {% else %}
-                                <span class="text-muted">-</span>
-                            {% endif %}
-                        </td>
-
-                        <td data-label="Status">
-                            <div class="dropdown">
-                                <span class="badge status-badge status-{{ job.status.name.lower().replace(' ', '-') }} px-3 py-2 dropdown-toggle" 
-                                      style="cursor: pointer; font-size: 0.85rem;"
-                                      data-bs-toggle="dropdown" 
-                                      aria-expanded="false"
-                                      id="status-badge-{{ job.id }}">
-                                    <i class="fas fa-flag me-1"></i>
-                                    {{ job.status.name }}
-                                    <i class="fas fa-chevron-down ms-1" style="font-size: 0.7rem;"></i>
-                                </span>
-                                <ul class="dropdown-menu" style="z-index: 9999; border: 1px solid #dee2e6; box-shadow: 0 8px 25px rgba(0,0,0,0.15);">
-                                    {% for status in statuses %}
-                                    <li>
-                                        <a class="dropdown-item d-flex align-items-center" 
-                                           href="#" 
-                                           onclick="updateJobStatus({{ job.id }}, {{ status.id }}, '{{ status.name }}')"
-                                           style="padding: 0.6rem 1rem; transition: all 0.2s ease;">
-                                            <span class="badge status-badge status-{{ status.name.lower().replace(' ', '-') }} me-3" style="font-size: 0.7rem; min-width: 60px;">
-                                                {{ status.name }}
-                                            </span>
-                                            <span style="font-weight: 500;">{{ status.name }}</span>
-                                        </a>
-                                    </li>
-                                    {% endfor %}
-                                </ul>
                             </div>
-                        </td>
-
-                        <td data-label="Tanggal Apply">
-                            <div class="date-info">
-                                <i class="fas fa-calendar"></i>
-                                {{ job.applied_date.strftime('%d %b %Y') }}
-                            </div>
-                        </td>
-                        
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
 
 
-                        <td data-label="Aksi">
-                            <div class="d-flex gap-2 justify-content-center">
-                                <a href="/job/{{ job.id }}/edit" 
-                                   class="btn btn-warning btn-sm">
-                                    <i class="fas fa-edit me-1"></i>
-                                    <span class="d-none d-sm-inline">Edit</span>
-                                </a>
-                                <button class="btn btn-danger btn-sm delete-btn" 
-                                        data-job-id="{{ job.id }}" 
-                                        data-company="{{ job.company_name }}">
+
+
+                    <td data-label="Status">
+                        <div class="status-badge-container">
+
+                            <span class="status-badge status-{{ (job.status.name or 'unknown').lower().replace(' ', '-') }}" data-job-id="{{ job.id }}">
+                                <i class="fas fa-flag"></i>
+
+                                {{ job.status.name if job.status else 'Status Tidak Diketahui' }}
+                            </span>
+                        </div>
+                    </td>
+
+                    <td data-label="Tanggal Apply">
+                        <div class="date-info">
+                            <i class="fas fa-calendar"></i>
+                            {{ job.applied_date.strftime('%d %b %Y') }}
+                        </div>
+                    </td>
+
+                    <td data-label="Aksi">
+                        <div class="d-flex gap-2 justify-content-center">
+                            <a href="/job/{{ job.id }}/edit" 
+                               class="btn btn-warning btn-sm"
+                               title="Edit data">
+                                <i class="fas fa-edit me-1"></i>
+                                Edit
+                            </a>
+                            <form method="post" action="/job/{{ job.id }}/delete" style="display: inline;">
+                                <button type="submit" class="btn btn-danger btn-sm" 
+                                        onclick="return confirm('Apakah Anda yakin ingin menghapus lamaran kerja dari {{ job.company_name }}?')"
+                                        title="Hapus data">
                                     <i class="fas fa-trash me-1"></i>
-                                    <span class="d-none d-sm-inline">Delete</span>
+                                    Hapus
                                 </button>
-                            </div>
-                        </td>
-                    </tr>
-                    {% else %}
-
-
-
-
-                    <tr>
-                        <td colspan="9" class="text-center py-4">
-                            <div class="empty-state">
-                                <i class="fas fa-inbox fa-3x mb-3"></i>
-                                <p class="mb-0">Belum ada data lamaran kerja</p>
-                                <small>Klik "Tambah Lamaran" untuk mulai menambah data</small>
-                            </div>
-                        </td>
-                    </tr>
-
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="9" class="text-center py-4">
+                        <div class="empty-state">
+                            <i class="fas fa-inbox mb-4"></i>
+                            <p class="mb-2">Belum ada data lamaran kerja</p>
+                            <small>Klik "Tambah Lamaran" untuk mulai menambah data</small>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
     
-
-    <!-- Simple Pagination -->
+    <!-- Modern Pagination -->
     {% if pagination.pages > 1 %}
     <div class="card-footer">
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center mb-0">
+        <div class="pagination">
+            <div class="pagination-info">
+                Halaman {{ pagination.page }} dari {{ pagination.pages }}
+            </div>
+            <div class="pagination-links">
                 <!-- First Page -->
                 {% if pagination.has_prev %}
-                <li class="page-item">
-                    <a class="page-link" href="{{ url_for('index', page=1, q=request.args.get('q', ''), status=request.args.get('status', 'All'), start_date=request.args.get('start_date', ''), end_date=request.args.get('end_date', '')) }}">
-                        <i class="fas fa-angle-double-left"></i>
-                    </a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="{{ url_for('index', page=pagination.prev_num, q=request.args.get('q', ''), status=request.args.get('status', 'All'), start_date=request.args.get('start_date', ''), end_date=request.args.get('end_date', '')) }}">
-                        <i class="fas fa-angle-left"></i>
-                    </a>
-                </li>
+                <a class="page-btn" href="{{ url_for('index', page=1, q=request.args.get('q', ''), status=request.args.get('status', 'All'), start_date=request.args.get('start_date', ''), end_date=request.args.get('end_date', '')) }}" title="Halaman pertama">
+                    <i class="fas fa-angle-double-left"></i>
+                </a>
+                <a class="page-btn" href="{{ url_for('index', page=pagination.prev_num, q=request.args.get('q', ''), status=request.args.get('status', 'All'), start_date=request.args.get('start_date', ''), end_date=request.args.get('end_date', '')) }}" title="Halaman sebelumnya">
+                    <i class="fas fa-angle-left"></i>
+                </a>
                 {% endif %}
                 
                 <!-- Page Numbers -->
                 {% for page_num in pagination.iter_pages() %}
                     {% if page_num %}
                         {% if page_num != pagination.page %}
-                        <li class="page-item">
-                            <a class="page-link" href="{{ url_for('index', page=page_num, q=request.args.get('q', ''), status=request.args.get('status', 'All'), start_date=request.args.get('start_date', ''), end_date=request.args.get('end_date', '')) }}">
-                                {{ page_num }}
-                            </a>
-                        </li>
+                        <a class="page-link" href="{{ url_for('index', page=page_num, q=request.args.get('q', ''), status=request.args.get('status', 'All'), start_date=request.args.get('start_date', ''), end_date=request.args.get('end_date', '')) }}">
+                            {{ page_num }}
+                        </a>
                         {% else %}
-                        <li class="page-item active">
-                            <span class="page-link">{{ page_num }}</span>
-                        </li>
+                        <span class="page-current">{{ page_num }}</span>
                         {% endif %}
                     {% else %}
-                    <li class="page-item disabled">
-                        <span class="page-link">...</span>
-                    </li>
+                    <span class="page-ellipsis">...</span>
                     {% endif %}
                 {% endfor %}
                 
                 <!-- Next Page -->
                 {% if pagination.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="{{ url_for('index', page=pagination.next_num, q=request.args.get('q', ''), status=request.args.get('status', 'All'), start_date=request.args.get('start_date', ''), end_date=request.args.get('end_date', '')) }}">
-                        <i class="fas fa-angle-right"></i>
-                    </a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="{{ url_for('index', page=pagination.pages, q=request.args.get('q', ''), status=request.args.get('status', 'All'), start_date=request.args.get('start_date', ''), end_date=request.args.get('end_date', '')) }}">
-                        <i class="fas fa-angle-double-right"></i>
-                    </a>
-                </li>
+                <a class="page-btn" href="{{ url_for('index', page=pagination.next_num, q=request.args.get('q', ''), status=request.args.get('status', 'All'), start_date=request.args.get('start_date', ''), end_date=request.args.get('end_date', '')) }}" title="Halaman selanjutnya">
+                    <i class="fas fa-angle-right"></i>
+                </a>
+                <a class="page-btn" href="{{ url_for('index', page=pagination.pages, q=request.args.get('q', ''), status=request.args.get('status', 'All'), start_date=request.args.get('start_date', ''), end_date=request.args.get('end_date', '')) }}" title="Halaman terakhir">
+                    <i class="fas fa-angle-double-right"></i>
+                </a>
                 {% endif %}
-            </ul>
-        </nav>
+            </div>
+        </div>
     </div>
     {% endif %}
 </div>
@@ -426,156 +439,416 @@
 
 
 
+<!-- Modern JavaScript dengan Status Dropdown -->
 <script>
+// Status options configuration
+const STATUS_OPTIONS = [
+    { value: 'Terdaftar', label: 'Terdaftar', dotClass: 'terdaftar' },
+    { value: 'Interview', label: 'Interview', dotClass: 'interview' },
+    { value: 'Tes', label: 'Tes', dotClass: 'tes' },
+    { value: 'Diterima', label: 'Diterima', dotClass: 'diterima' },
+    { value: 'Tidak Diterima', label: 'Tidak Diterima', dotClass: 'tidak-diterima' }
+];
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize status dropdowns
+    initializeStatusDropdowns();
+    
+    // Simple confirmation for delete
+    console.log('Dashboard loaded successfully');
+    
+    // Add smooth scrolling
+    document.documentElement.style.scrollBehavior = 'smooth';
+    
+    // Add loading states to buttons
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Memproses...';
+                submitBtn.disabled = true;
+            }
+        });
+    });
+});
+
+
+// Initialize all status dropdowns
+function initializeStatusDropdowns() {
+    const statusBadges = document.querySelectorAll('.status-badge');
+    console.log('Found status badges:', statusBadges.length);
+    
+    statusBadges.forEach((badge, index) => {
+        console.log(`Initializing badge ${index}:`, badge);
+        
+        // Remove existing dropdown if any
+        const existingDropdown = badge.querySelector('.status-dropdown');
+        if (existingDropdown) {
+            existingDropdown.remove();
+        }
+        
+        createStatusDropdown(badge);
+        addStatusBadgeListeners(badge);
+    });
+}
+
+
+// Create dropdown for status badge
+function createStatusDropdown(badge) {
+    const dropdown = document.createElement('div');
+    dropdown.className = 'status-dropdown';
+    
+    const currentStatus = badge.textContent.trim();
+    console.log('Creating dropdown for current status:', currentStatus);
+    
+    dropdown.innerHTML = STATUS_OPTIONS.map(option => {
+        const isActive = option.value === currentStatus;
+        return `
+            <div class="status-option ${isActive ? 'active' : ''}" 
+                 data-status="${option.value}">
+                <span class="status-dot ${option.dotClass}"></span>
+                ${option.label}
+            </div>
+        `;
+    }).join('');
+    
+    badge.appendChild(dropdown);
+    console.log('Dropdown created and appended');
+}
+
+// Add event listeners to status badge
+function addStatusBadgeListeners(badge) {
+    const dropdown = badge.querySelector('.status-dropdown');
+    const options = dropdown.querySelectorAll('.status-option');
+    
+    badge.addEventListener('click', function(e) {
+        e.stopPropagation();
+        toggleStatusDropdown(this);
+    });
+    
+    options.forEach(option => {
+        option.addEventListener('click', function(e) {
+            e.stopPropagation();
+            updateStatus(badge, this.dataset.status, this);
+        });
+    });
+}
+
+
+
+// Toggle dropdown visibility
+function toggleStatusDropdown(badge) {
+    const dropdown = badge.querySelector('.status-dropdown');
+    if (!dropdown) return;
+    
+    const isOpen = dropdown.classList.contains('show');
+    
+    // Close all other dropdowns
+    closeAllStatusDropdowns();
+    
+    // Toggle current dropdown
+    if (!isOpen) {
+        dropdown.classList.add('show');
+    }
+}
+
+// Close all dropdowns
+function closeAllStatusDropdowns() {
+    const dropdowns = document.querySelectorAll('.status-dropdown');
+    dropdowns.forEach(dropdown => {
+        dropdown.classList.remove('show');
+    });
+}
 
 
 
 
-
-    // Update job status
-    window.updateJobStatus = function(jobId, statusId, statusName) {
-        // Send AJAX request
-        fetch(`/update_status/${jobId}`, {
+// Update status via API
+async function updateStatus(badge, newStatus, optionElement) {
+    try {
+        const jobId = badge.dataset.jobId;
+        if (!jobId) {
+            console.error('Job ID not found');
+            showStatusNotification('Job ID tidak ditemukan', 'error');
+            return;
+        }
+        
+        console.log(`Updating job ${jobId} status to: ${newStatus}`);
+        
+        // Store original content before loading
+        const originalContent = badge.innerHTML;
+        const originalClasses = badge.className;
+        
+        // Show loading state immediately
+        badge.innerHTML = `
+            <div class="status-loading">
+                <div class="spinner"></div>
+                Mengupdate...
+            </div>
+        `;
+        badge.style.opacity = '0.7';
+        badge.style.pointerEvents = 'none';
+        
+        // Close dropdown immediately
+        const dropdown = badge.querySelector('.status-dropdown');
+        if (dropdown) dropdown.classList.remove('show');
+        
+        // Make API call
+        const response = await fetch(`/api/job/${jobId}/status`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest'
             },
-            body: JSON.stringify({ status_id: statusId })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Update the badge immediately
-                const badge = document.getElementById(`status-badge-${jobId}`);
-                if (badge) {
-                    // Remove old status classes
-                    badge.classList.forEach(className => {
-                        if (className.startsWith('status-')) {
-                            badge.classList.remove(className);
-                        }
-                    });
-                    
-                    // Add new status class
-                    const newClass = `status-${statusName.toLowerCase().replace(' ', '-')}`;
-                    badge.classList.add(newClass);
-                    
-                    // Update text content
-                    badge.innerHTML = `<i class="fas fa-flag me-1"></i>${statusName} <i class="fas fa-chevron-down ms-1" style="font-size: 0.7rem;"></i>`;
-                }
-                
-                // Update statistics if provided
-                if (data.stats) {
-                    updateStatistics(data.stats);
-                }
-                
-                // Show success message
-                showAlert(`Status "${statusName}" berhasil diupdate!`, 'success');
-            } else {
-                showAlert('Gagal mengupdate status!', 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showAlert('Terjadi kesalahan saat mengupdate status!', 'error');
+            body: JSON.stringify({ status: newStatus })
         });
-    };
-
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', function(event) {
-        const dropdowns = document.querySelectorAll('.dropdown-menu');
-        dropdowns.forEach(dropdown => {
-            const toggle = dropdown.previousElementSibling;
-            if (!dropdown.contains(event.target) && !toggle.contains(event.target)) {
-                dropdown.classList.remove('show');
-                toggle.setAttribute('aria-expanded', 'false');
-            }
-        });
-    });
-
-    // Show alert function
-    function showAlert(message, type) {
-        const alert = document.createElement('div');
-        alert.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
-        alert.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-        alert.innerHTML = `
-            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
         
-        document.body.appendChild(alert);
+        const data = await response.json();
+        console.log('API Response:', data);
         
-        // Auto dismiss after 3 seconds
-        setTimeout(() => {
-            if (alert.parentNode) {
-                alert.remove();
-            }
-        }, 3000);
-    }
-
-    // Update statistics function
-    function updateStatistics(stats) {
-        if (stats) {
-            Object.keys(stats).forEach(key => {
-                const element = document.querySelector(`[data-stat="${key}"]`);
-                if (element) {
-                    element.textContent = stats[key];
-                }
-            });
-        }
-    }
 
 
-    // Handle delete button clicks with custom confirmation modal
-    document.querySelectorAll('.delete-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const jobId = this.dataset.jobId;
-            const companyName = this.dataset.company;
+
+        if (response.ok && data.success) {
+            // Update badge appearance with new status
+            const statusClass = newStatus.toLowerCase().replace(/\s+/g, '-');
+            const newClassName = `status-badge status-${statusClass}`;
             
-            showConfirmationModal(
-                'Hapus Lamaran Kerja',
-                `Apakah Anda yakin ingin menghapus lamaran kerja dari "${companyName}"? Aksi ini tidak dapat dibatalkan.`,
-                function() {
-                    // Send AJAX request
-                    fetch(`/job/${jobId}/delete`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Show success message
-                            const alert = document.createElement('div');
-                            alert.className = 'alert alert-success alert-dismissible fade show';
-                            alert.innerHTML = `
-                                ${data.message}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            `;
-                            document.querySelector('.container').prepend(alert);
-                            
-                            // Remove alert after 3 seconds
-                            setTimeout(() => {
-                                alert.remove();
-                            }, 3000);
-                            
-                            // Refresh page to update table and statistics
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 1000);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showAlert('Terjadi kesalahan saat menghapus job', 'error');
-                    });
-                }
-            );
-        });
+            console.log('Updating badge from:', badge.className, 'to:', newClassName);
+            
+            // Remove all status-* classes first
+            const classList = badge.className.split(' ').filter(cls => !cls.startsWith('status-'));
+            
+            // Set base class and new status class
+            badge.className = `status-badge status-${statusClass}`;
+            badge.innerHTML = `
+                <i class="fas fa-flag"></i>
+                ${newStatus}
+            `;
+            badge.style.opacity = '1';
+            badge.style.pointerEvents = 'auto';
+            
+            // Force a reflow to ensure CSS updates
+            badge.offsetHeight;
+            
+            console.log(`Badge updated successfully. Final classes: ${badge.className}`);
+            
+            // Update dropdown options to show new active state
+            setTimeout(() => {
+                updateDropdownOptions(badge, newStatus);
+            }, 100);
+            
+            // Update statistics if available
+            if (data.stats) {
+                updateStatistics(data.stats);
+            }
+            
+            // Show success notification
+            showStatusNotification('Status berhasil diupdate!', 'success');
+            
+        } else {
+            throw new Error(data.message || 'Gagal mengupdate status');
+        }
+        
+    } catch (error) {
+        console.error('Error updating status:', error);
+        const errorMessage = error.message || 'Terjadi kesalahan saat mengupdate status';
+        
+        // Restore original content on error
+        badge.innerHTML = originalContent;
+        badge.className = originalClasses;
+        badge.style.opacity = '1';
+        badge.style.pointerEvents = 'auto';
+        
+        // Show error notification
+        showStatusNotification(errorMessage, 'error');
+    }
+}
+
+
+// Show loading state
+function showStatusLoading(badge) {
+    const originalContent = badge.innerHTML;
+    const originalClasses = badge.className;
+    
+    badge.setAttribute('data-original-content', originalContent);
+    badge.setAttribute('data-original-classes', originalClasses);
+    badge.innerHTML = `
+        <div class="status-loading">
+            <div class="spinner"></div>
+            Mengupdate...
+        </div>
+    `;
+    badge.style.pointerEvents = 'none';
+    badge.style.opacity = '0.7';
+}
+
+// Hide loading state
+function hideStatusLoading(badge) {
+    const originalContent = badge.getAttribute('data-original-content');
+    const originalClasses = badge.getAttribute('data-original-classes');
+    
+    if (originalContent) {
+        badge.innerHTML = originalContent;
+        badge.removeAttribute('data-original-content');
+    }
+    
+    if (originalClasses) {
+        badge.className = originalClasses;
+        badge.removeAttribute('data-original-classes');
+    }
+    
+    badge.style.pointerEvents = 'auto';
+    badge.style.opacity = '1';
+}
+
+// Update badge appearance
+function updateStatusBadge(badge, newStatus) {
+    // Remove all status-related classes
+    const baseClasses = 'status-badge';
+    badge.className = baseClasses;
+    
+    // Add new status class
+    const statusClass = newStatus.toLowerCase().replace(/\s+/g, '-');
+    badge.classList.add(`status-${statusClass}`);
+    
+    // Update content
+    badge.innerHTML = `
+        <i class="fas fa-flag"></i>
+        ${newStatus}
+    `;
+    
+    console.log(`Updated badge class to: status-${statusClass}`);
+}
+
+// Update dropdown options
+function updateDropdownOptions(badge, newStatus) {
+    const dropdown = badge.querySelector('.status-dropdown');
+    const options = dropdown.querySelectorAll('.status-option');
+    
+    options.forEach(option => {
+        option.classList.remove('active');
+        if (option.dataset.status === newStatus) {
+            option.classList.add('active');
+        }
     });
+}
+
+// Update statistics cards
+function updateStatistics(stats) {
+    Object.keys(stats).forEach(key => {
+        const statElement = document.querySelector(`[data-stat="${key}"]`);
+        if (statElement) {
+            statElement.textContent = stats[key];
+        }
+    });
+}
+
+// Close all dropdowns
+function closeAllStatusDropdowns() {
+    const dropdowns = document.querySelectorAll('.status-dropdown');
+    dropdowns.forEach(dropdown => {
+        dropdown.classList.remove('show');
+    });
+}
+
+// Image Modal Functions
+function showImageModal(imageSrc, title) {
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalTitle = document.getElementById('modalTitle');
+    
+    modalImage.src = imageSrc;
+    modalTitle.textContent = title;
+    modal.style.display = 'block';
+    
+    // Add fade in animation
+    modal.style.opacity = '0';
+    setTimeout(() => {
+        modal.style.transition = 'opacity 0.3s ease';
+        modal.style.opacity = '1';
+    }, 10);
+}
+
+function closeImageModal() {
+    const modal = document.getElementById('imageModal');
+    modal.style.opacity = '0';
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300);
+}
+
+
+// Enhanced notification system
+function showStatusNotification(message, type = 'success') {
+    // Use existing showAlert if available
+    if (window.showAlert) {
+        window.showAlert(message, type);
+        return;
+    }
+    
+    // Fallback to simple alert
+    const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
+    const icon = type === 'error' ? 'fas fa-exclamation-triangle' : 'fas fa-check-circle';
+    
+    // Create temporary alert
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert ${alertClass} alert-dismissible fade show`;
+    alertDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 300px;
+        max-width: 400px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        animation: slideInRight 0.3s ease-out;
+    `;
+    
+    alertDiv.innerHTML = `
+        <i class="${icon} me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(alertDiv);
+    
+    // Auto remove after 4 seconds
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.style.animation = 'slideOutRight 0.3s ease-in';
+            setTimeout(() => alertDiv.remove(), 300);
+        }
+    }, 4000);
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', function(event) {
+    const isStatusBadge = event.target.closest('.status-badge');
+    const isDropdown = event.target.closest('.status-dropdown');
+    
+    if (!isStatusBadge && !isDropdown) {
+        closeAllStatusDropdowns();
+    }
+});
+
+// Close modal when clicking outside
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('imageModal');
+    if (event.target === modal) {
+        closeImageModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeImageModal();
+        closeAllStatusDropdowns();
+    }
 });
 </script>
+
 {% endblock %}
+

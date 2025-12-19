@@ -1,5 +1,14 @@
 
-{% extends 'base.html' %}
+
+{% extends 'base-sidebar.html' %}
+
+{% block title %}Tambah Lamaran - Loker Tracker{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Dashboard</a></li>
+    <li class="breadcrumb-item active">Tambah Lamaran</li>
+{% endblock %}
+
 {% block content %}
 
 
@@ -72,18 +81,20 @@
                                 <i class="fas fa-map-marker-alt me-1"></i>Lokasi Administrasi
                             </label>
 
+
+
                             <!-- Smart Single Input Field -->
                             <input type="text" class="form-control smart-location-input"
                                    placeholder="Ketik nama kota, kabupaten, atau provinsi..."
                                    required
-                                   autocomplete="off">
+                                   autocomplete="off"
+                                   name="location"
+                                   id="location">
                             <small class="form-text text-muted">
                                 <i class="fas fa-search me-1"></i>
                                 Ketik nama lokasi (minimal 1 huruf) - akan muncul suggestions otomatis
                             </small>
 
-                            <!-- Hidden input untuk menyimpan full address -->
-                            <input type="hidden" name="location" class="location-input" required>
 
                             <small class="form-text text-muted mt-2">
                                 <i class="fas fa-lightbulb me-1"></i>
@@ -195,6 +206,7 @@
                         <label for="status_id" class="form-label text-muted fw-medium">
                             <i class="fas fa-flag me-1"></i>Status Lamaran
                         </label>
+
                         <select class="form-select" id="status_id" name="status_id" required>
                             <option value="">Pilih status lamaran...</option>
                             {% for status in statuses %}
@@ -252,7 +264,16 @@
 </div>
 
 
+
 <script>
+// Update location field functionality
+function updateLocationField(value) {
+    const hiddenLocationField = document.querySelector('.location-input');
+    if (hiddenLocationField) {
+        hiddenLocationField.value = value;
+    }
+}
+
 // Custom source toggle functionality
 function toggleCustomSource() {
     const sourceSelect = document.getElementById('source_info');

@@ -1,0 +1,492 @@
+{% extends 'base-sidebar.html' %}
+
+{% block title %}Daftar Lamaran - Loker Tracker{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item active">Daftar Lamaran</li>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">
+                <i class="fas fa-list me-3"></i>
+                Daftar Lamaran Kerja
+            </h1>
+            <p class="page-subtitle">
+                Kelola dan pantau semua lamaran kerja Anda
+            </p>
+        </div>
+        <div class="action-buttons">
+            <a href="{{ url_for('export_pdf') }}" class="btn btn-danger">
+                <i class="fas fa-file-pdf me-2"></i>Export PDF
+            </a>
+            <a href="{{ url_for('export_excel') }}" class="btn btn-success">
+                <i class="fas fa-file-excel me-2"></i>Export Excel
+            </a>
+            <a href="{{ url_for('add_job') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Tambah Lamaran
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Section -->
+<div class="filter-section">
+    <h5 class="mb-4">
+        <i class="fas fa-filter me-2 text-primary"></i>
+        Filter Data Lamaran
+    </h5>
+    <form method="GET" class="filter-form">
+        <div class="form-group">
+            <label for="search" class="form-label">
+                <i class="fas fa-search me-2"></i>Cari Posisi/Perusahaan
+            </label>
+            <input type="text" 
+                   id="search" 
+                   name="search" 
+                   class="form-control" 
+                   placeholder="Masukkan posisi atau nama perusahaan..."
+                   value="{{ request.args.get('search', '') }}">
+        </div>
+        
+        <div class="form-group">
+            <label for="status" class="form-label">
+                <i class="fas fa-tag me-2"></i>Status
+            </label>
+            <select id="status" name="status" class="form-select">
+                <option value="">Semua Status</option>
+                <option value="terdaftar" {{ 'selected' if request.args.get('status') == 'terdaftar' else '' }}>Terdaftar</option>
+                <option value="interview" {{ 'selected' if request.args.get('status') == 'interview' else '' }}>Interview</option>
+                <option value="tes" {{ 'selected' if request.args.get('status') == 'tes' else '' }}>Tes</option>
+                <option value="diterima" {{ 'selected' if request.args.get('status') == 'diterima' else '' }}>Diterima</option>
+                <option value="tidak-diterima" {{ 'selected' if request.args.get('status') == 'tidak-diterima' else '' }}>Tidak Diterima</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="source" class="form-label">
+                <i class="fas fa-share-alt me-2"></i>Sumber
+            </label>
+            <select id="source" name="source" class="form-select">
+                <option value="">Semua Sumber</option>
+                <option value="LinkedIn" {{ 'selected' if request.args.get('source') == 'LinkedIn' else '' }}>LinkedIn</option>
+                <option value="Instagram" {{ 'selected' if request.args.get('source') == 'Instagram' else '' }}>Instagram</option>
+                <option value="TikTok" {{ 'selected' if request.args.get('source') == 'TikTok' else '' }}>TikTok</option>
+                <option value="WhatsApp" {{ 'selected' if request.args.get('source') == 'WhatsApp' else '' }}>WhatsApp</option>
+                <option value="JobStreet" {{ 'selected' if request.args.get('source') == 'JobStreet' else '' }}>JobStreet</option>
+                <option value="Indeed" {{ 'selected' if request.args.get('source') == 'Indeed' else '' }}>Indeed</option>
+                <option value="Website" {{ 'selected' if request.args.get('source') == 'Website' else '' }}>Website</option>
+                <option value="Email" {{ 'selected' if request.args.get('source') == 'Email' else '' }}>Email</option>
+                <option value="Teman" {{ 'selected' if request.args.get('source') == 'Teman' else '' }}>Teman</option>
+                <option value="Job Fair" {{ 'selected' if request.args.get('source') == 'Job Fair' else '' }}>Job Fair</option>
+                <option value="Sosial Media" {{ 'selected' if request.args.get('source') == 'Sosial Media' else '' }}>Sosial Media</option>
+                <option value="Lainnya" {{ 'selected' if request.args.get('source') == 'Lainnya' else '' }}>Lainnya</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="date_from" class="form-label">
+                <i class="fas fa-calendar me-2"></i>Tanggal Dari
+            </label>
+            <input type="date" 
+                   id="date_from" 
+                   name="date_from" 
+                   class="form-control"
+                   value="{{ request.args.get('date_from', '') }}">
+        </div>
+        
+        <div class="form-group">
+            <label for="date_to" class="form-label">
+                <i class="fas fa-calendar me-2"></i>Tanggal Sampai
+            </label>
+            <input type="date" 
+                   id="date_to" 
+                   name="date_to" 
+                   class="form-control"
+                   value="{{ request.args.get('date_to', '') }}">
+        </div>
+        
+        <div class="form-group" style="margin-bottom: 0;">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-search me-2"></i>Filter
+            </button>
+            <a href="{{ url_for('jobs') }}" class="btn btn-secondary">
+                <i class="fas fa-times me-2"></i>Reset
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Statistics Summary -->
+<div class="stats-grid mb-6">
+    <div class="stat-card">
+        <div class="stat-icon primary">
+            <i class="fas fa-briefcase"></i>
+        </div>
+        <div class="stat-number">{{ total_jobs }}</div>
+        <div class="stat-label">Total Lamaran</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon warning">
+            <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-number">{{ pending_jobs }}</div>
+        <div class="stat-label">Menunggu Respon</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon success">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-number">{{ interview_jobs }}</div>
+        <div class="stat-label">Interview/Tes</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon danger">
+            <i class="fas fa-trophy"></i>
+        </div>
+        <div class="stat-number">{{ accepted_jobs }}</div>
+        <div class="stat-label">Diterima</div>
+    </div>
+</div>
+
+<!-- Table Section -->
+<div class="table-section">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h5 class="mb-0">
+            <i class="fas fa-table me-2 text-primary"></i>
+            Data Lamaran Kerja
+        </h5>
+        <div class="pagination-info">
+            Menampilkan {{ jobs|length }} dari {{ total_jobs }} data
+        </div>
+    </div>
+    
+    <div class="table-container">
+        {% if jobs %}
+        <table class="jobs-table">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Posisi</th>
+                    <th>Perusahaan</th>
+                    <th>Sumber</th>
+                    <th>Lokasi</th>
+                    <th>Tanggal</th>
+                    <th>Status</th>
+                    <th>Bukti</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job in jobs %}
+                <tr>
+                    <td>
+                        <span class="bg-light text-dark fw-bold">#{{ loop.index }}</span>
+                    </td>
+                    <td>
+                        <div class="position-info">
+                            <i class="fas fa-user-tie"></i>
+                            <strong>{{ job.position }}</strong>
+                        </div>
+                    </td>
+
+                    <td>
+                        <strong>{{ job.company_name }}</strong>
+                    </td>
+                    <td>
+
+                        {% set source_class = (job.source_info or 'lainnya').lower().replace(' ', '-').replace('&', '') if job.source_info else 'lainnya' %}
+                        <span class="source-badge {{ source_class }}">
+                            {% if job.source_info == 'LinkedIn' %}
+                                <i class="fab fa-linkedin"></i> LinkedIn
+                            {% elif job.source_info == 'Instagram' %}
+                                <i class="fab fa-instagram"></i> Instagram
+                            {% elif job.source_info == 'TikTok' %}
+                                <i class="fab fa-tiktok"></i> TikTok
+                            {% elif job.source_info == 'WhatsApp' %}
+                                <i class="fab fa-whatsapp"></i> WhatsApp
+                            {% elif job.source_info == 'JobStreet' %}
+                                <i class="fas fa-building"></i> JobStreet
+                            {% elif job.source_info == 'Indeed' %}
+                                <i class="fas fa-search"></i> Indeed
+                            {% elif job.source_info == 'Email' %}
+                                <i class="fas fa-envelope"></i> Email
+                            {% elif job.source_info == 'Teman' %}
+                                <i class="fas fa-user-friends"></i> Teman
+                            {% elif job.source_info == 'Job Fair' %}
+                                <i class="fas fa-handshake"></i> Job Fair
+                            {% elif job.source_info == 'Sosial Media' %}
+                                <i class="fas fa-share-alt"></i> Sosial Media
+                            {% else %}
+                                <i class="fas fa-globe"></i> {{ job.source_info or 'Lainnya' }}
+                            {% endif %}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="location-info">
+                            <i class="fas fa-map-marker-alt"></i>
+                            {{ job.location }}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="date-info">
+                            <i class="fas fa-calendar"></i>
+                            {{ job.applied_date.strftime('%d/%m/%Y') }}
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="status-badge-container">
+
+                            <div class="status-badge {{ 'status-' + (job.status.name or 'unknown').replace(' ', '-') }}"
+                                 data-status="{{ job.status.name or 'unknown' }}"
+                                 onclick="toggleStatusDropdown({{ job.id }})">
+
+                                <i class="fas fa-circle status-dot {{ (job.status.name or 'unknown').replace(' ', '-') }}"></i>
+                                <span class="status-text">{{ (job.status.name or 'unknown').replace('-', ' ').title() }}</span>
+                                <i class="fas fa-chevron-down ms-1"></i>
+                            </div>
+                            
+                            <div class="status-dropdown" id="statusDropdown{{ job.id }}">
+                                <div class="status-option {{ 'active' if job.status.name == 'terdaftar' else '' }}" 
+                                     onclick="updateStatus({{ job.id }}, 'terdaftar', this)">
+                                    <div class="status-dot terdaftar"></div>
+                                    <span>Terdaftar</span>
+                                </div>
+                                <div class="status-option {{ 'active' if job.status.name == 'interview' else '' }}" 
+                                     onclick="updateStatus({{ job.id }}, 'interview', this)">
+                                    <div class="status-dot interview"></div>
+                                    <span>Interview</span>
+                                </div>
+                                <div class="status-option {{ 'active' if job.status.name == 'tes' else '' }}" 
+                                     onclick="updateStatus({{ job.id }}, 'tes', this)">
+                                    <div class="status-dot tes"></div>
+                                    <span>Tes</span>
+                                </div>
+                                <div class="status-option {{ 'active' if job.status.name == 'diterima' else '' }}" 
+                                     onclick="updateStatus({{ job.id }}, 'diterima', this)">
+                                    <div class="status-dot diterima"></div>
+                                    <span>Diterima</span>
+                                </div>
+                                <div class="status-option {{ 'active' if job.status.name == 'tidak-diterima' else '' }}" 
+                                     onclick="updateStatus({{ job.id }}, 'tidak-diterima', this)">
+                                    <div class="status-dot tidak-diterima"></div>
+                                    <span>Tidak Diterima</span>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+
+                    <td>
+                        {% if job.application_proof %}
+                            <a href="{{ job.application_proof }}" 
+                               target="_blank" 
+                               class="proof-link"
+                               title="Lihat Bukti Lamaran">
+                                <i class="fas fa-external-link-alt me-1"></i>Lihat
+                            </a>
+                            {% if job.image_proof %}
+                                <div class="proof-screenshot" 
+                                     onclick="showImageModal('{{ url_for('static', filename=job.image_proof) }}')"
+                                     title="Lihat Screenshot">
+                                    <i class="fas fa-image"></i>
+                                    Screenshot
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2">
+
+                            <a href="{{ url_for('edit_job', id=job.id) }}"
+                               class="btn btn-sm btn-secondary"
+                               title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <button onclick="confirmDelete({{ job.id }})" 
+                                    class="btn btn-sm btn-danger"
+                                    title="Hapus">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-inbox"></i>
+            <p>Belum ada data lamaran kerja</p>
+            <small>Mulai dengan menambahkan lamaran kerja pertama Anda</small>
+            <div class="mt-4">
+                <a href="{{ url_for('add_job') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Tambah Lamaran Pertama
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if pagination and pagination.pages > 1 %}
+<div class="pagination">
+    <div class="pagination-container d-flex justify-content-center align-items-center">
+        <div class="pagination-info">
+            Halaman {{ pagination.page }} dari {{ pagination.pages }} 
+            (Total: {{ total_jobs }} data)
+        </div>
+        
+
+        <div class="pagination-links">
+            {% if pagination.has_prev %}
+                {% set prev_args = request.args.to_dict() %}
+                {% set _ = prev_args.update({'page': pagination.prev_num}) %}
+                <a href="{{ url_for('jobs', **prev_args) }}" 
+                   class="page-link">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            {% endif %}
+            
+            {% for page_num in pagination.iter_pages() %}
+                {% if page_num %}
+                    {% if page_num != pagination.page %}
+                        {% set page_args = request.args.to_dict() %}
+                        {% set _ = page_args.update({'page': page_num}) %}
+                        <a href="{{ url_for('jobs', **page_args) }}" 
+                           class="page-link">{{ page_num }}</a>
+                    {% else %}
+                        <span class="page-current">{{ page_num }}</span>
+                    {% endif %}
+                {% else %}
+                    <span class="page-ellipsis">...</span>
+                {% endif %}
+            {% endfor %}
+            
+            {% if pagination.has_next %}
+                {% set next_args = request.args.to_dict() %}
+                {% set _ = next_args.update({'page': pagination.next_num}) %}
+                <a href="{{ url_for('jobs', **next_args) }}" 
+                   class="page-link">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Delete Confirmation Form -->
+<form id="deleteForm" method="POST" style="display: none;">
+    <input type="hidden" name="_method" value="DELETE">
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Status dropdown functionality
+    window.toggleStatusDropdown = function(jobId) {
+        const dropdown = document.getElementById('statusDropdown' + jobId);
+        const allDropdowns = document.querySelectorAll('.status-dropdown');
+        
+        // Close all other dropdowns
+        allDropdowns.forEach(d => {
+            if (d !== dropdown) d.classList.remove('show');
+        });
+        
+        // Toggle current dropdown
+        dropdown.classList.toggle('show');
+    };
+    
+    // Update status
+    window.updateStatus = function(jobId, newStatus, element) {
+        const dropdown = document.getElementById('statusDropdown' + jobId);
+        
+        // Show loading
+        const statusBadge = document.querySelector(`[onclick="toggleStatusDropdown(${jobId})"]`);
+        const originalContent = statusBadge.innerHTML;
+        statusBadge.innerHTML = '<div class="status-loading"><i class="fas fa-spinner fa-spin"></i> Updating...</div>';
+        
+        // Send AJAX request
+
+        fetch(`/api/job/${jobId}/status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ status: newStatus.charAt(0).toUpperCase() + newStatus.slice(1) })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update status badge
+                statusBadge.className = `status-badge status-${newStatus}`;
+                statusBadge.setAttribute('data-status', newStatus);
+                statusBadge.innerHTML = `
+                    <i class="fas fa-circle status-dot ${newStatus}"></i>
+                    <span class="status-text">${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}</span>
+                    <i class="fas fa-chevron-down ms-1"></i>
+                `;
+                
+                // Update active state in dropdown
+                dropdown.querySelectorAll('.status-option').forEach(opt => opt.classList.remove('active'));
+                element.classList.add('active');
+                
+                // Show success message
+                showAlert('Status berhasil diperbarui!', 'success');
+            } else {
+                throw new Error(data.message || 'Gagal memperbarui status');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            statusBadge.innerHTML = originalContent;
+            showAlert('Gagal memperbarui status: ' + error.message, 'error');
+        })
+        .finally(() => {
+            dropdown.classList.remove('show');
+        });
+    };
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.status-badge-container')) {
+            document.querySelectorAll('.status-dropdown').forEach(dropdown => {
+                dropdown.classList.remove('show');
+            });
+        }
+    });
+    
+    // Delete confirmation
+    window.confirmDelete = function(jobId) {
+        showConfirmationModal(
+            'Hapus Lamaran Kerja',
+            'Apakah Anda yakin ingin menghapus lamaran kerja ini? Tindakan ini tidak dapat dibatalkan.',
+            function() {
+                const form = document.getElementById('deleteForm');
+                form.action = `/delete_job/${jobId}`;
+                form.submit();
+            }
+        );
+    };
+    
+    // Auto-submit filter form when changing select fields
+    document.querySelectorAll('#status, #source').forEach(select => {
+        select.addEventListener('change', function() {
+            this.closest('form').submit();
+        });
+    });
+});
+</script>
+{% endblock %}

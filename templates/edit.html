@@ -1,5 +1,14 @@
 
-{% extends 'base.html' %}
+
+{% extends 'base-sidebar.html' %}
+
+{% block title %}Edit Lamaran - Loker Tracker{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Dashboard</a></li>
+    <li class="breadcrumb-item active">Edit Lamaran</li>
+{% endblock %}
+
 {% block content %}
 
 
@@ -75,6 +84,7 @@
 
                     <div class="row">
 
+
                         <!-- Location -->
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-medium">
@@ -85,7 +95,9 @@
                             <input type="text" 
                                    class="form-control smart-location-input"
                                    placeholder="Ketik nama kota, kabupaten, atau provinsi..."
-                                   required autocomplete="off">
+                                   required 
+                                   autocomplete="off"
+                                   value="">
                             <small class="form-text">
                                 <i class="fas fa-search me-1"></i>
                                 Ketik nama lokasi (minimal 1 huruf) - akan muncul suggestions otomatis
@@ -245,10 +257,11 @@
                                     class="form-select"
                                     required>
                                 {% for status in statuses %}
-                                <option value="{{ status.id }}" 
-                                        {% if job.status_id == status.id %}selected{% endif %}>
-                                    {{ status.name }}
-                                </option>
+
+                            <option value="{{ status.id }}"
+                                {% if job.status_id == status.id %}selected{% endif %}>
+                                {{ status.name }}
+                            </option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -426,50 +439,74 @@ function toggleCustomSourceEdit() {
 }
 
 
+
 // Handle location pre-selection for edit page with smart single input system
 function initLocationEdit() {
     const smartLocationInput = document.querySelector('.smart-location-input');
     const hiddenLocationInput = document.querySelector('.location-input');
 
-    if (!smartLocationInput || !hiddenLocationInput) return;
+    if (!smartLocationInput || !hiddenLocationInput) {
+        console.log('Location inputs not found');
+        return;
+    }
 
     // Get existing location value from job data
     const existingLocation = "{{ job.location }}";
+    console.log('Existing location:', existingLocation);
 
-    // Wait for the smart input system to be initialized
-    setTimeout(function() {
-        if (existingLocation && existingLocation !== 'None') {
-            // Parse the existing address to extract the main location name
-            const addressParts = existingLocation.split(', ');
+    // If no existing location, don't do anything
+    if (!existingLocation || existingLocation === 'None' || existingLocation === '') {
+        console.log('No existing location to pre-populate');
+        return;
+    }
 
-            if (addressParts.length >= 2) {
-                // For city/regency: "City Name, Province, Indonesia"
-                // For province: "Province Name, Indonesia"
-                let locationName = '';
+    try {
+        // Parse the existing address to extract the main location name
+        const addressParts = existingLocation.split(', ');
 
-                if (addressParts.length === 3) {
-                    // City/Regency case: "Jakarta Pusat, DKI Jakarta, Indonesia"
-                    locationName = addressParts[0].trim();
-                } else if (addressParts.length === 2) {
-                    // Province case: "DKI Jakarta, Indonesia"
-                    locationName = addressParts[0].trim();
-                }
+        if (addressParts.length >= 2) {
+            // For city/regency: "City Name, Province, Indonesia"
+            // For province: "Province Name, Indonesia"
+            let locationName = '';
 
-                if (locationName) {
-                    // Set the smart input value
-                    smartLocationInput.value = locationName;
-
-                    // Ensure the hidden input has the full address
-                    if (hiddenLocationInput.value !== existingLocation) {
-                        hiddenLocationInput.value = existingLocation;
-                    }
-
-                    console.log('Pre-populated location:', locationName, 'Full address:', existingLocation);
-                }
+            if (addressParts.length === 3) {
+                // City/Regency case: "Jakarta Pusat, DKI Jakarta, Indonesia"
+                locationName = addressParts[0].trim();
+            } else if (addressParts.length === 2) {
+                // Province case: "DKI Jakarta, Indonesia"
+                locationName = addressParts[0].trim();
+            } else {
+                // Fallback - use the first part
+                locationName = addressParts[0].trim();
             }
+
+            if (locationName) {
+                // Set the smart input value
+                smartLocationInput.value = locationName;
+
+                // Ensure the hidden input has the full address
+                hiddenLocationInput.value = existingLocation;
+
+                console.log('Pre-populated location:', locationName, 'Full address:', existingLocation);
+            }
+        } else {
+            // If only one part, use it directly
+            smartLocationInput.value = existingLocation.trim();
+            hiddenLocationInput.value = existingLocation;
+            console.log('Single part location set:', existingLocation);
         }
-    }, 300); // Shorter timeout since we don't need to wait for dropdown population
+    } catch (error) {
+        console.error('Error parsing location:', error);
+        // Fallback - just use the raw location
+        smartLocationInput.value = existingLocation;
+        hiddenLocationInput.value = existingLocation;
+    }
 }
+
+// Initialize location on page load
+document.addEventListener('DOMContentLoaded', function() {
+    initLocationEdit();
+});
 
 // File upload functionality (same as add.html)
 function handleFileSelect(input) {

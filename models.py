@@ -1,3 +1,4 @@
+
 from flask_login import UserMixin
 from extensions import db
 
@@ -12,17 +13,16 @@ class User(db.Model, UserMixin):
         lazy=True
     )
 
-
-
 class Status(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
     color = db.Column(db.String(20), default='secondary')
 
-
-
-
-
+    jobs = db.relationship(
+        'JobApplication',
+        backref='status',
+        lazy=True
+    )
 
 class JobApplication(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -38,9 +38,7 @@ class JobApplication(db.Model):
     notes = db.Column(db.Text, nullable=True)  # NEW: Keterangan tambahan
     applied_date = db.Column(db.DateTime)
 
-    status_id = db.Column(db.Integer, db.ForeignKey('status.id'))
-    status = db.relationship('Status')
-
+    status_id = db.Column(db.Integer, db.ForeignKey('status.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 

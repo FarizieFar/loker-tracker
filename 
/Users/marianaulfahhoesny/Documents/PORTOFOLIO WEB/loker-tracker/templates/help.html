@@ -1,0 +1,742 @@
+{% extends 'base-sidebar.html' %}
+
+{% block title %}Bantuan - Loker Tracker{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item active">Bantuan</li>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">
+                <i class="fas fa-question-circle me-3"></i>
+                Pusat Bantuan
+            </h1>
+            <p class="page-subtitle">
+                Panduan lengkap menggunakan aplikasi Loker Tracker
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Help Navigation -->
+<div class="row mb-6">
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="fas fa-list me-2"></i>
+                    Topik Bantuan
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="help-nav">
+                    <a href="#getting-started" class="help-nav-item active" data-section="getting-started">
+                        <i class="fas fa-play me-3"></i>
+                        <span>Memulai</span>
+                        <i class="fas fa-chevron-right ms-auto"></i>
+                    </a>
+                    <a href="#adding-jobs" class="help-nav-item" data-section="adding-jobs">
+                        <i class="fas fa-plus me-3"></i>
+                        <span>Menambah Lamaran</span>
+                        <i class="fas fa-chevron-right ms-auto"></i>
+                    </a>
+                    <a href="#managing-status" class="help-nav-item" data-section="managing-status">
+                        <i class="fas fa-tasks me-3"></i>
+                        <span>Kelola Status</span>
+                        <i class="fas fa-chevron-right ms-auto"></i>
+                    </a>
+                    <a href="#search-filter" class="help-nav-item" data-section="search-filter">
+                        <i class="fas fa-search me-3"></i>
+                        <span>Cari & Filter</span>
+                        <i class="fas fa-chevron-right ms-auto"></i>
+                    </a>
+                    <a href="#export-data" class="help-nav-item" data-section="export-data">
+                        <i class="fas fa-download me-3"></i>
+                        <span>Export Data</span>
+                        <i class="fas fa-chevron-right ms-auto"></i>
+                    </a>
+                    <a href="#troubleshooting" class="help-nav-item" data-section="troubleshooting">
+                        <i class="fas fa-tools me-3"></i>
+                        <span>Troubleshooting</span>
+                        <i class="fas fa-chevron-right ms-auto"></i>
+                    </a>
+                    <a href="#faq" class="help-nav-item" data-section="faq">
+                        <i class="fas fa-comments me-3"></i>
+                        <span>FAQ</span>
+                        <i class="fas fa-chevron-right ms-auto"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Content -->
+    <div class="col-lg-8 mb-4">
+        <!-- Getting Started -->
+        <div class="help-section active" id="getting-started">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-play text-success me-2"></i>
+                        Memulai Menggunakan Loker Tracker
+                    </h5>
+                    <p class="card-subtitle">
+                        Panduan dasar untuk pengguna baru
+                    </p>
+                </div>
+                <div class="card-body">
+                    <div class="help-content">
+                        <div class="help-step mb-4">
+                            <h6>
+                                <span class="step-number">1</span>
+                                <i class="fas fa-home me-2"></i>
+                                Halaman Dashboard
+                            </h6>
+                            <p class="step-description">
+                                Dashboard adalah halaman utama yang menampilkan ringkasan semua lamaran kerja Anda. Di sini Anda dapat melihat:
+                            </p>
+                            <ul>
+                                <li>Statistik total lamaran, status, dan tingkat keberhasilan</li>
+                                <li>Grafik visualisasi data lamaran</li>
+                                <li>Lamaran terbaru yang ditambahkan</li>
+                                <li>Aksi cepat untuk menambah lamaran baru</li>
+                            </ul>
+                        </div>
+
+                        <div class="help-step mb-4">
+                            <h6>
+                                <span class="step-number">2</span>
+                                <i class="fas fa-list me-2"></i>
+                                Daftar Lamaran
+                            </h6>
+                            <p class="step-description">
+                                Halaman ini menampilkan semua data lamaran kerja dalam bentuk tabel yang dapat di-filter dan diurutkan.
+                            </p>
+                            <ul>
+                                <li>Gunakan filter untuk menampilkan data berdasarkan status, sumber, atau rentang tanggal</li>
+                                <li>Klik pada badge status untuk mengubah status langsung</li>
+                                <li>Edit atau hapus lamaran dengan tombol aksi di kolom terakhir</li>
+                                <li>Lihat bukti lamaran dengan mengklik link "Lihat" atau "Screenshot"</li>
+                            </ul>
+                        </div>
+
+                        <div class="help-step mb-4">
+                            <h6>
+                                <span class="step-number">3</span>
+                                <i class="fas fa-plus me-2"></i>
+                                Menambah Lamaran Baru
+                            </h6>
+                            <p class="step-description">
+                                Klik tombol "Tambah Lamaran" untuk menambahkan data lamaran kerja baru.
+                            </p>
+                            <ul>
+                                <li>Isi semua field yang wajib: Posisi, Perusahaan, dan Tanggal Apply</li>
+                                <li>Pilih sumber lamaran dari dropdown yang tersedia</li>
+                                <li>Upload screenshot atau bukti lamaran (opsional)</li>
+                                <li>Simpan data untuk melihatnya di dashboard dan daftar lamaran</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Adding Jobs -->
+        <div class="help-section" id="adding-jobs">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-plus text-primary me-2"></i>
+                        Cara Menambah Lamaran Kerja
+                    </h5>
+                    <p class="card-subtitle">
+                        Panduan detail mengisi form tambah lamaran
+                    </p>
+                </div>
+                <div class="card-body">
+                    <div class="help-content">
+                        <div class="field-guide mb-4">
+                            <h6><i class="fas fa-info-circle me-2"></i>Field Wajib</h6>
+                            <div class="field-item">
+                                <strong>Posisi/Jabatan:</strong> Nama posisi yang dilamar (contoh: "Software Engineer", "Marketing Specialist")
+                            </div>
+                            <div class="field-item">
+                                <strong>Nama Perusahaan:</strong> Nama lengkap perusahaan (contoh: "PT. Teknologi Indonesia", "Startup ABC")
+                            </div>
+                            <div class="field-item">
+                                <strong>Tanggal Apply:</strong> Tanggal saat Anda melamar (default: tanggal hari ini)
+                            </div>
+                        </div>
+
+                        <div class="field-guide mb-4">
+                            <h6><i class="fas fa-asterisk me-2"></i>Field Opsional</h6>
+                            <div class="field-item">
+                                <strong>Lokasi:</strong> Lokasi kerja (contoh: "Jakarta Selatan", "Remote", "Surabaya")
+                            </div>
+                            <div class="field-item">
+                                <strong>Sumber:</strong> Platform dimana Anda menemukan lowongan (LinkedIn, JobStreet, Indeed, dll)
+                            </div>
+                            <div class="field-item">
+                                <strong>Link Bukti:</strong> URL ke halaman apply atau email konfirmasi
+                            </div>
+                            <div class="field-item">
+                                <strong>Screenshot:</strong> Upload gambar bukti lamaran (format: JPG, PNG, max 5MB)
+                            </div>
+                        </div>
+
+                        <div class="tip-box">
+                            <h6><i class="fas fa-lightbulb text-warning me-2"></i>Tips Mengisi Data</h6>
+                            <ul>
+                                <li>Gunakan nama posisi yang jelas dan mudah dipahami</li>
+                                <li>Tulis nama perusahaan dengan lengkap dan benar</li>
+                                <li>Selalu simpan screenshot atau bukti apply untuk referensi</li>
+                                <li>Pilih sumber yang tepat untuk tracking performa platform</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Managing Status -->
+        <div class="help-section" id="managing-status">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-tasks text-warning me-2"></i>
+                        Mengelola Status Lamaran
+                    </h5>
+                    <p class="card-subtitle">
+                        Cara mengubah dan memantau status lamaran kerja
+                    </p>
+                </div>
+                <div class="card-body">
+                    <div class="help-content">
+                        <div class="status-guide mb-4">
+                            <h6><i class="fas fa-flag me-2"></i>Status yang Tersedia</h6>
+                            <div class="status-item">
+                                <span class="status-badge status-terdaftar">Terdaftar</span>
+                                <span class="status-description">Lamaran baru saja dikirim, belum ada respon</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-badge status-interview">Interview</span>
+                                <span class="status-description">Dipesan untuk interview atau panggilan telepon</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-badge status-tes">Tes</span>
+                                <span class="status-description">Diundang untuk mengikuti tes/assessment</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-badge status-diterima">Diterima</span>
+                                <span class="status-description">Lamaran diterima dan mendapat offer</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-badge status-tidak-diterima">Tidak Diterima</span>
+                                <span class="status-description">Lamaran ditolak atau tidak ada respon</span>
+                            </div>
+                        </div>
+
+                        <div class="action-guide mb-4">
+                            <h6><i class="fas fa-mouse-pointer me-2"></i>Cara Mengubah Status</h6>
+                            <ol>
+                                <li>Klik pada badge status di tabel "Daftar Lamaran"</li>
+                                <li>Dropdown menu akan muncul dengan opsi status</li>
+                                <li>Klik status baru yang diinginkan</li>
+                                <li>Status akan langsung terupdate secara otomatis</li>
+                            </ol>
+                        </div>
+
+                        <div class="tip-box">
+                            <h6><i class="fas fa-chart-line me-2"></i>Tips Monitoring Status</h6>
+                            <ul>
+                                <li>Update status secara berkala untuk tracking yang akurat</li>
+                                <li>Gunakan halaman "Laporan" untuk melihat statistik</li>
+                                <li>Dashboard menampilkan ringkasan status dalam bentuk grafik</li>
+                                <li>Status "Diterima" akan meningkatkan persentase keberhasilan</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="help-section" id="search-filter">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-search text-info me-2"></i>
+                        Fitur Pencarian dan Filter
+                    </h5>
+                    <p class="card-subtitle">
+                        Cara mencari dan memfilter data lamaran kerja
+                    </p>
+                </div>
+                <div class="card-body">
+                    <div class="help-content">
+                        <div class="filter-guide mb-<h6><i4">
+                             class="fas fa-filter me-2"></i>Opsi Filter</h6>
+                            <div class="filter-item">
+                                <strong>Cari Posisi/Perusahaan:</strong> Ketik kata kunci untuk mencari posisi atau nama perusahaan tertentu
+                            </div>
+                            <div class="filter-item">
+                                <strong>Status:</strong> Filter berdasarkan status lamaran (Terdaftar, Interview, Tes, Diterima, Tidak Diterima)
+                            </div>
+                            <div class="filter-item">
+                                <strong>Sumber:</strong> Filter berdasarkan platform tempat melamar (LinkedIn, JobStreet, dll)
+                            </div>
+                            <div class="filter-item">
+                                <strong>Rentang Tanggal:</strong> Filter berdasarkan periode apply (tanggal dari dan sampai)
+                            </div>
+                        </div>
+
+                        <div class="search-guide mb-4">
+                            <h6><i class="fas fa-search-plus me-2"></i>Tips Pencarian</h6>
+                            <ul>
+                                <li>Gunakan kata kunci yang spesifik untuk hasil yang akurat</li>
+                                <li>Kombinasi filter akan memberikan hasil yang lebih tepat</li>
+                                <li>Filter tanggal berguna untuk analisis per periode</li>
+                                <li>Hasil filter dapat di-export untuk laporan</li>
+                            </ul>
+                        </div>
+
+                        <div class="action-guide">
+                            <h6><i class="fas fa-redo me-2"></i>Reset Filter</h6>
+                            <p>Klik tombol "Reset" untuk menghapus semua filter dan menampilkan semua data.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Data -->
+        <div class="help-section" id="export-data">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-download text-success me-2"></i>
+                        Export Data dan Laporan
+                    </h5>
+                    <p class="card-subtitle">
+                        Cara mengunduh data dalam format PDF dan Excel
+                    </p>
+                </div>
+                <div class="card-body">
+                    <div class="help-content">
+                        <div class="export-guide mb-4">
+                            <h6><i class="fas fa-file-pdf text-danger me-2"></i>Export PDF</h6>
+                            <p>Format PDF cocok untuk laporan formal dan presentasi:</p>
+                            <ul>
+                                <li>Data diformat rapi dalam tabel</li>
+                                <li>Include statistik dan grafik</li>
+                                <li>Sudah siap untuk dicetak</li>
+                                <li>Tersedia di halaman "Laporan & Export"</li>
+                            </ul>
+                        </div>
+
+                        <div class="export-guide mb-4">
+                            <h6><i class="fas fa-file-excel text-success me-2"></i>Export Excel</h6>
+                            <p>Format Excel untuk analisis dan manipulasi data lebih lanjut:</p>
+                            <ul>
+                                <li>Data dalam format spreadsheet</li>
+                                <li>Dapat di-filter dan diurutkan</li>
+                                <li>Cocok untuk analisis menggunakan Excel</li>
+                                <li>Dapat diintegrasikan dengan tools lain</li>
+                            </ul>
+                        </div>
+
+                        <div class="filter-guide">
+                            <h6><i class="fas fa-sliders-h me-2"></i>Filter Data Export</h6>
+                            <p>Sebelum export, Anda dapat mengatur filter:</p>
+                            <ul>
+                                <li>Rentang tanggal untuk periode tertentu</li>
+                                <li>Status tertentu untuk analisis status</li>
+                                <li>Data yang sudah di-filter akan ter-export</li>
+                                <li>Gunakan filter di halaman "Daftar Lamaran" terlebih dahulu</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Troubleshooting -->
+        <div class="help-section" id="troubleshooting">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-tools text-danger me-2"></i>
+                        Troubleshooting
+                    </h5>
+                    <p class="card-subtitle">
+                        Solusi untuk masalah umum yang mungkin terjadi
+                    </p>
+                </div>
+                <div class="card-body">
+                    <div class="help-content">
+                        <div class="issue-item mb-4">
+                            <h6><i class="fas fa-exclamation-triangle text-warning me-2"></i>Data tidak muncul di dashboard</h6>
+                            <p><strong>Penyebab:</strong> Database kosong atau ada masalah koneksi</p>
+                            <p><strong>Solusi:</strong></p>
+                            <ul>
+                                <li>Tambahkan data lamaran baru melalui tombol "Tambah Lamaran"</li>
+                                <li>Refresh halaman untuk memuat ulang data</li>
+                                <li>Periksa koneksi internet Anda</li>
+                            </ul>
+                        </div>
+
+                        <div class="issue-item mb-4">
+                            <h6><i class="fas fa-upload text-danger me-2"></i>Gagal upload screenshot</h6>
+                            <p><strong>Penyebab:</strong> Format file tidak didukung atau ukuran terlalu besar</p>
+                            <p><strong>Solusi:</strong></p>
+                            <ul>
+                                <li>Gunakan format JPG, PNG, atau GIF</li>
+                                <li>Pastikan ukuran file kurang dari 5MB</li>
+                                <li>Kompres gambar jika perlu</li>
+                            </ul>
+                        </div>
+
+                        <div class="issue-item mb-4">
+                            <h6><i class="fas fa-clock text-info me-2"></i>Status tidak berubah saat diklik</h6>
+                            <p><strong>Penyebab:</strong> JavaScript tidak aktif atau ada error</p>
+                            <p><strong>Solusi:</strong></p>
+                            <ul>
+                                <li>Refresh halaman dan coba lagi</li>
+                                <li>Pastikan JavaScript diaktifkan di browser</li>
+                                <li>Coba gunakan browser lain</li>
+                            </ul>
+                        </div>
+
+                        <div class="issue-item">
+                            <h6><i class="fas fa-download text-danger me-2"></i>Export PDF/Excel tidak berhasil</h6>
+                            <p><strong>Penyebab:</strong> Tidak ada data atau ada error server</p>
+                            <p><strong>Solusi:</strong></p>
+                            <ul>
+                                <li>Pastikan ada data lamaran di database</li>
+                                <li>Coba filter data terlebih dahulu</li>
+                                <li>Periksa koneksi internet</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="help-section" id="faq">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-comments text-primary me-2"></i>
+                        FAQ (Frequently Asked Questions)
+                    </h5>
+                    <p class="card-subtitle">
+                        Jawaban untuk pertanyaan yang sering diajukan
+                    </p>
+                </div>
+                <div class="card-body">
+                    <div class="help-content">
+                        <div class="faq-item mb-4">
+                            <h6><i class="fas fa-question-circle text-info me-2"></i>Apakah data saya aman?</h6>
+                            <p>Ya, semua data tersimpan secara lokal di perangkat Anda. Kami tidak mengumpulkan atau menyimpan data pribadi Anda di server.</p>
+                        </div>
+
+                        <div class="faq-item mb-4">
+                            <h6><i class="fas fa-question-circle text-info me-2"></i>Bisakah saya backup data?</h6>
+                            <p>Ya, Anda dapat menggunakan fitur export untuk membuat backup data dalam format Excel. Simpan file backup di tempat yang aman.</p>
+                        </div>
+
+                        <div class="faq-item mb-4">
+                            <h6><i class="fas fa-question-circle text-info me-2"></i>Bagaimana jika saya lupa password?</h6>
+                            <p>Aplikasi ini tidak menggunakan sistem user login yang kompleks. Data tersimpan lokal dan tidak terikat dengan akun.</p>
+                        </div>
+
+                        <div class="faq-item mb-4">
+                            <h6><i class="fas fa-question-circle text-info me-2"></i>Bisakah saya menggunakan di multiple device?</h6>
+                            <p>Data tersimpan lokal, jadi untuk menggunakan di device lain, Anda perlu memindahkan file database atau menggunakan fitur export/import.</p>
+                        </div>
+
+                        <div class="faq-item mb-4">
+                            <h6><i class="fas fa-question-circle text-info me-2"></i>Apakah ada batasan jumlah lamaran?</h6>
+                            <p>Tidak ada batasan jumlah lamaran yang bisa Anda input. Namun semakin banyak data, semakin besar ukuran file database.</p>
+                        </div>
+
+                        <div class="faq-item">
+                            <h6><i class="fas fa-question-circle text-info me-2"></i>Bagaimana cara menghapus semua data?</h6>
+                            <p>Untuk keamanan, fitur hapus semua data tidak tersedia di interface. Anda dapat menghapus data satu per satu atau reset database dari menu pengaturan.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Support -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="fas fa-headset text-primary me-2"></i>
+                    Butuh Bantuan Lebih Lanjut?
+                </h5>
+                <p class="card-subtitle">
+                    Jika panduan ini belum menyelesaikan masalah Anda
+                </p>
+            </div>
+            <div class="card-body">
+                <div class="support-options">
+                    <div class="support-item">
+                        <div class="support-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="support-content">
+                            <h6>Dokumentasi Lengkap</h6>
+                            <p>Baca dokumentasi teknis untuk informasi lebih detail</p>
+                            <a href="#" class="btn btn-sm btn-primary">Buka Dokumentasi</a>
+                        </div>
+                    </div>
+                    
+                    <div class="support-item">
+                        <div class="support-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <div class="support-content">
+                            <h6>Video Tutorial</h6>
+                            <p>Tonton video tutorial step-by-step penggunaan aplikasi</p>
+                            <a href="#" class="btn btn-sm btn-success">Tonton Video</a>
+                        </div>
+                    </div>
+                    
+                    <div class="support-item">
+                        <div class="support-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="support-content">
+                            <h6>Kirim Feedback</h6>
+                            <p>Kirim saran atau laporkan bug yang Anda temukan</p>
+                            <a href="#" class="btn btn-sm btn-warning">Kirim Feedback</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.help-nav {
+    padding: var(--space-2) 0;
+}
+
+.help-nav-item {
+    display: flex;
+    align-items: center;
+    padding: var(--space-3) var(--space-4);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all var(--transition-normal);
+    border-left: 3px solid transparent;
+}
+
+.help-nav-item:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-left-color: var(--primary);
+}
+
+.help-nav-item.active {
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.1), transparent);
+    color: var(--primary);
+    border-left-color: var(--primary);
+    font-weight: 600;
+}
+
+.help-section {
+    display: none;
+}
+
+.help-section.active {
+    display: block;
+}
+
+.help-step {
+    padding: var(--space-4);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    border-left: 4px solid var(--primary);
+}
+
+.step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-right: var(--space-2);
+}
+
+.step-description {
+    color: var(--text-secondary);
+    margin: var(--space-2) 0;
+}
+
+.field-guide, .status-guide, .filter-guide, .search-guide, .action-guide, .export-guide {
+    padding: var(--space-4);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+}
+
+.field-item, .filter-item, .status-item {
+    margin-bottom: var(--space-2);
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.field-item:last-child, .filter-item:last-child, .status-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.status-description {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-left: var(--space-2);
+}
+
+.tip-box {
+    padding: var(--space-4);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05));
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.issue-item {
+    padding: var(--space-4);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    border-left: 4px solid var(--warning);
+}
+
+.faq-item {
+    padding: var(--space-4);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+}
+
+.support-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-4);
+}
+
+.support-item {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+}
+
+.support-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--primary);
+    color: white;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.support-content h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.support-content p {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: var(--space-3);
+}
+
+@media (max-width: 768px) {
+    .help-nav {
+        display: flex;
+        overflow-x: auto;
+        gap: var(--space-2);
+        padding: var(--space-2);
+    }
+    
+    .help-nav-item {
+        white-space: nowrap;
+        border-left: none;
+        border-bottom: 3px solid transparent;
+        border-radius: var(--radius-md);
+    }
+    
+    .help-nav-item:hover,
+    .help-nav-item.active {
+        border-left: none;
+        border-bottom-color: var(--primary);
+    }
+    
+    .support-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .support-item {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Help navigation
+    const navItems = document.querySelectorAll('.help-nav-item');
+    const sections = document.querySelectorAll('.help-section');
+    
+    navItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Remove active class from all nav items and sections
+            navItems.forEach(nav => nav.classList.remove('active'));
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Add active class to clicked nav item
+            this.classList.add('active');
+            
+            // Show corresponding section
+            const sectionId = this.getAttribute('data-section');
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

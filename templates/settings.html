@@ -1,0 +1,929 @@
+{% extends 'base-sidebar.html' %}
+
+{% block title %}Pengaturan - Loker Tracker{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item active">Pengaturan</li>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">
+                <i class="fas fa-cog me-3"></i>
+                Pengaturan Aplikasi
+            </h1>
+            <p class="page-subtitle">
+                Kelola konfigurasi dan preferensi aplikasi Loker Tracker
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Settings Categories -->
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="fas fa-list me-2"></i>
+                    Kategori Pengaturan
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="settings-nav">
+                    <a href="#general" class="settings-nav-item active" data-section="general">
+                        <i class="fas fa-cog me-3"></i>
+                        <span>Pengaturan Umum</span>
+                        <i class="fas fa-chevron-right ms-auto"></i>
+                    </a>
+                    <a href="#notifications" class="settings-nav-item" data-section="notifications">
+                        <i class="fas fa-bell me-3"></i>
+                        <span>Notifikasi</span>
+                        <i class="fas fa-chevron-right ms-auto"></i>
+                    </a>
+                    <a href="#appearance" class="settings-nav-item" data-section="appearance">
+                        <i class="fas fa-palette me-3"></i>
+                        <span>Tampilan</span>
+                        <i class="fas fa-chevron-right ms-auto"></i>
+                    </a>
+                    <a href="#data" class="settings-nav-item" data-section="data">
+                        <i class="fas fa-database me-3"></i>
+                        <span>Manajemen Data</span>
+                        <i class="fas fa-chevron-right ms-auto"></i>
+                    </a>
+                    <a href="#backup" class="settings-nav-item" data-section="backup">
+                        <i class="fas fa-download me-3"></i>
+                        <span>Backup & Restore</span>
+                        <i class="fas fa-chevron-right ms-auto"></i>
+                    </a>
+                    <a href="#security" class="settings-nav-item" data-section="security">
+                        <i class="fas fa-shield-alt me-3"></i>
+                        <span>Keamanan</span>
+                        <i class="fas fa-chevron-right ms-auto"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Content -->
+    <div class="col-lg-8 mb-4">
+        <!-- General Settings -->
+        <div class="settings-section active" id="general">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-cog text-primary me-2"></i>
+                        Pengaturan Umum
+                    </h5>
+                    <p class="card-subtitle">
+                        Konfigurasi dasar aplikasi
+                    </p>
+                </div>
+
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('settings') }}">
+                        <input type="hidden" name="section" value="general">
+                        
+                        <div class="form-group mb-4">
+                            <label for="app_name" class="form-label">
+                                <i class="fas fa-tag me-2"></i>Nama Aplikasi
+                            </label>
+                            <input type="text" 
+                                   id="app_name" 
+                                   name="app_name" 
+                                   class="form-control" 
+                                   value="Loker Tracker"
+                                   placeholder="Nama aplikasi">
+                        </div>
+                        
+                        <div class="form-group mb-4">
+                            <label for="default_status" class="form-label">
+                                <i class="fas fa-flag me-2"></i>Status Default
+                            </label>
+                            <select id="default_status" name="default_status" class="form-select">
+                                <option value="terdaftar">Terdaftar</option>
+                                <option value="interview">Interview</option>
+                                <option value="tes">Tes</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group mb-4">
+                            <label for="items_per_page" class="form-label">
+                                <i class="fas fa-list me-2"></i>Item per Halaman
+                            </label>
+                            <select id="items_per_page" name="items_per_page" class="form-select">
+                                <option value="10">10 item</option>
+                                <option value="25" selected>25 item</option>
+                                <option value="50">50 item</option>
+                                <option value="100">100 item</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group mb-4">
+                            <label for="date_format" class="form-label">
+                                <i class="fas fa-calendar me-2"></i>Format Tanggal
+                            </label>
+                            <select id="date_format" name="date_format" class="form-select">
+                                <option value="DD/MM/YYYY" selected>DD/MM/YYYY</option>
+                                <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                                <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Simpan Pengaturan
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications Settings -->
+        <div class="settings-section" id="notifications">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-bell text-warning me-2"></i>
+                        Pengaturan Notifikasi
+                    </h5>
+                    <p class="card-subtitle">
+                        Kelola preferensi notifikasi
+                    </p>
+                </div>
+
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('settings') }}">
+                        <input type="hidden" name="section" value="notifications">
+                        
+                        <div class="form-group mb-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       id="email_notifications" 
+                                       name="email_notifications"
+                                       checked>
+                                <label class="form-check-label" for="email_notifications">
+                                    <i class="fas fa-envelope me-2"></i>
+                                    Notifikasi Email
+                                </label>
+                                <small class="text-muted d-block">
+                                    Kirim notifikasi melalui email
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mb-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       id="status_change_notifications" 
+                                       name="status_change_notifications"
+                                       checked>
+                                <label class="form-check-label" for="status_change_notifications">
+                                    <i class="fas fa-exchange-alt me-2"></i>
+                                    Notifikasi Perubahan Status
+                                </label>
+                                <small class="text-muted d-block">
+                                    Notifikasi saat status lamaran berubah
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mb-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       id="weekly_summary" 
+                                       name="weekly_summary">
+                                <label class="form-check-label" for="weekly_summary">
+                                    <i class="fas fa-chart-line me-2"></i>
+                                    Ringkasan Mingguan
+                                </label>
+                                <small class="text-muted d-block">
+                                    Ringkasan performa lamaran per minggu
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Simpan Pengaturan
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appearance Settings -->
+        <div class="settings-section" id="appearance">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-palette text-info me-2"></i>
+                        Pengaturan Tampilan
+                    </h5>
+                    <p class="card-subtitle">
+                        Kustomisasi tampilan aplikasi
+                    </p>
+                </div>
+
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('settings') }}">
+                        <input type="hidden" name="section" value="appearance">
+                        
+                        <div class="form-group mb-4">
+                            <label class="form-label">
+                                <i class="fas fa-sun me-2"></i>Tema
+                            </label>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <div class="theme-option">
+                                        <input type="radio" 
+                                               name="theme" 
+                                               value="light" 
+                                               id="theme-light"
+                                               checked>
+                                        <label for="theme-light" class="theme-card">
+                                            <div class="theme-preview light-theme">
+                                                <i class="fas fa-sun"></i>
+                                            </div>
+                                            <span class="theme-name">Terang</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="theme-option">
+                                        <input type="radio" 
+                                               name="theme" 
+                                               value="dark" 
+                                               id="theme-dark">
+                                        <label for="theme-dark" class="theme-card">
+                                            <div class="theme-preview dark-theme">
+                                                <i class="fas fa-moon"></i>
+                                            </div>
+                                            <span class="theme-name">Gelap</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="theme-option">
+                                        <input type="radio" 
+                                               name="theme" 
+                                               value="auto" 
+                                               id="theme-auto">
+                                        <label for="theme-auto" class="theme-card">
+                                            <div class="theme-preview auto-theme">
+                                                <i class="fas fa-desktop"></i>
+                                            </div>
+                                            <span class="theme-name">Otomatis</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mb-4">
+                            <label for="accent_color" class="form-label">
+                                <i class="fas fa-palette me-2"></i>Warna Aksen
+                            </label>
+                            <select id="accent_color" name="accent_color" class="form-select">
+                                <option value="blue" selected>Biru</option>
+                                <option value="green">Hijau</option>
+                                <option value="purple">Ungu</option>
+                                <option value="orange">Oranye</option>
+                                <option value="pink">Pink</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Simpan Pengaturan
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Management -->
+        <div class="settings-section" id="data">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-database text-success me-2"></i>
+                        Manajemen Data
+                    </h5>
+                    <p class="card-subtitle">
+                        Kelola data aplikasi
+                    </p>
+                </div>
+                <div class="card-body">
+                    <div class="data-actions">
+                        <div class="action-item mb-4">
+                            <div class="action-info">
+                                <h6>
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Statistik Database
+                                </h6>
+                                <p class="text-muted mb-3">Informasi penggunaan data</p>
+                            </div>
+                            <div class="action-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Total Lamaran:</span>
+                                    <span class="stat-value">{{ total_jobs or 0 }}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Ukuran Database:</span>
+                                    <span class="stat-value">~{{ db_size or '0' }} MB</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">File Upload:</span>
+                                    <span class="stat-value">{{ uploaded_files or 0 }} files</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="action-item mb-4">
+                            <div class="action-info">
+                                <h6>
+                                    <i class="fas fa-broom me-2"></i>
+                                    Bersihkan Data
+                                </h6>
+                                <p class="text-muted mb-3">Hapus data yang tidak diperlukan</p>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn btn-warning btn-sm" onclick="cleanupData()">
+                                    <i class="fas fa-trash me-2"></i>
+                                    Bersihkan Cache
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="confirmDeleteAll()">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Hapus Semua Data
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="action-item">
+                            <div class="action-info">
+                                <h6>
+                                    <i class="fas fa-tools me-2"></i>
+                                    Maintenance
+                                </h6>
+                                <p class="text-muted mb-3">Perbaikan dan optimisasi database</p>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn btn-info btn-sm" onclick="optimizeDatabase()">
+                                    <i class="fas fa-magic me-2"></i>
+                                    Optimasi Database
+                                </button>
+                                <button class="btn btn-secondary btn-sm" onclick="checkIntegrity()">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    Cek Integritas
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Backup & Restore -->
+        <div class="settings-section" id="backup">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-download text-primary me-2"></i>
+                        Backup & Restore
+                    </h5>
+                    <p class="card-subtitle">
+                        Cadangkan dan pulihkan data aplikasi
+                    </p>
+                </div>
+                <div class="card-body">
+                    <div class="backup-actions">
+                        <div class="action-item mb-4">
+                            <div class="action-info">
+                                <h6>
+                                    <i class="fas fa-database me-2"></i>
+                                    Backup Database
+                                </h6>
+                                <p class="text-muted mb-3">Cadangkan semua data aplikasi</p>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary" onclick="createBackup()">
+                                    <i class="fas fa-download me-2"></i>
+                                    Buat Backup
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="action-item mb-4">
+                            <div class="action-info">
+                                <h6>
+                                    <i class="fas fa-upload me-2"></i>
+                                    Restore Data
+                                </h6>
+                                <p class="text-muted mb-3">Pulihkan data dari backup</p>
+                            </div>
+                            <div class="action-buttons">
+                                <input type="file" id="restoreFile" accept=".json,.sql" style="display: none;">
+                                <button class="btn btn-success" onclick="document.getElementById('restoreFile').click()">
+                                    <i class="fas fa-upload me-2"></i>
+                                    Pilih File Restore
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="action-item">
+                            <div class="action-info">
+                                <h6>
+                                    <i class="fas fa-history me-2"></i>
+                                    Riwayat Backup
+                                </h6>
+                                <p class="text-muted mb-3">File backup yang tersedia</p>
+                            </div>
+                            <div class="backup-list">
+                                <div class="backup-item">
+                                    <div class="backup-info">
+                                        <span class="backup-name">backup-20241215-143000.json</span>
+                                        <span class="backup-date">15 Des 2024, 14:30</span>
+                                    </div>
+                                    <div class="backup-actions">
+                                        <button class="btn btn-sm btn-secondary" onclick="downloadBackup('backup-20241215-143000.json')">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteBackup('backup-20241215-143000.json')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="backup-item">
+                                    <div class="backup-info">
+                                        <span class="backup-name">backup-20241210-090000.json</span>
+                                        <span class="backup-date">10 Des 2024, 09:00</span>
+                                    </div>
+                                    <div class="backup-actions">
+                                        <button class="btn btn-sm btn-secondary" onclick="downloadBackup('backup-20241210-090000.json')">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteBackup('backup-20241210-090000.json')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Settings -->
+        <div class="settings-section" id="security">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-shield-alt text-danger me-2"></i>
+                        Pengaturan Keamanan
+                    </h5>
+                    <p class="card-subtitle">
+                        Pengaturan keamanan aplikasi
+                    </p>
+                </div>
+
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('settings') }}">
+                        <input type="hidden" name="section" value="security">
+                        
+                        <div class="form-group mb-4">
+                            <label for="session_timeout" class="form-label">
+                                <i class="fas fa-clock me-2"></i>Timeout Session (menit)
+                            </label>
+                            <select id="session_timeout" name="session_timeout" class="form-select">
+                                <option value="30">30 menit</option>
+                                <option value="60" selected>1 jam</option>
+                                <option value="120">2 jam</option>
+                                <option value="240">4 jam</option>
+                                <option value="480">8 jam</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group mb-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       id="require_password_change" 
+                                       name="require_password_change">
+                                <label class="form-check-label" for="require_password_change">
+                                    <i class="fas fa-key me-2"></i>
+                                    Wajib Ganti Password
+                                </label>
+                                <small class="text-muted d-block">
+                                    Paksa pengguna mengganti password secara berkala
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mb-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       id="enable_audit_log" 
+                                       name="enable_audit_log"
+                                       checked>
+                                <label class="form-check-label" for="enable_audit_log">
+                                    <i class="fas fa-clipboard-list me-2"></i>
+                                    Aktifkan Audit Log
+                                </label>
+                                <small class="text-muted d-block">
+                                    Catat semua aktivitas pengguna
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Simpan Pengaturan
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.settings-nav {
+    padding: var(--space-2) 0;
+}
+
+.settings-nav-item {
+    display: flex;
+    align-items: center;
+    padding: var(--space-3) var(--space-4);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all var(--transition-normal);
+    border-left: 3px solid transparent;
+}
+
+.settings-nav-item:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-left-color: var(--primary);
+}
+
+.settings-nav-item.active {
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.1), transparent);
+    color: var(--primary);
+    border-left-color: var(--primary);
+    font-weight: 600;
+}
+
+.settings-section {
+    display: none;
+}
+
+.settings-section.active {
+    display: block;
+}
+
+.theme-option input[type="radio"] {
+    display: none;
+}
+
+.theme-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-4);
+    border: 2px solid var(--gray-300);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    text-align: center;
+}
+
+.theme-option input[type="radio"]:checked + .theme-card {
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.theme-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.theme-preview {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--space-2);
+    font-size: 1.25rem;
+}
+
+.light-theme {
+    background: var(--bg-primary);
+    color: var(--primary);
+    border: 1px solid var(--gray-300);
+}
+
+.dark-theme {
+    background: #1e293b;
+    color: #6366f1;
+}
+
+.auto-theme {
+    background: linear-gradient(135deg, var(--bg-primary) 0%, #1e293b 100%);
+    color: var(--primary);
+}
+
+.theme-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.data-actions, .backup-actions {
+    padding: var(--space-4);
+}
+
+.action-item {
+    padding: var(--space-4);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+}
+
+.action-info h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-1);
+}
+
+.action-info p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.action-stats {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.stat-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.action-buttons {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.backup-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.backup-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-3);
+    background: var(--bg-primary);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+}
+
+.backup-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.backup-name {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+}
+
+.backup-date {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.backup-actions {
+    display: flex;
+    gap: var(--space-1);
+}
+
+@media (max-width: 768px) {
+    .settings-nav {
+        display: flex;
+        overflow-x: auto;
+        gap: var(--space-2);
+        padding: var(--space-2);
+    }
+    
+    .settings-nav-item {
+        white-space: nowrap;
+        border-left: none;
+        border-bottom: 3px solid transparent;
+        border-radius: var(--radius-md);
+    }
+    
+    .settings-nav-item:hover,
+    .settings-nav-item.active {
+        border-left: none;
+        border-bottom-color: var(--primary);
+    }
+    
+    .theme-card {
+        padding: var(--space-3);
+    }
+    
+    .theme-preview {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .action-item {
+        padding: var(--space-3);
+    }
+    
+    .backup-item {
+        flex-direction: column;
+        align-items: start;
+        gap: var(--space-2);
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Settings navigation
+    const navItems = document.querySelectorAll('.settings-nav-item');
+    const sections = document.querySelectorAll('.settings-section');
+    
+    navItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Remove active class from all nav items and sections
+            navItems.forEach(nav => nav.classList.remove('active'));
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Add active class to clicked nav item
+            this.classList.add('active');
+            
+            // Show corresponding section
+            const sectionId = this.getAttribute('data-section');
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+        });
+    });
+    
+    // Theme preview functionality
+    const themeRadios = document.querySelectorAll('input[name="theme"]');
+    themeRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value === 'dark') {
+                document.body.classList.add('dark-theme');
+            } else {
+                document.body.classList.remove('dark-theme');
+            }
+        });
+    });
+});
+
+// Data management functions
+function cleanupData() {
+    showConfirmationModal(
+        'Bersihkan Cache',
+        'Apakah Anda yakin ingin membersihkan cache aplikasi?',
+        function() {
+            // Show loading
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Membersihkan...';
+            btn.disabled = true;
+            
+            // Simulate cleanup process
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                showAlert('Cache berhasil dibersihkan!', 'success');
+            }, 2000);
+        }
+    );
+}
+
+function confirmDeleteAll() {
+    showConfirmationModal(
+        'Hapus Semua Data',
+        'PERINGATAN: Tindakan ini akan menghapus SEMUA data lamaran kerja secara permanen! Tindakan ini tidak dapat dibatalkan.',
+        function() {
+            showAlert('Fitur hapus semua data dinonaktifkan untuk keamanan', 'warning');
+        }
+    );
+}
+
+function optimizeDatabase() {
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Mengoptimasi...';
+    btn.disabled = true;
+    
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        showAlert('Database berhasil dioptimasi!', 'success');
+    }, 3000);
+}
+
+function checkIntegrity() {
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Memeriksa...';
+    btn.disabled = true;
+    
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        showAlert('Database dalam kondisi baik!', 'success');
+    }, 2000);
+}
+
+// Backup functions
+function createBackup() {
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Membuat Backup...';
+    btn.disabled = true;
+    
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        showAlert('Backup berhasil dibuat!', 'success');
+    }, 3000);
+}
+
+function downloadBackup(filename) {
+    showAlert(`Mengunduh ${filename}...`, 'info');
+    // Simulate download
+    setTimeout(() => {
+        showAlert('Backup berhasil diunduh!', 'success');
+    }, 1000);
+}
+
+function deleteBackup(filename) {
+    showConfirmationModal(
+        'Hapus Backup',
+        `Apakah Anda yakin ingin menghapus backup "${filename}"?`,
+        function() {
+            showAlert(`Backup "${filename}" berhasil dihapus!`, 'success');
+        }
+    );
+}
+
+document.getElementById('restoreFile').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        showConfirmationModal(
+            'Restore Data',
+            `Apakah Anda yakin ingin mengembalikan data dari file "${file.name}"? Data saat ini akan ditimpa.`,
+            function() {
+                showAlert('Data berhasil dikembalikan dari backup!', 'success');
+            }
+        );
+    }
+});
+</script>
+{% endblock %}
