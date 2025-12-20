@@ -177,7 +177,9 @@
                     <th>Perusahaan</th>
                     <th>Sumber</th>
                     <th>Lokasi</th>
+
                     <th>Tanggal</th>
+                    <th>Terakhir Diupdate</th>
                     <th>Status</th>
                     <th>Bukti</th>
                     <th>Aksi</th>
@@ -234,10 +236,23 @@
                             {{ job.location }}
                         </div>
                     </td>
+
                     <td>
                         <div class="date-info">
                             <i class="fas fa-calendar"></i>
                             {{ job.applied_date.strftime('%d/%m/%Y') }}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="date-info">
+                            <i class="fas fa-clock"></i>
+                            {% if job.last_status_update %}
+                                <span class="last-update-text" data-timestamp="{{ job.last_status_update.isoformat() }}">
+                                    {{ job.last_status_update.strftime('%d/%m/%Y %H:%M') }}
+                                </span>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
                         </div>
                     </td>
 
@@ -393,7 +408,11 @@
 
 {% block scripts %}
 <script>
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize relative time formatting
+    initializeRelativeTime();
+    
     // Status dropdown functionality
     window.toggleStatusDropdown = function(jobId) {
         const dropdown = document.getElementById('statusDropdown' + jobId);
@@ -481,6 +500,7 @@ document.addEventListener('DOMContentLoaded', function() {
         );
     };
     
+
     // Auto-submit filter form when changing select fields
     document.querySelectorAll('#status, #source').forEach(select => {
         select.addEventListener('change', function() {
@@ -488,5 +508,99 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// Initialize relative time formatting
+function initializeRelativeTime() {
+    const updateElements = document.querySelectorAll('.last-update-text');
+    
+    updateElements.forEach(element => {
+        const timestamp = element.dataset.timestamp;
+        if (timestamp) {
+            const relativeTime = formatRelativeTime(timestamp);
+            element.textContent = relativeTime;
+            element.title = new Date(timestamp).toLocaleString('id-ID');
+        }
+    });
+    
+    // Update relative times every minute
+    setInterval(() => {
+        updateElements.forEach(element => {
+            const timestamp = element.dataset.timestamp;
+            if (timestamp) {
+                const relativeTime = formatRelativeTime(timestamp);
+                element.textContent = relativeTime;
+            }
+        });
+    }, 60000); // Update every minute
+}
+
+
+// Format relative time in Indonesian - Enhanced with seconds precision
+function formatRelativeTime(timestamp) {
+    const now = new Date();
+    const updateTime = new Date(timestamp);
+    const diffInSeconds = Math.floor((now - updateTime) / 1000);
+    
+    // For very recent updates (less than 1 minute ago)
+    if (diffInSeconds < 60) {
+        if (diffInSeconds < 10) {
+            return 'Baru saja';
+        } else {
+            return `${diffInSeconds} detik yang lalu`;
+        }
+    }
+    // For updates within the last hour (less than 60 minutes ago)
+    else if (diffInSeconds < 3600) {
+        const minutes = Math.floor(diffInSeconds / 60);
+        const seconds = diffInSeconds % 60;
+        if (minutes === 1 && seconds > 0) {
+            return `${minutes} menit ${seconds} detik yang lalu`;
+        } else {
+            return `${minutes} menit yang lalu`;
+        }
+    }
+    // For updates within the last day (less than 24 hours ago)
+    else if (diffInSeconds < 86400) {
+        const hours = Math.floor(diffInSeconds / 3600);
+        const remainingMinutes = Math.floor((diffInSeconds % 3600) / 60);
+        
+        if (hours === 1 && remainingMinutes > 0) {
+            return `${hours} jam ${remainingMinutes} menit yang lalu`;
+        } else {
+            return `${hours} jam yang lalu`;
+        }
+    }
+    // For updates within the last week (less than 7 days ago)
+    else if (diffInSeconds < 604800) {
+        const days = Math.floor(diffInSeconds / 86400);
+        const remainingHours = Math.floor((diffInSeconds % 86400) / 3600);
+        
+        if (days === 1 && remainingHours > 0) {
+            return `${days} hari ${remainingHours} jam yang lalu`;
+        } else {
+            return `${days} hari yang lalu`;
+        }
+    }
+    // For older updates, show a more specific time
+    else {
+        const days = Math.floor(diffInSeconds / 86400);
+        const remainingHours = Math.floor((diffInSeconds % 86400) / 3600);
+        
+        if (days < 30) {
+            if (days < 7) {
+                return `${days} hari ${remainingHours} jam yang lalu`;
+            } else {
+                return `${days} hari yang lalu`;
+            }
+        } else {
+            // For very old dates, show the actual date
+            return updateTime.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'short',
+                year: updateTime.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+            });
+        }
+    }
+}
 </script>
 {% endblock %}

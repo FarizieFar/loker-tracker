@@ -205,6 +205,7 @@ def add_job():
         if source_info == 'Custom':
             source_info = request.form.get('custom_source', '')
         
+
         job = JobApplication(
             company_name=request.form['company_name'],
             position=request.form.get('position', ''),  # NEW: Handle posisi
@@ -215,6 +216,7 @@ def add_job():
             source_info=source_info,  # Handle custom source_info
             status_id=request.form['status_id'],  # ✅ INI PENTING
             applied_date=applied_date,
+            last_status_update=applied_date,  # NEW: Set tanggal update awal sama dengan applied_date
             user_id=current_user.id
         )
         db.session.add(job)
@@ -276,7 +278,16 @@ def edit_job(id):
                             os.remove(old_file_path)
                     job.image_proof = new_image
         
-        job.status_id = request.form['status_id']
+
+        old_status_id = job.status_id
+        new_status_id = int(request.form['status_id'])
+        
+        job.status_id = new_status_id
+        
+        # NEW: Update tanggal status jika status berubah
+        if old_status_id != new_status_id:
+            job.last_status_update = datetime.now()
+        
         db.session.commit()
         return redirect(url_for('index'))
 
@@ -329,7 +340,9 @@ def update_status(job_id):
         if not data or 'status_id' not in data:
             return jsonify({'success': False, 'error': 'Invalid data'}), 400
         
+
         job.status_id = data['status_id']
+        job.last_status_update = datetime.now()  # NEW: Update tanggal status terakhir berubah
         db.session.commit()
         
 
@@ -396,8 +409,10 @@ def update_job_status(job_id):
             return jsonify({'success': False, 'message': 'Status tidak ditemukan'}), 400
         
 
+
         # Update job status
         job.status_id = status.id
+        job.last_status_update = datetime.now()  # NEW: Update tanggal status terakhir berubah
         db.session.commit()
         
         # Create notification for status change
@@ -815,11 +830,13 @@ def export_pdf():
         story.append(Paragraph(date_str, styles['Normal']))
         story.append(Spacer(1, 30))
         
+
         # Create table data
         table_data = [
-            ['No', 'Perusahaan', 'Posisi', 'Lokasi', 'Status', 'Tanggal Apply', 'Sumber Info']
+            ['No', 'Perusahaan', 'Posisi', 'Lokasi', 'Status', 'Tanggal Apply', 'Terakhir Diupdate', 'Sumber Info']
         ]
         
+
         for idx, job in enumerate(jobs, 1):
             table_data.append([
                 str(idx),
@@ -828,6 +845,7 @@ def export_pdf():
                 job.location or '-',
                 job.status.name if job.status else '-',
                 job.applied_date.strftime('%d/%m/%Y') if job.applied_date else '-',
+                job.last_status_update.strftime('%d/%m/%Y %H:%M') if job.last_status_update else '-',
                 job.source_info or '-'
             ])
         
@@ -899,6 +917,7 @@ def export_excel():
             flash('Tidak ada data untuk diekspor', 'warning')
             return redirect(url_for('index'))
         
+
         # Prepare data for DataFrame
         data = []
         for job in jobs:
@@ -910,6 +929,7 @@ def export_excel():
                 'Alamat': job.address or '-',
                 'Status': job.status.name if job.status else '-',
                 'Tanggal Apply': job.applied_date.strftime('%d/%m/%Y') if job.applied_date else '-',
+                'Terakhir Diupdate': job.last_status_update.strftime('%d/%m/%Y %H:%M') if job.last_status_update else '-',
                 'Sumber Info': job.source_info or '-',
                 'Bukti Lamaran (Link)': job.application_proof or '-',
                 'Catatan': job.notes or '-'

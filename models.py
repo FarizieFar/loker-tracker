@@ -34,6 +34,7 @@ class Status(db.Model):
         lazy=True
     )
 
+
 class JobApplication(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     company_name = db.Column(db.String(100))
@@ -47,7 +48,7 @@ class JobApplication(db.Model):
     logo_url = db.Column(db.String(255), nullable=True)  # NEW: URL logo perusahaan
     notes = db.Column(db.Text, nullable=True)  # NEW: Keterangan tambahan
     applied_date = db.Column(db.DateTime)
-
+    last_status_update = db.Column(db.DateTime, nullable=True)  # NEW: Tanggal terakhir update status
 
     status_id = db.Column(db.Integer, db.ForeignKey('status.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
