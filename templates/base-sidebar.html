@@ -367,9 +367,22 @@
             });
 
 
-            // Update notification badge and relative time periodically
-            setInterval(updateNotificationBadge, 60000); // Update every minute
-            setInterval(updateNotificationRelativeTime, 30000); // Update relative time every 30 seconds
+
+
+
+
+            // Update notification badge and relative time periodically - ULTRA REAL TIME!
+            setInterval(updateNotificationBadge, 2000); // Update every 2 seconds for fastest updates
+            setInterval(updateNotificationRelativeTime, 1000); // Update relative time every 1 second for ultra-recent updates
+            setInterval(validateAndUpdateTimestamps, 500); // Validate every 0.5 seconds for very recent updates
+            setInterval(loadNotifications, 5000); // Reload notifications every 5 seconds for fresh data
+            
+            // CRITICAL: Force immediate timestamp update for new notifications
+            setTimeout(updateNotificationRelativeTime, 100); // Very quick update
+            setTimeout(updateNotificationRelativeTime, 250); // Quick DOM ready check
+            setTimeout(updateNotificationRelativeTime, 500); // Ensure DOM is ready
+            setTimeout(updateNotificationRelativeTime, 750); // Final update to be sure
+            setTimeout(updateNotificationRelativeTime, 1000); // Another check
         }
 
 
@@ -397,6 +410,7 @@
             }
         }
 
+
         function renderNotifications(notifications, unreadCount) {
             const notificationList = document.getElementById('notificationList');
             const notificationBadge = document.getElementById('notificationBadge');
@@ -421,14 +435,18 @@
             }
 
 
+
+            console.log('Rendering', notifications.length, 'notifications with real-time timestamps');
             notificationList.innerHTML = notifications.map(notification => `
                 <div class="notification-item ${notification.type} ${!notification.is_read ? 'unread' : ''}" 
                      onclick="markNotificationRead(${notification.id})">
                     <div class="notification-content">
                         <div class="notification-title">${notification.title}</div>
                         <div class="notification-message">${notification.message}</div>
-
-                        <div class="notification-time" data-timestamp="${notification.created_at}">${formatTimeAgo(notification.created_at)}</div>
+                        <div class="notification-time" data-timestamp="${notification.created_at}">
+                            <i class="fas fa-clock me-1"></i>
+                            <span class="time-text">${formatTimeAgo(notification.created_at)}</span>
+                        </div>
                     </div>
                     <div class="notification-actions">
                         <button class="btn btn-sm btn-link text-danger p-1" 
@@ -438,11 +456,15 @@
                         </button>
                     </div>
                 </div>
-
             `).join('');
             
-            // Update relative times after rendering
-            setTimeout(updateNotificationRelativeTime, 100);
+            // CRITICAL: Force immediate update of relative times after rendering
+            console.log('Forcing immediate relative time update...');
+            updateNotificationRelativeTime();
+            
+            // Additional delay to ensure DOM is ready
+            setTimeout(updateNotificationRelativeTime, 200);
+            setTimeout(updateNotificationRelativeTime, 500);
         }
 
         function showNotificationError() {
@@ -594,6 +616,9 @@
 
 
 
+
+
+        // ULTRA-GRANULAR FORMAT TIME AGO dengan precision maksimal
         function formatTimeAgo(dateString) {
             const now = new Date();
             let date;
@@ -626,40 +651,61 @@
             }
             
             const diffInSeconds = Math.floor((now - date) / 1000);
+            const diffInMinutes = Math.floor(diffInSeconds / 60);
+            const diffInHours = Math.floor(diffInMinutes / 60);
+            const diffInDays = Math.floor(diffInHours / 24);
+            const diffInWeeks = Math.floor(diffInDays / 7);
+            const diffInMonths = Math.floor(diffInDays / 30);
+            const diffInYears = Math.floor(diffInDays / 365);
             
-            // For very recent updates (less than 1 minute ago)
-            if (diffInSeconds < 60) {
-                if (diffInSeconds < 10) {
-                    return 'Baru saja';
-                } else {
-                    return `${diffInSeconds} detik yang lalu`;
-                }
+            // ULTRA-RECENT: Less than 10 seconds
+            if (diffInSeconds < 10) {
+                return 'Baru saja';
             }
-            // For updates within the last hour (less than 60 minutes ago)
-            else if (diffInSeconds < 3600) {
-                const minutes = Math.floor(diffInSeconds / 60);
+            
+            // RECENT: 10 seconds to 59 seconds  
+            if (diffInSeconds < 60) {
+                return `${diffInSeconds} detik yang lalu`;
+            }
+            
+            // MINUTE RANGE: 1 minute to 59 minutes 59 seconds
+            if (diffInMinutes < 60) {
+                const minutes = diffInMinutes;
                 const seconds = diffInSeconds % 60;
-                if (minutes === 1 && seconds > 0) {
-                    return `${minutes} menit ${seconds} detik yang lalu`;
+                
+                // Show seconds only if less than 5 minutes for ultra-precise tracking
+                if (minutes < 5) {
+                    if (seconds > 0) {
+                        return `${minutes} menit ${seconds} detik yang lalu`;
+                    } else {
+                        return `${minutes} menit yang lalu`;
+                    }
                 } else {
                     return `${minutes} menit yang lalu`;
                 }
             }
-            // For updates within the last day (less than 24 hours ago)
-            else if (diffInSeconds < 86400) {
-                const hours = Math.floor(diffInSeconds / 3600);
-                const remainingMinutes = Math.floor((diffInSeconds % 3600) / 60);
+            
+            // HOUR RANGE: 1 hour to 23 hours 59 minutes
+            if (diffInHours < 24) {
+                const hours = diffInHours;
+                const remainingMinutes = diffInMinutes % 60;
                 
-                if (hours === 1 && remainingMinutes > 0) {
-                    return `${hours} jam ${remainingMinutes} menit yang lalu`;
+                // Show detailed breakdown for first few hours
+                if (hours < 3) {
+                    if (remainingMinutes > 0) {
+                        return `${hours} jam ${remainingMinutes} menit yang lalu`;
+                    } else {
+                        return `${hours} jam yang lalu`;
+                    }
                 } else {
                     return `${hours} jam yang lalu`;
                 }
             }
-            // For updates within the last week (less than 7 days ago)
-            else if (diffInSeconds < 604800) {
-                const days = Math.floor(diffInSeconds / 86400);
-                const remainingHours = Math.floor((diffInSeconds % 86400) / 3600);
+            
+            // DAY RANGE: 1 day to 6 days 23 hours
+            if (diffInDays < 7) {
+                const days = diffInDays;
+                const remainingHours = diffInHours % 24;
                 
                 if (days === 1 && remainingHours > 0) {
                     return `${days} hari ${remainingHours} jam yang lalu`;
@@ -667,26 +713,49 @@
                     return `${days} hari yang lalu`;
                 }
             }
-            // For older updates, show a more specific time
-            else {
-                const days = Math.floor(diffInSeconds / 86400);
-                const remainingHours = Math.floor((diffInSeconds % 86400) / 3600);
+            
+            // WEEK RANGE: 1 week to 4 weeks 6 days
+            if (diffInDays < 30) {
+                const weeks = Math.floor(diffInDays / 7);
+                const remainingDays = diffInDays % 7;
                 
-                if (days < 30) {
-                    if (days < 7) {
-                        return `${days} hari ${remainingHours} jam yang lalu`;
-                    } else {
-                        return `${days} hari yang lalu`;
-                    }
+                if (weeks === 1 && remainingDays > 0) {
+                    return `${weeks} minggu ${remainingDays} hari yang lalu`;
                 } else {
-                    // For very old dates, show the actual date
-                    return date.toLocaleDateString('id-ID', {
-                        day: 'numeric',
-                        month: 'short',
-                        year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
-                    });
+                    return `${weeks} minggu yang lalu`;
                 }
             }
+            
+            // MONTH RANGE: 1 month to 11 months 29 days
+            if (diffInMonths < 12) {
+                const months = diffInMonths;
+                const remainingDays = diffInDays % 30;
+                
+                if (months === 1 && remainingDays > 0) {
+                    return `${months} bulan ${remainingDays} hari yang lalu`;
+                } else {
+                    return `${months} bulan yang lalu`;
+                }
+            }
+            
+            // YEAR RANGE: 1 year and beyond
+            if (diffInYears >= 1) {
+                const years = diffInYears;
+                const remainingMonths = Math.floor((diffInDays % 365) / 30);
+                
+                if (years === 1 && remainingMonths > 0) {
+                    return `${years} tahun ${remainingMonths} bulan yang lalu`;
+                } else {
+                    return `${years} tahun yang lalu`;
+                }
+            }
+            
+            // FALLBACK: Show exact date for very old timestamps
+            return date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'short', 
+                year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+            });
         }
 
 
@@ -712,6 +781,7 @@
         }
 
 
+
         function updateNotificationRelativeTime() {
             // Update relative time for all notification timestamps
             const notificationTimes = document.querySelectorAll('.notification-time[data-timestamp]');
@@ -723,9 +793,62 @@
                     console.log('Updating timestamp:', timestamp);
                     const relativeTime = formatTimeAgo(timestamp);
                     console.log('New relative time:', relativeTime);
-                    element.textContent = relativeTime;
+                    
+                    // Find the time-text span inside the notification-time div
+                    const timeTextSpan = element.querySelector('.time-text');
+                    if (timeTextSpan) {
+                        const oldTime = timeTextSpan.textContent;
+                        timeTextSpan.textContent = relativeTime;
+                        
+                        // Add animation class if time changed
+                        if (oldTime !== relativeTime) {
+                            element.classList.add('updating');
+                            setTimeout(() => {
+                                element.classList.remove('updating');
+                            }, 300);
+                        }
+                    } else {
+                        // Fallback if no time-text span found
+                        const oldTime = element.textContent;
+                        element.innerHTML = `<i class="fas fa-clock me-1"></i><span class="time-text">${relativeTime}</span>`;
+                        
+                        if (oldTime !== relativeTime) {
+                            element.classList.add('updating');
+                            setTimeout(() => {
+                                element.classList.remove('updating');
+                            }, 300);
+                        }
+                    }
                 } else {
                     console.warn('No timestamp found for element:', element);
+                }
+            });
+        }
+        
+        // Additional timestamp validation function
+        function validateAndUpdateTimestamps() {
+            const now = Date.now();
+            const notificationTimes = document.querySelectorAll('.notification-time[data-timestamp]');
+            
+            notificationTimes.forEach(element => {
+                const timestamp = element.getAttribute('data-timestamp');
+                if (timestamp) {
+                    try {
+                        const date = new Date(timestamp);
+                        const diffMs = now - date.getTime();
+                        const diffSecs = Math.floor(diffMs / 1000);
+                        
+                        // Force update for very recent notifications (less than 1 minute)
+                        if (diffSecs < 60) {
+                            const relativeTime = formatTimeAgo(timestamp);
+                            if (element.textContent !== relativeTime) {
+                                console.log('Force update for recent notification:', relativeTime);
+                                element.textContent = relativeTime;
+                            }
+                        }
+                    } catch (error) {
+                        console.warn('Error validating timestamp:', timestamp, error);
+                    }
                 }
             });
         }

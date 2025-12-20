@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Timestamp Real-Time</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .timestamp-display {
+            font-size: 16px;
+            color: #333;
+            margin: 10px 0;
+        }
+        .timestamp-display .last-update-text {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .debug-info {
+            background: #f8f9fa;
+            padding: 10px;
+            border-left: 4px solid #007bff;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🕐 Test Timestamp Real-Time</h1>
+    <p>Testing fungsi timestamp real-time yang sudah diperbaiki</p>
+
+    <div class="test-section">
+        <h3>Test 1: Baru Saja (seconds ago)</h3>
+        <div class="timestamp-display">
+            <i class="fas fa-clock"></i>
+            <span class="last-update-text" data-timestamp="2025-12-21T06:35:33.701084">
+                2025-12-21T06:35:33.701084
+            </span>
+        </div>
+        <div class="debug-info">
+            <strong>Expected:</strong> "Baru saja" (karena timestamp sudah diupdate ke waktu saat ini)
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 2: 1 Menit yang Lalu</h3>
+        <div class="timestamp-display">
+            <i class="fas fa-clock"></i>
+            <span class="last-update-text" data-timestamp="2025-12-21T06:34:33.701084">
+                2025-12-21T06:34:33.701084
+            </span>
+        </div>
+        <div class="debug-info">
+            <strong>Expected:</strong> "1 menit yang lalu"
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 3: 1 Jam yang Lalu</h3>
+        <div class="timestamp-display">
+            <i class="fas fa-clock"></i>
+            <span class="last-update-text" data-timestamp="2025-12-21T05:35:33.701084">
+                2025-12-21T05:35:33.701084
+            </span>
+        </div>
+        <div class="debug-info">
+            <strong>Expected:</strong> "1 jam yang lalu"
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 4: 7 Jam yang Lalu (seperti masalah sebelumnya)</h3>
+        <div class="timestamp-display">
+            <i class="fas fa-clock"></i>
+            <span class="last-update-text" data-timestamp="2025-12-20T23:35:33.701084">
+                2025-12-20T23:35:33.701084
+            </span>
+        </div>
+        <div class="debug-info">
+            <strong>Expected:</strong> "7 jam yang lalu"
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>Current Server Time</h3>
+        <div class="debug-info">
+            <div id="current-time">Loading...</div>
+        </div>
+    </div>
+
+    <script>
+// Format relative time in Indonesian - Enhanced with seconds precision and debugging
+function formatRelativeTime(timestamp) {
+    console.log('Processing timestamp:', timestamp);
+    
+    const now = new Date();
+    let updateTime;
+    
+    try {
+        // Handle different timestamp formats
+        if (typeof timestamp === 'string') {
+            // Try parsing ISO format first
+            if (timestamp.includes('T') && timestamp.includes('Z')) {
+                updateTime = new Date(timestamp);
+            } else if (timestamp.includes('-') && timestamp.length > 10) {
+                // Handle Python datetime format like "2023-12-21 14:30:00"
+                updateTime = new Date(timestamp.replace(' ', 'T'));
+            } else {
+                // Try direct parsing
+                updateTime = new Date(timestamp);
+            }
+        } else {
+            updateTime = new Date(timestamp);
+        }
+        
+        // Validate date
+        if (isNaN(updateTime.getTime())) {
+            console.warn('Invalid date format:', timestamp);
+            return 'Waktu tidak valid';
+        }
+        
+        console.log('Parsed update time:', updateTime);
+        console.log('Current time:', now);
+        console.log('Time difference:', now - updateTime);
+        
+    } catch (error) {
+        console.error('Error parsing timestamp:', timestamp, error);
+        return 'Waktu tidak valid';
+    }
+    
+    const diffInSeconds = Math.floor((now - updateTime) / 1000);
+    console.log('Diff in seconds:', diffInSeconds);
+    
+    // For very recent updates (less than 1 minute ago)
+    if (diffInSeconds < 60) {
+        if (diffInSeconds < 10) {
+            console.log('Returning: Baru saja');
+            return 'Baru saja';
+        } else {
+            const result = `${diffInSeconds} detik yang lalu`;
+            console.log('Returning:', result);
+            return result;
+        }
+    }
+    // For updates within the last hour (less than 60 minutes ago)
+    else if (diffInSeconds < 3600) {
+        const minutes = Math.floor(diffInSeconds / 60);
+        const seconds = diffInSeconds % 60;
+        if (minutes === 1 && seconds > 0) {
+            const result = `${minutes} menit ${seconds} detik yang lalu`;
+            console.log('Returning:', result);
+            return result;
+        } else {
+            const result = `${minutes} menit yang lalu`;
+            console.log('Returning:', result);
+            return result;
+        }
+    }
+    // For updates within the last day (less than 24 hours ago)
+    else if (diffInSeconds < 86400) {
+        const hours = Math.floor(diffInSeconds / 3600);
+        const remainingMinutes = Math.floor((diffInSeconds % 3600) / 60);
+        
+        if (hours === 1 && remainingMinutes > 0) {
+            const result = `${hours} jam ${remainingMinutes} menit yang lalu`;
+            console.log('Returning:', result);
+            return result;
+        } else {
+            const result = `${hours} jam yang lalu`;
+            console.log('Returning:', result);
+            return result;
+        }
+    }
+    // For updates within the last week (less than 7 days ago)
+    else if (diffInSeconds < 604800) {
+        const days = Math.floor(diffInSeconds / 86400);
+        const remainingHours = Math.floor((diffInSeconds % 86400) / 3600);
+        
+        if (days === 1 && remainingHours > 0) {
+            const result = `${days} hari ${remainingHours} jam yang lalu`;
+            console.log('Returning:', result);
+            return result;
+        } else {
+            const result = `${days} hari yang lalu`;
+            console.log('Returning:', result);
+            return result;
+        }
+    }
+    // For older updates, show a more specific time
+    else {
+        const days = Math.floor(diffInSeconds / 86400);
+        const remainingHours = Math.floor((diffInSeconds % 86400) / 3600);
+        
+        if (days < 30) {
+            if (days < 7) {
+                const result = `${days} hari ${remainingHours} jam yang lalu`;
+                console.log('Returning:', result);
+                return result;
+            } else {
+                const result = `${days} hari yang lalu`;
+                console.log('Returning:', result);
+                return result;
+            }
+        } else {
+            // For very old dates, show the actual date
+            const result = updateTime.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'short',
+                year: updateTime.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+            });
+            console.log('Returning date:', result);
+            return result;
+        }
+    }
+}
+
+// Initialize relative time formatting
+function initializeRelativeTime() {
+    const updateElements = document.querySelectorAll('.last-update-text');
+    
+    updateElements.forEach(element => {
+        const timestamp = element.dataset.timestamp;
+        if (timestamp) {
+            const relativeTime = formatRelativeTime(timestamp);
+            element.textContent = relativeTime;
+            element.title = new Date(timestamp).toLocaleString('id-ID');
+        }
+    });
+    
+    // Update relative times every minute
+    setInterval(() => {
+        updateElements.forEach(element => {
+            const timestamp = element.dataset.timestamp;
+            if (timestamp) {
+                const relativeTime = formatRelativeTime(timestamp);
+                element.textContent = relativeTime;
+            }
+        });
+    }, 60000); // Update every minute
+}
+
+// Show current server time
+function updateCurrentTime() {
+    const now = new Date();
+    document.getElementById('current-time').innerHTML = `
+        <strong>Current Time:</strong> ${now.toLocaleString('id-ID')}<br>
+        <strong>ISO Format:</strong> ${now.toISOString()}<br>
+        <strong>Unix Timestamp:</strong> ${Math.floor(now.getTime() / 1000)}
+    `;
+}
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Page loaded, initializing timestamp system...');
+    
+    // Initialize relative time formatting
+    initializeRelativeTime();
+    
+    // Update current time
+    updateCurrentTime();
+    setInterval(updateCurrentTime, 1000);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Real-Time Notification Timestamp Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .notification-time { color: #666; font-size: 0.9em; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .pass { background: #d4edda; color: #155724; }
+        .fail { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h2>Real-Time Notification Timestamp Test</h2>
+    
+    <div id="test-results"></div>
+    
+    <h3>Test Notifications:</h3>
+    <div id="test-notifications"></div>
+    
+    <script>
+        function formatTimeAgo(dateString) {
+            const now = new Date();
+            let date;
+            
+            try {
+                if (typeof dateString === 'string') {
+                    if (dateString.includes('T') && dateString.includes('Z')) {
+                        date = new Date(dateString);
+                    } else if (dateString.includes('-') && dateString.length > 10) {
+                        date = new Date(dateString.replace(' ', 'T'));
+                    } else {
+                        date = new Date(dateString);
+                    }
+                } else {
+                    date = new Date(dateString);
+                }
+                
+                if (isNaN(date.getTime())) {
+                    return 'Waktu tidak valid';
+                }
+            } catch (error) {
+                return 'Waktu tidak valid';
+            }
+            
+            const diffInSeconds = Math.floor((now - date) / 1000);
+            
+            if (diffInSeconds < 60) {
+                if (diffInSeconds < 10) {
+                    return 'Baru saja';
+                } else {
+                    return diffInSeconds + ' detik yang lalu';
+                }
+            }
+            else if (diffInSeconds < 3600) {
+                const minutes = Math.floor(diffInSeconds / 60);
+                const seconds = diffInSeconds % 60;
+                if (minutes === 1 && seconds > 0) {
+                    return minutes + ' menit ' + seconds + ' detik yang lalu';
+                } else {
+                    return minutes + ' menit yang lalu';
+                }
+            }
+            else if (diffInSeconds < 86400) {
+                const hours = Math.floor(diffInSeconds / 3600);
+                const remainingMinutes = Math.floor((diffInSeconds % 3600) / 60);
+                
+                if (hours === 1 && remainingMinutes > 0) {
+                    return hours + ' jam ' + remainingMinutes + ' menit yang lalu';
+                } else {
+                    return hours + ' jam yang lalu';
+                }
+            }
+            else {
+                const days = Math.floor(diffInSeconds / 86400);
+                return days + ' hari yang lalu';
+            }
+        }
+        
+        function updateNotificationRelativeTime() {
+            const notificationTimes = document.querySelectorAll('.notification-time[data-timestamp]');
+            console.log('Updating relative time for', notificationTimes.length, 'notifications');
+            
+            notificationTimes.forEach(element => {
+                const timestamp = element.getAttribute('data-timestamp');
+                if (timestamp) {
+                    const relativeTime = formatTimeAgo(timestamp);
+                    element.textContent = relativeTime;
+                }
+            });
+        }
+        
+        function validateAndUpdateTimestamps() {
+            const now = Date.now();
+            const notificationTimes = document.querySelectorAll('.notification-time[data-timestamp]');
+            
+            notificationTimes.forEach(element => {
+                const timestamp = element.getAttribute('data-timestamp');
+                if (timestamp) {
+                    try {
+                        const date = new Date(timestamp);
+                        const diffMs = now - date.getTime();
+                        const diffSecs = Math.floor(diffMs / 1000);
+                        
+                        if (diffSecs < 60) {
+                            const relativeTime = formatTimeAgo(timestamp);
+                            if (element.textContent !== relativeTime) {
+                                element.textContent = relativeTime;
+                            }
+                        }
+                    } catch (error) {
+                        console.warn('Error validating timestamp:', timestamp, error);
+                    }
+                }
+            });
+        }
+        
+        // Create test notifications
+        function createTestNotifications() {
+            const now = new Date();
+            const testCases = [
+                { time: new Date(now.getTime() - 5000), label: '5 detik lalu' },
+                { time: new Date(now.getTime() - 30000), label: '30 detik lalu' },
+                { time: new Date(now.getTime() - 90000), label: '1.5 menit lalu' },
+                { time: new Date(now.getTime() - 3600000), label: '1 jam lalu' },
+                { time: new Date(now.getTime() - 86400000), label: '1 hari lalu' }
+            ];
+            
+            const container = document.getElementById('test-notifications');
+            
+            testCases.forEach((testCase, index) => {
+                const notificationDiv = document.createElement('div');
+                notificationDiv.className = 'notification-item';
+                notificationDiv.innerHTML = `
+                    <div class="notification-content">
+                        <div class="notification-title">Test Notification ${index + 1}</div>
+                        <div class="notification-message">Test case: ${testCase.label}</div>
+                        <div class="notification-time" data-timestamp="${testCase.time.toISOString()}">${formatTimeAgo(testCase.time)}</div>
+                    </div>
+                `;
+                container.appendChild(notificationDiv);
+            });
+        }
+        
+        function runTests() {
+            const results = [];
+            
+            // Test 1: Check if formatTimeAgo function exists
+            if (typeof formatTimeAgo === 'function') {
+                results.push({ test: 'formatTimeAgo function exists', pass: true });
+            } else {
+                results.push({ test: 'formatTimeAgo function exists', pass: false });
+            }
+            
+            // Test 2: Check if updateNotificationRelativeTime function exists
+            if (typeof updateNotificationRelativeTime === 'function') {
+                results.push({ test: 'updateNotificationRelativeTime function exists', pass: true });
+            } else {
+                results.push({ test: 'updateNotificationRelativeTime function exists', pass: false });
+            }
+            
+            // Test 3: Test formatTimeAgo with recent date
+            const recentTime = new Date(Date.now() - 5000).toISOString();
+            const result = formatTimeAgo(recentTime);
+            if (result.includes('detik')) {
+                results.push({ test: 'formatTimeAgo handles recent dates', pass: true });
+            } else {
+                results.push({ test: 'formatTimeAgo handles recent dates', pass: false });
+            }
+            
+            // Test 4: Test updateNotificationRelativeTime
+            createTestNotifications();
+            const beforeCount = document.querySelectorAll('.notification-time').length;
+            updateNotificationRelativeTime();
+            const afterCount = document.querySelectorAll('.notification-time').length;
+            
+            if (beforeCount === afterCount && afterCount > 0) {
+                results.push({ test: 'updateNotificationRelativeTime processes timestamps', pass: true });
+            } else {
+                results.push({ test: 'updateNotificationRelativeTime processes timestamps', pass: false });
+            }
+            
+            // Display results
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = results.map(result => 
+                `<div class="test-result ${result.pass ? 'pass' : 'fail'}">${result.pass ? '✅' : '❌'} ${result.test}</div>`
+            ).join('');
+            
+            const passCount = results.filter(r => r.pass).length;
+            resultsDiv.innerHTML += `<h3>Result: ${passCount}/${results.length} tests passed</h3>`;
+        }
+        
+        // Start the tests and real-time updates
+        document.addEventListener('DOMContentLoaded', function() {
+            runTests();
+            
+            // Start real-time updates
+            setInterval(updateNotificationRelativeTime, 2000);
+            setInterval(validateAndUpdateTimestamps, 1000);
+        });
+    </script>
+</body>
+</html>

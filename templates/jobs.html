@@ -462,8 +462,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 dropdown.querySelectorAll('.status-option').forEach(opt => opt.classList.remove('active'));
                 element.classList.add('active');
                 
+
                 // Show success message
                 showAlert('Status berhasil diperbarui!', 'success');
+                
+                // 🚀 TRIGGER REAL-TIME NOTIFICATION UPDATE
+                // Reload notifications to show the new status update notification at the top
+                if (typeof loadNotifications === 'function') {
+                    loadNotifications();
+                }
+                
+                // Force update notification badge
+                if (typeof updateNotificationBadge === 'function') {
+                    updateNotificationBadge();
+                }
+                
+                // Update notification relative time immediately
+                if (typeof updateNotificationRelativeTime === 'function') {
+                    updateNotificationRelativeTime();
+                }
             } else {
                 throw new Error(data.message || 'Gagal memperbarui status');
             }
@@ -535,45 +552,93 @@ function initializeRelativeTime() {
 }
 
 
-// Format relative time in Indonesian - Enhanced with seconds precision
+
+
+// Format relative time in Indonesian - ULTRA GRANULAR with seconds precision
 function formatRelativeTime(timestamp) {
     const now = new Date();
-    const updateTime = new Date(timestamp);
-    const diffInSeconds = Math.floor((now - updateTime) / 1000);
+    let updateTime;
     
-    // For very recent updates (less than 1 minute ago)
-    if (diffInSeconds < 60) {
-        if (diffInSeconds < 10) {
-            return 'Baru saja';
+    try {
+        // Handle different timestamp formats
+        if (typeof timestamp === 'string') {
+            // Try parsing ISO format first
+            if (timestamp.includes('T') && timestamp.includes('Z')) {
+                updateTime = new Date(timestamp);
+            } else if (timestamp.includes('-') && timestamp.length > 10) {
+                // Handle Python datetime format like "2023-12-21 14:30:00"
+                updateTime = new Date(timestamp.replace(' ', 'T'));
+            } else {
+                // Try direct parsing
+                updateTime = new Date(timestamp);
+            }
         } else {
-            return `${diffInSeconds} detik yang lalu`;
+            updateTime = new Date(timestamp);
         }
+        
+        // Validate date
+        if (isNaN(updateTime.getTime())) {
+            console.warn('Invalid date format:', timestamp);
+            return 'Waktu tidak valid';
+        }
+    } catch (error) {
+        console.error('Error parsing timestamp:', timestamp, error);
+        return 'Waktu tidak valid';
     }
-    // For updates within the last hour (less than 60 minutes ago)
-    else if (diffInSeconds < 3600) {
-        const minutes = Math.floor(diffInSeconds / 60);
+    
+    const diffInSeconds = Math.floor((now - updateTime) / 1000);
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    const diffInDays = Math.floor(diffInHours / 24);
+    
+    // ULTRA-RECENT: Less than 10 seconds
+    if (diffInSeconds < 10) {
+        return 'Baru saja';
+    }
+    
+    // RECENT: 10 seconds to 59 seconds  
+    if (diffInSeconds < 60) {
+        return `${diffInSeconds} detik yang lalu`;
+    }
+    
+    // MINUTE RANGE: 1 minute to 59 minutes 59 seconds
+    if (diffInMinutes < 60) {
+        const minutes = diffInMinutes;
         const seconds = diffInSeconds % 60;
-        if (minutes === 1 && seconds > 0) {
-            return `${minutes} menit ${seconds} detik yang lalu`;
+        
+        // Show seconds only if less than 5 minutes
+        if (minutes < 5) {
+            if (seconds > 0) {
+                return `${minutes} menit ${seconds} detik yang lalu`;
+            } else {
+                return `${minutes} menit yang lalu`;
+            }
         } else {
             return `${minutes} menit yang lalu`;
         }
     }
-    // For updates within the last day (less than 24 hours ago)
-    else if (diffInSeconds < 86400) {
-        const hours = Math.floor(diffInSeconds / 3600);
-        const remainingMinutes = Math.floor((diffInSeconds % 3600) / 60);
+    
+    // HOUR RANGE: 1 hour to 23 hours 59 minutes
+    if (diffInHours < 24) {
+        const hours = diffInHours;
+        const remainingMinutes = diffInMinutes % 60;
         
-        if (hours === 1 && remainingMinutes > 0) {
-            return `${hours} jam ${remainingMinutes} menit yang lalu`;
+        // Show detailed breakdown for first few hours
+        if (hours < 3) {
+            if (remainingMinutes > 0) {
+                return `${hours} jam ${remainingMinutes} menit yang lalu`;
+            } else {
+                return `${hours} jam yang lalu`;
+            }
         } else {
             return `${hours} jam yang lalu`;
         }
     }
-    // For updates within the last week (less than 7 days ago)
-    else if (diffInSeconds < 604800) {
-        const days = Math.floor(diffInSeconds / 86400);
-        const remainingHours = Math.floor((diffInSeconds % 86400) / 3600);
+    
+    // DAY RANGE: 1 day to 6 days 23 hours
+    if (diffInDays < 7) {
+        const days = diffInDays;
+        const remainingHours = diffInHours % 24;
         
         if (days === 1 && remainingHours > 0) {
             return `${days} hari ${remainingHours} jam yang lalu`;
@@ -581,26 +646,51 @@ function formatRelativeTime(timestamp) {
             return `${days} hari yang lalu`;
         }
     }
-    // For older updates, show a more specific time
-    else {
-        const days = Math.floor(diffInSeconds / 86400);
-        const remainingHours = Math.floor((diffInSeconds % 86400) / 3600);
+    
+    // WEEK RANGE: 1 week to 4 weeks 6 days
+    if (diffInDays < 30) {
+        const weeks = Math.floor(diffInDays / 7);
+        const remainingDays = diffInDays % 7;
         
-        if (days < 30) {
-            if (days < 7) {
-                return `${days} hari ${remainingHours} jam yang lalu`;
-            } else {
-                return `${days} hari yang lalu`;
-            }
+        if (weeks === 1 && remainingDays > 0) {
+            return `${weeks} minggu ${remainingDays} hari yang lalu`;
         } else {
-            // For very old dates, show the actual date
-            return updateTime.toLocaleDateString('id-ID', {
-                day: 'numeric',
-                month: 'short',
-                year: updateTime.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
-            });
+            return `${weeks} minggu yang lalu`;
         }
     }
+    
+    // MONTH RANGE: 1 month to 11 months 29 days
+    const diffInMonths = Math.floor(diffInDays / 30);
+    if (diffInMonths < 12) {
+        const months = diffInMonths;
+        const remainingDays = diffInDays % 30;
+        
+        if (months === 1 && remainingDays > 0) {
+            return `${months} bulan ${remainingDays} hari yang lalu`;
+        } else {
+            return `${months} bulan yang lalu`;
+        }
+    }
+    
+    // YEAR RANGE: 1 year and beyond
+    const diffInYears = Math.floor(diffInDays / 365);
+    if (diffInYears >= 1) {
+        const years = diffInYears;
+        const remainingMonths = Math.floor((diffInDays % 365) / 30);
+        
+        if (years === 1 && remainingMonths > 0) {
+            return `${years} tahun ${remainingMonths} bulan yang lalu`;
+        } else {
+            return `${years} tahun yang lalu`;
+        }
+    }
+    
+    // FALLBACK: Show exact date for very old timestamps
+    return updateTime.toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'short', 
+        year: updateTime.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+    });
 }
 </script>
 {% endblock %}
