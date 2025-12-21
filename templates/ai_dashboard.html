@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Dashboard - Job Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .ai-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+        .ai-card:hover {
+            transform: translateY(-5px);
+        }
+        .insight-card {
+            border-left: 4px solid #007bff;
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        .insight-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .priority-high { border-left-color: #dc3545; }
+        .priority-medium { border-left-color: #ffc107; }
+        .priority-low { border-left-color: #28a745; }
+        .skill-gap-item {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .match-score {
+            font-size: 2em;
+            font-weight: bold;
+            color: #28a745;
+        }
+        .career-path {
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .progress-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: conic-gradient(#28a745 0deg, #28a745 var(--score-deg), #e9ecef var(--score-deg));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            position: relative;
+        }
+        .progress-circle::before {
+            content: '';
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: white;
+            z-index: 1;
+        }
+        .progress-text {
+            position: relative;
+            z-index: 2;
+            font-weight: bold;
+            font-size: 0.8em;
+            color: #495057;
+        }
+        .ai-stats {
+            background: linear-gradient(45deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #495057;
+        }
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">AI Dashboard</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="ai-card">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2><i class="fas fa-robot"></i> AI Dashboard</h2>
+                            <p class="mb-0">Intelligent insights untuk career journey Anda</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button class="btn btn-light" onclick="generateInsights()">
+                                <i class="fas fa-magic"></i> Generate Insights
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Statistics -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="ai-stats">
+                    <div class="row">
+                        <div class="col-md-3 col-6 stat-item">
+                            <div class="stat-number">{{ insights|length }}</div>
+                            <div class="stat-label">AI Insights</div>
+                        </div>
+                        <div class="col-md-3 col-6 stat-item">
+                            <div class="stat-number">{{ job_matches|length }}</div>
+                            <div class="stat-label">Job Matches</div>
+                        </div>
+                        <div class="col-md-3 col-6 stat-item">
+                            <div class="stat-number">{{ skill_gaps|length }}</div>
+                            <div class="stat-label">Skill Gaps</div>
+                        </div>
+                        <div class="col-md-3 col-6 stat-item">
+                            <div class="stat-number">{{ career_trajectories|length }}</div>
+                            <div class="stat-label">Career Paths</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Left Column -->
+            <div class="col-lg-8">
+                <!-- CV Profile Summary -->
+                {% if cv_profile %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-user"></i> CV Profile Analysis</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Personal Information</h6>
+                                <p><strong>Nama:</strong> {{ cv_profile.full_name or 'Not provided' }}</p>
+                                <p><strong>Email:</strong> {{ cv_profile.email or 'Not provided' }}</p>
+                                <p><strong>Experience Level:</strong> {{ cv_profile.experience_level.title() if cv_profile.experience_level else 'Unknown' }}</p>
+                                <p><strong>Years Experience:</strong> {{ cv_profile.years_experience or 0 }} years</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>AI Scores</h6>
+                                <div class="text-center mb-3">
+                                    <div class="progress-circle" style="--score-deg: {{ (cv_profile.ats_score or 0) * 3.6 }}deg">
+                                        <span class="progress-text">{{ cv_profile.ats_score or 0 }}%</span>
+                                    </div>
+                                    <small class="text-muted">ATS Score</small>
+                                </div>
+                                <div class="text-center">
+                                    <div class="progress-circle" style="--score-deg: {{ (cv_profile.completeness_score or 0) * 3.6 }}deg">
+                                        <span class="progress-text">{{ cv_profile.completeness_score or 0 }}%</span>
+                                    </div>
+                                    <small class="text-muted">Completeness</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% if cv_profile.extracted_skills %}
+                        <hr>
+                        <h6>Extracted Skills</h6>
+                        <div>
+                            {% for skill in cv_profile.extracted_skills.split(',') %}
+                                <span class="badge bg-primary me-1">{{ skill.strip() }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <i class="fas fa-upload fa-3x text-muted mb-3"></i>
+                        <h5>No CV Profile Found</h5>
+                        <p class="text-muted">Upload your CV to get started with AI analysis</p>
+                        <a href="{{ url_for('upload_cv') }}" class="btn btn-primary">
+                            <i class="fas fa-upload"></i> Upload CV
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- AI Insights -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5><i class="fas fa-lightbulb"></i> AI Insights</h5>
+                        <button class="btn btn-sm btn-outline-primary" onclick="refreshInsights()">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        {% if insights %}
+                            {% for insight in insights %}
+                            <div class="insight-card priority-{{ 'high' if insight.priority_level <= 2 else 'medium' if insight.priority_level == 3 else 'low' }}">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">{{ insight.title }}</h6>
+                                        <p class="mb-2">{{ insight.content }}</p>
+                                        {% if insight.action_required and insight.action_text %}
+                                            <div class="alert alert-info py-2 mb-2">
+                                                <i class="fas fa-exclamation-circle"></i> {{ insight.action_text }}
+                                            </div>
+                                        {% endif %}
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock"></i> {{ insight.created_at.strftime('%d/%m/%Y %H:%M') }}
+                                            {% if insight.related_skills %}
+                                                | <i class="fas fa-tags"></i> {{ insight.related_skills|length }} skills
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge bg-{{ 'danger' if insight.priority_level <= 2 else 'warning' if insight.priority_level == 3 else 'success' }}">
+                                            Priority {{ insight.priority_level }}
+                                        </span>
+                                        <br>
+                                        <small class="text-muted">{{ (insight.confidence_score * 100)|round(0) }}% confidence</small>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center">
+                                <i class="fas fa-lightbulb fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">No insights available yet</p>
+                                <button class="btn btn-primary" onclick="generateInsights()">
+                                    <i class="fas fa-magic"></i> Generate Insights
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Job Matches -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-handshake"></i> Job Matches</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if job_matches %}
+                            {% for match in job_matches %}
+                            <div class="border rounded p-3 mb-3">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        <h6 class="mb-1">{{ match.job.company_name }}</h6>
+                                        <p class="text-muted mb-1">{{ match.job.position }}</p>
+                                        <p class="mb-0"><small>{{ match.job.location }}</small></p>
+                                        {% if match.recommendations %}
+                                            <p class="mt-2"><small>{{ match.recommendations[:200] }}{% if match.recommendations|length > 200 %}...{% endif %}</small></p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <div class="match-score">{{ match.match_score|round(0) }}%</div>
+                                        <small class="text-muted">Match Score</small>
+                                        <div class="mt-2">
+                                            {% if match.matching_skills %}
+                                                {% set matching = match.matching_skills|from_json %}
+                                                <small class="text-success">{{ matching|length }} matching skills</small>
+                                            {% endif %}
+                                            {% if match.missing_skills %}
+                                                {% set missing = match.missing_skills|from_json %}
+                                                <br><small class="text-warning">{{ missing|length }} missing skills</small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center">
+                                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">No job matches available yet</p>
+                                <p class="text-muted">Upload your CV to get job matching recommendations</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-lg-4">
+                <!-- Quick Actions -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6><i class="fas fa-bolt"></i> Quick Actions</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="{{ url_for('upload_cv') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-upload"></i> Upload/Update CV
+                            </a>
+                            <button class="btn btn-outline-info" onclick="generateInsights()">
+                                <i class="fas fa-magic"></i> Generate AI Insights
+                            </button>
+                            <a href="{{ url_for('jobs') }}" class="btn btn-outline-success">
+                                <i class="fas fa-search"></i> Find Matching Jobs
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skill Gaps -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6><i class="fas fa-exclamation-triangle"></i> Skill Gaps</h6>
+                    </div>
+                    <div class="card-body">
+                        {% if skill_gaps %}
+                            {% for gap in skill_gaps[:5] %}
+                            <div class="skill-gap-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ gap.skill_name }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ gap.skill_category.title() if gap.skill_category else 'General' }}</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge bg-{{ 'danger' if gap.gap_severity > 0.7 else 'warning' if gap.gap_severity > 0.4 else 'success' }}">
+                                            {{ (gap.gap_severity * 100)|round(0) }}%
+                                        </span>
+                                        <br>
+                                        <small class="text-muted">Priority: {{ gap.priority_score|round(1) }}</small>
+                                    </div>
+                                </div>
+                                {% if gap.learning_resources %}
+                                    <small class="text-info mt-1">
+                                        <i class="fas fa-book"></i> Learning resources available
+                                    </small>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                            {% if skill_gaps|length > 5 %}
+                                <div class="text-center">
+                                    <small class="text-muted">And {{ skill_gaps|length - 5 }} more skill gaps...</small>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="text-center">
+                                <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                                <p class="text-muted">No significant skill gaps detected!</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Career Trajectories -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6><i class="fas fa-route"></i> Career Paths</h6>
+                    </div>
+                    <div class="card-body">
+                        {% if career_trajectories %}
+                            {% for trajectory in career_trajectories %}
+                            <div class="career-path">
+                                <h6 class="mb-2">{{ trajectory.current_role or 'Current Role' }} → {{ trajectory.target_role or 'Target Role' }}</h6>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <small><strong>Stage:</strong> {{ trajectory.career_stage.title() if trajectory.career_stage else 'Unknown' }}</small>
+                                    </div>
+                                    <div class="col-6 text-end">
+                                        <small><strong>Success Rate:</strong> {{ (trajectory.success_probability * 100)|round(0) if trajectory.success_probability else 0 }}%</small>
+                                    </div>
+                                </div>
+                                {% if trajectory.progression_years %}
+                                    <small class="text-light">
+                                        <i class="fas fa-clock"></i> Estimated progression: {{ trajectory.progression_years|round(1) }} years
+                                    </small>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center">
+                                <i class="fas fa-route fa-2x text-muted mb-2"></i>
+                                <p class="text-muted">Career path analysis not available</p>
+                                <small class="text-muted">Upload your CV to get career recommendations</small>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        async function generateInsights() {
+            try {
+                const response = await fetch('/api/ai/generate-insights', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showSuccessMessage(`Berhasil generate ${result.insights_count} insights AI!`);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    showErrorMessage(result.error || 'Gagal generate insights');
+                }
+            } catch (error) {
+                showErrorMessage('Terjadi kesalahan saat generate insights');
+                console.error(error);
+            }
+        }
+
+        async function refreshInsights() {
+            try {
+                const response = await fetch('/api/ai/insights');
+                const result = await response.json();
+                
+                if (result.success) {
+                    showSuccessMessage('Insights berhasil diupdate!');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    showErrorMessage('Gagal update insights');
+                }
+            } catch (error) {
+                showErrorMessage('Terjadi kesalahan saat update insights');
+                console.error(error);
+            }
+        }
+
+        function showSuccessMessage(message) {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success alert-dismissible fade show position-fixed';
+            alert.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alert.innerHTML = `
+                <i class="fas fa-check-circle"></i> ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alert);
+            
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.parentNode.removeChild(alert);
+                }
+            }, 5000);
+        }
+
+        function showErrorMessage(message) {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-danger alert-dismissible fade show position-fixed';
+            alert.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alert.innerHTML = `
+                <i class="fas fa-exclamation-circle"></i> ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alert);
+            
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.parentNode.removeChild(alert);
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

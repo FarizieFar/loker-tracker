@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload CV - AI Job Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .upload-area {
+            border: 2px dashed #007bff;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+        }
+        .upload-area:hover {
+            border-color: #0056b3;
+            background-color: #e9ecef;
+        }
+        .upload-area.dragover {
+            border-color: #28a745;
+            background-color: #d4edda;
+        }
+        .ai-analysis-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .skill-badge {
+            background-color: #e9ecef;
+            color: #495057;
+            padding: 5px 10px;
+            border-radius: 15px;
+            margin: 2px;
+            display: inline-block;
+            font-size: 0.85em;
+        }
+        .score-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: conic-gradient(#28a745 0deg, #28a745 var(--score-deg), #e9ecef var(--score-deg));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            position: relative;
+        }
+        .score-circle::before {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: white;
+            z-index: 1;
+        }
+        .score-text {
+            position: relative;
+            z-index: 2;
+            font-weight: bold;
+            color: #495057;
+        }
+        .insight-card {
+            border-left: 4px solid #007bff;
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+        .priority-high { border-left-color: #dc3545; }
+        .priority-medium { border-left-color: #ffc107; }
+        .priority-low { border-left-color: #28a745; }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{{ url_for('ai_dashboard') }}">AI Dashboard</a></li>
+                        <li class="breadcrumb-item active">Upload CV</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h4><i class="fas fa-file-upload"></i> Upload dan Analisis CV</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="cvUploadForm" enctype="multipart/form-data">
+                            <div class="upload-area" id="uploadArea">
+                                <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                                <h5>Drag & Drop CV Anda di sini</h5>
+                                <p class="text-muted">atau klik untuk memilih file</p>
+                                <input type="file" id="cvFile" name="cv_file" accept=".pdf,.doc,.docx,.txt" style="display: none;">
+                                <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('cvFile').click()">
+                                    Pilih File
+                                </button>
+                            </div>
+                            <div id="fileInfo" class="mt-3" style="display: none;">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span id="fileName"></span>
+                                    <button type="button" class="btn btn-sm btn-outline-danger ms-2" onclick="clearFile()">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <button type="submit" class="btn btn-primary" id="analyzeBtn" disabled>
+                                    <i class="fas fa-magic"></i> Analisis CV dengan AI
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Analysis Results -->
+                <div id="analysisResults" style="display: none;">
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h4><i class="fas fa-chart-line"></i> Hasil Analisis AI</h4>
+                        </div>
+                        <div class="card-body" id="analysisContent">
+                            <!-- Results will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Insights Results -->
+                <div id="insightsResults" style="display: none;">
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h4><i class="fas fa-lightbulb"></i> AI Insights & Rekomendasi</h4>
+                        </div>
+                        <div class="card-body" id="insightsContent">
+                            <!-- Insights will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <!-- AI Features Info -->
+                <div class="ai-analysis-card">
+                    <h5><i class="fas fa-robot"></i> Fitur AI</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check"></i> Ekstraksi skills otomatis</li>
+                        <li><i class="fas fa-check"></i> Analisis level pengalaman</li>
+                        <li><i class="fas fa-check"></i> Skor ATS compatibility</li>
+                        <li><i class="fas fa-check"></i> Rekomendasi career path</li>
+                        <li><i class="fas fa-check"></i> Gap analysis skills</li>
+                    </ul>
+                </div>
+
+                <!-- Upload Guidelines -->
+                <div class="card">
+                    <div class="card-header">
+                        <h6><i class="fas fa-info-circle"></i> Panduan Upload</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-file-pdf text-danger"></i> Format yang didukung: PDF, DOC, DOCX, TXT</li>
+                            <li><i class="fas fa-weight text-warning"></i> Maksimal ukuran: 16MB</li>
+                            <li><i class="fas fa-shield-alt text-success"></i> File Anda aman dan privat</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('cvFile');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileSelect();
+            }
+        });
+
+        fileInput.addEventListener('change', handleFileSelect);
+
+        function handleFileSelect() {
+            const file = fileInput.files[0];
+            if (file) {
+                fileName.textContent = `File dipilih: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                fileInfo.style.display = 'block';
+                analyzeBtn.disabled = false;
+            }
+        }
+
+        function clearFile() {
+            fileInput.value = '';
+            fileInfo.style.display = 'none';
+            analyzeBtn.disabled = true;
+        }
+
+        // Form submission
+        document.getElementById('cvUploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('cv_file', fileInput.files[0]);
+            
+            analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menganalisis CV...';
+            analyzeBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/ai/cv/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayAnalysisResults(result.analysis);
+                    displayInsights(result.insights_count);
+                    showSuccessMessage('CV berhasil dianalisis!');
+                } else {
+                    showErrorMessage(result.error);
+                }
+            } catch (error) {
+                showErrorMessage('Terjadi kesalahan saat menganalisis CV');
+                console.error(error);
+            } finally {
+                analyzeBtn.innerHTML = '<i class="fas fa-magic"></i> Analisis CV dengan AI';
+                analyzeBtn.disabled = false;
+            }
+        });
+
+        function displayAnalysisResults(analysis) {
+            const content = document.getElementById('analysisContent');
+            const personalInfo = analysis.personal_info || {};
+            const skills = analysis.skills || [];
+            
+            let skillsHtml = skills.map(skill => 
+                `<span class="skill-badge">${skill}</span>`
+            ).join('');
+            
+            const atsScore = analysis.ats_score || 0;
+            const completenessScore = analysis.completeness_score || 0;
+            
+            content.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-user"></i> Informasi Personal</h6>
+                        <p><strong>Nama:</strong> ${personalInfo.name || 'Tidak terdeteksi'}</p>
+                        <p><strong>Email:</strong> ${personalInfo.email || 'Tidak terdeteksi'}</p>
+                        <p><strong>Telepon:</strong> ${personalInfo.phone || 'Tidak terdeteksi'}</p>
+                        <p><strong>Lokasi:</strong> ${personalInfo.location || 'Tidak terdeteksi'}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-chart-bar"></i> Skor Analisis</h6>
+                        <div class="text-center mb-3">
+                            <div class="score-circle" style="--score-deg: ${atsScore * 3.6}deg">
+                                <span class="score-text">${atsScore}%</span>
+                            </div>
+                            <small class="text-muted">ATS Score</small>
+                        </div>
+                        <div class="text-center">
+                            <div class="score-circle" style="--score-deg: ${completenessScore * 3.6}deg">
+                                <span class="score-text">${completenessScore}%</span>
+                            </div>
+                            <small class="text-muted">Completeness</small>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <h6><i class="fas fa-tools"></i> Skills Teridentifikasi</h6>
+                <div class="mb-3">
+                    ${skillsHtml || '<span class="text-muted">Tidak ada skills yang terdeteksi</span>'}
+                </div>
+                <h6><i class="fas fa-briefcase"></i> Level Pengalaman</h6>
+                <p><strong>Level:</strong> ${analysis.experience_level || 'Tidak diketahui'}</p>
+                <p><strong>Tahun Pengalaman:</strong> ${analysis.years_experience || 0} tahun</p>
+                <p><strong>Pendidikan:</strong> ${analysis.education_level || 'Tidak diketahui'}</p>
+                ${analysis.summary ? `<h6><i class="fas fa-align-left"></i> Ringkasan</h6><p>${analysis.summary}</p>` : ''}
+            `;
+            
+            document.getElementById('analysisResults').style.display = 'block';
+        }
+
+        function displayInsights(insightsCount) {
+            document.getElementById('insightsResults').style.display = 'block';
+            document.getElementById('insightsContent').innerHTML = `
+                <div class="alert alert-success">
+                    <i class="fas fa-lightbulb"></i> Berhasil generate ${insightsCount} insights AI!
+                    <br><small>Lihat insights lengkap di <a href="${window.location.origin}/ai/dashboard" class="alert-link">AI Dashboard</a></small>
+                </div>
+            `;
+        }
+
+        function showSuccessMessage(message) {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success alert-dismissible fade show';
+            alert.innerHTML = `
+                <i class="fas fa-check-circle"></i> ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.insertBefore(alert, document.body.firstChild);
+        }
+
+        function showErrorMessage(message) {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-danger alert-dismissible fade show';
+            alert.innerHTML = `
+                <i class="fas fa-exclamation-circle"></i> ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.insertBefore(alert, document.body.firstChild);
+        }
+    </script>
+</body>
+</html>

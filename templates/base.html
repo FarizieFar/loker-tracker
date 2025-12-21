@@ -25,7 +25,20 @@
                 Loker Tracker
             </a>
             {% if current_user.is_authenticated %}
+
             <div class="d-flex align-items-center gap-4">
+                <!-- AI Features Navigation -->
+                <div class="d-flex align-items-center gap-3">
+                    <a href="{{ url_for('ai_dashboard') }}" class="btn btn-outline-primary btn-sm" title="AI Dashboard">
+                        <i class="fas fa-robot me-1"></i>
+                        <span class="d-none d-md-inline">AI</span>
+                    </a>
+                    <a href="{{ url_for('upload_cv') }}" class="btn btn-outline-info btn-sm" title="Upload CV">
+                        <i class="fas fa-upload me-1"></i>
+                        <span class="d-none d-md-inline">CV</span>
+                    </a>
+                </div>
+                
                 <div style="display: flex; align-items: center; gap: var(--space-3);">
                     <div style="width: 32px; height: 32px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">
                         {{ current_user.username[0].upper() }}

@@ -15,6 +15,7 @@ import uuid
 import io
 from io import BytesIO
 
+
 # Import for PDF and Excel export
 import pandas as pd
 from reportlab.lib.pagesizes import A4
@@ -25,6 +26,15 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.units import inch
 
+# Import AI modules
+from ai_modules.ai_service import AIService
+from ai_modules.cv_analyzer import CVAnalyzer
+from ai_modules.job_matcher import JobMatcher
+from ai_modules.insights_generator import InsightsGenerator
+from models import CVProfile, JobMatch, AIInsight, SkillGap, CareerTrajectory
+import json
+import traceback
+
 
 app = Flask(__name__)
 
@@ -33,19 +43,27 @@ app.config['SECRET_KEY'] = 'super-secret-key-alfarizi'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+
 # File upload configuration
 app.config['UPLOAD_FOLDER'] = 'static/uploads/proofs'
+app.config['CV_UPLOAD_FOLDER'] = 'static/uploads/cv'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+CV_ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx', 'txt'}
 
-
-
-# Create upload directory if it doesn't exist
+# Create upload directories if they don't exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+os.makedirs(app.config['CV_UPLOAD_FOLDER'], exist_ok=True)
 
 def allowed_file(filename):
+    """Check if file has allowed extension for images"""
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def allowed_cv_file(filename):
+    """Check if file has allowed extension for CV uploads"""
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in CV_ALLOWED_EXTENSIONS
 
 def save_uploaded_file(file):
     """Save uploaded file and return filename"""
@@ -65,6 +83,17 @@ def save_uploaded_image(file):
         # Generate unique filename
         unique_filename = str(uuid.uuid4()) + '.' + filename.rsplit('.', 1)[1]
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+        file.save(file_path)
+        return unique_filename
+    return None
+
+def save_uploaded_cv(file):
+    """Save uploaded CV file and return the filename"""
+    if file and allowed_cv_file(file.filename):
+        filename = secure_filename(file.filename)
+        # Generate unique filename
+        unique_filename = f"{uuid.uuid4().hex}_{filename}"
+        file_path = os.path.join(app.config['CV_UPLOAD_FOLDER'], unique_filename)
         file.save(file_path)
         return unique_filename
     return None
@@ -628,6 +657,324 @@ def clear_all_notifications():
 
 
 
+
+
+# ======================
+# AI-POWERED FEATURES
+# ======================
+
+# Initialize AI services
+ai_service = AIService()
+cv_analyzer = CVAnalyzer()
+job_matcher = JobMatcher()
+insights_generator = InsightsGenerator()
+
+# CV Upload and Analysis
+
+@app.route('/ai/cv/upload', methods=['GET', 'POST'])
+@login_required
+def upload_cv():
+    """Upload and analyze CV/Resume"""
+    if request.method == 'POST':
+        try:
+            # Handle file upload
+            if 'cv_file' not in request.files:
+                return jsonify({'success': False, 'error': 'No file provided'}), 400
+            
+            file = request.files['cv_file']
+            if file.filename == '':
+                return jsonify({'success': False, 'error': 'No file selected'}), 400
+            
+            # Save uploaded CV file using the new function
+            cv_filename = save_uploaded_cv(file)
+            if not cv_filename:
+                return jsonify({'success': False, 'error': 'Invalid file type. Please upload PDF, DOC, DOCX, or TXT files only.'}), 400
+            
+            # Read file content for analysis
+            file_path = os.path.join(app.config['CV_UPLOAD_FOLDER'], cv_filename)
+            
+            # Handle different file types
+            file_extension = file.filename.rsplit('.', 1)[1].lower()
+            cv_content = ""
+            
+            try:
+                if file_extension == 'pdf':
+                    # For PDF files, we'll use a simple text extraction (in real app, use PyPDF2 or similar)
+                    with open(file_path, 'rb') as f:
+                        cv_content = f.read().decode('utf-8', errors='ignore')
+                elif file_extension in ['doc', 'docx']:
+                    # For DOC/DOCX files, use python-docx or similar library
+                    with open(file_path, 'rb') as f:
+                        cv_content = f.read().decode('utf-8', errors='ignore')
+                else:
+                    # For TXT files
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        cv_content = f.read()
+            except Exception as e:
+                print(f"Error reading file: {str(e)}")
+                return jsonify({'success': False, 'error': 'Error reading file content. Please make sure the file is not corrupted.'}), 400
+            
+            # Analyze CV using AI
+            analysis_result = cv_analyzer.analyze_cv(cv_content)
+            
+            # Save or update CV profile
+            cv_profile = CVProfile.query.filter_by(user_id=current_user.id).first()
+            if not cv_profile:
+                cv_profile = CVProfile(user_id=current_user.id)
+                db.session.add(cv_profile)
+            
+            # Update CV profile with analysis results
+            cv_profile.cv_file_path = cv_filename
+            cv_profile.file_size = len(cv_content)
+            cv_profile.full_name = analysis_result.get('personal_info', {}).get('name', '')
+            cv_profile.email = analysis_result.get('personal_info', {}).get('email', '')
+            cv_profile.phone = analysis_result.get('personal_info', {}).get('phone', '')
+            cv_profile.location = analysis_result.get('personal_info', {}).get('location', '')
+            cv_profile.extracted_skills = json.dumps(analysis_result.get('skills', []))
+            cv_profile.experience_level = analysis_result.get('experience_level', 'unknown')
+            cv_profile.years_experience = analysis_result.get('years_experience', 0)
+            cv_profile.education_level = analysis_result.get('education_level', '')
+            cv_profile.summary = analysis_result.get('summary', '')
+            cv_profile.ats_score = analysis_result.get('ats_score', 0)
+            cv_profile.completeness_score = analysis_result.get('completeness_score', 0)
+            cv_profile.last_updated = datetime.now()
+            
+            db.session.commit()
+            
+            # Generate insights based on CV analysis
+            user_data = {
+                'cv_analysis': analysis_result,
+                'job_applications': []
+            }
+            insights = insights_generator.generate_all_insights(user_data)
+            
+            # Save insights to database
+            for insight in insights:
+                ai_insight = AIInsight(
+                    user_id=current_user.id,
+                    insight_type=insight['type'],
+                    title=insight['title'],
+                    content=insight['content'],
+                    confidence_score=insight.get('confidence', 0),
+                    priority_level=insight.get('priority', 3),
+                    action_required=insight.get('action_required', False),
+                    action_text=insight.get('action_text', ''),
+                    related_skills=json.dumps(insight.get('related_skills', []))
+                )
+                db.session.add(ai_insight)
+            
+            db.session.commit()
+            
+            return jsonify({
+                'success': True,
+                'message': 'CV analyzed successfully',
+                'analysis': analysis_result,
+                'insights_count': len(insights)
+            })
+            
+        except Exception as e:
+            print(f"CV Analysis Error: {str(e)}")
+            print(traceback.format_exc())
+            return jsonify({'success': False, 'error': str(e)}), 500
+    
+    return render_template('cv_upload.html')
+
+# AI Dashboard
+@app.route('/ai/dashboard')
+@login_required
+def ai_dashboard():
+    """AI-powered insights dashboard"""
+    try:
+        # Get user's CV profile
+        cv_profile = CVProfile.query.filter_by(user_id=current_user.id).first()
+        
+        # Get AI insights
+        insights = AIInsight.query.filter_by(user_id=current_user.id)\
+            .order_by(AIInsight.created_at.desc()).limit(10).all()
+        
+        # Get job matches
+        job_matches = JobMatch.query.filter_by(user_id=current_user.id)\
+            .order_by(JobMatch.match_score.desc()).limit(5).all()
+        
+        # Get skill gaps
+        skill_gaps = SkillGap.query.filter_by(user_id=current_user.id)\
+            .order_by(SkillGap.priority_score.desc()).limit(10).all()
+        
+        # Get career trajectories
+        career_trajectories = CareerTrajectory.query.filter_by(user_id=current_user.id)\
+            .order_by(CareerTrajectory.created_at.desc()).limit(3).all()
+        
+        return render_template('ai_dashboard.html',
+                             cv_profile=cv_profile,
+                             insights=insights,
+                             job_matches=job_matches,
+                             skill_gaps=skill_gaps,
+                             career_trajectories=career_trajectories)
+        
+    except Exception as e:
+        print(f"AI Dashboard Error: {str(e)}")
+        flash('Error loading AI dashboard', 'danger')
+        return redirect(url_for('index'))
+
+# Job Matching API
+@app.route('/api/ai/job-match/<int:job_id>', methods=['POST'])
+@login_required
+def match_job(job_id):
+    """Match a specific job with user's CV"""
+    try:
+        job = JobApplication.query.get_or_404(job_id)
+        
+        if job.user_id != current_user.id:
+            return jsonify({'success': False, 'error': 'Unauthorized'}), 403
+        
+        # Get user's CV profile
+        cv_profile = CVProfile.query.filter_by(user_id=current_user.id).first()
+        if not cv_profile:
+            return jsonify({'success': False, 'error': 'No CV profile found. Please upload your CV first.'}), 400
+        
+        # Parse CV skills
+        cv_skills = json.loads(cv_profile.extracted_skills) if cv_profile.extracted_skills else []
+        
+        # Create job description from job data
+        job_description = f"""
+        Position: {job.position}
+        Company: {job.company_name}
+        Location: {job.location}
+        Requirements: {job.application_proof}
+        """
+        
+        # Perform job matching
+        match_result = job_matcher.match_job(cv_skills, job_description)
+        
+        # Save match result
+        job_match = JobMatch(
+            user_id=current_user.id,
+            job_id=job.id,
+            match_score=match_result['match_score'],
+            matching_skills=json.dumps(match_result['matching_skills']),
+            missing_skills=json.dumps(match_result['missing_skills']),
+            additional_skills=json.dumps(match_result['additional_skills']),
+            compatibility_factors=json.dumps(match_result['compatibility_factors']),
+            recommendations=match_result['recommendations'],
+            salary_match_score=match_result.get('salary_match_score', 0),
+            location_match_score=match_result.get('location_match_score', 0)
+        )
+        
+        # Remove existing match for this job
+        existing_match = JobMatch.query.filter_by(user_id=current_user.id, job_id=job.id).first()
+        if existing_match:
+            db.session.delete(existing_match)
+        
+        db.session.add(job_match)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'match_result': match_result,
+            'message': 'Job matching completed successfully'
+        })
+        
+    except Exception as e:
+        print(f"Job Matching Error: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# Generate All Insights
+@app.route('/api/ai/generate-insights', methods=['POST'])
+@login_required
+def generate_insights():
+    """Generate AI insights for user"""
+    try:
+        # Get user data
+        cv_profile = CVProfile.query.filter_by(user_id=current_user.id).first()
+        job_applications = JobApplication.query.filter_by(user_id=current_user.id).all()
+        
+        # Prepare user data for insights generation
+        user_data = {
+            'cv_analysis': {
+                'extracted_skills': json.loads(cv_profile.extracted_skills) if cv_profile and cv_profile.extracted_skills else [],
+                'experience_level': cv_profile.experience_level if cv_profile else 'unknown',
+                'years_experience': cv_profile.years_experience if cv_profile else 0,
+                'ats_score': cv_profile.ats_score if cv_profile else 0
+            },
+            'job_applications': [{
+                'position': job.position,
+                'company_name': job.company_name,
+                'location': job.location,
+                'status': job.status.name if job.status else 'Unknown'
+            } for job in job_applications]
+        }
+        
+        # Generate insights
+        insights = insights_generator.generate_all_insights(user_data)
+        
+        # Clear existing insights
+        AIInsight.query.filter_by(user_id=current_user.id).delete()
+        
+        # Save new insights
+        saved_insights = []
+        for insight in insights:
+            ai_insight = AIInsight(
+                user_id=current_user.id,
+                insight_type=insight['type'],
+                title=insight['title'],
+                content=insight['content'],
+                confidence_score=insight.get('confidence', 0),
+                priority_level=insight.get('priority', 3),
+                action_required=insight.get('action_required', False),
+                action_text=insight.get('action_text', ''),
+                related_skills=json.dumps(insight.get('related_skills', []))
+            )
+            db.session.add(ai_insight)
+            saved_insights.append(ai_insight)
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': f'Generated {len(saved_insights)} insights successfully',
+            'insights_count': len(saved_insights)
+        })
+        
+    except Exception as e:
+        print(f"Generate Insights Error: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# AI Insights API
+@app.route('/api/ai/insights')
+@login_required
+def get_ai_insights():
+    """Get AI insights for user"""
+    try:
+        insights = AIInsight.query.filter_by(user_id=current_user.id)\
+            .order_by(AIInsight.priority_level.desc(), AIInsight.created_at.desc())\
+            .limit(20).all()
+        
+        insights_data = []
+        for insight in insights:
+            insights_data.append({
+                'id': insight.id,
+                'type': insight.insight_type,
+                'title': insight.title,
+                'content': insight.content,
+                'confidence_score': insight.confidence_score,
+                'priority_level': insight.priority_level,
+                'is_read': insight.is_read,
+                'action_required': insight.action_required,
+                'action_text': insight.action_text,
+                'related_skills': json.loads(insight.related_skills) if insight.related_skills else [],
+                'created_at': insight.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            })
+        
+        return jsonify({
+            'success': True,
+            'insights': insights_data
+        })
+        
+    except Exception as e:
+        print(f"Get AI Insights Error: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 # ======================
 # SERVE UPLOADED IMAGE
