@@ -715,7 +715,7 @@ def upload_cv():
                 return jsonify({'success': False, 'error': 'Error reading file content. Please make sure the file is not corrupted.'}), 400
             
             # Analyze CV using AI
-            analysis_result = cv_analyzer.analyze_cv(cv_content)
+            analysis_result = cv_analyzer.analyze_cv(file_path, len(cv_content))
             
             # Save or update CV profile
             cv_profile = CVProfile.query.filter_by(user_id=current_user.id).first()
